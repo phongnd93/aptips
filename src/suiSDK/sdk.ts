@@ -1,4 +1,4 @@
-import { SuiClient, getFullnodeUrl } from '@mysten/sui.js/client';
+import { SuiClient, SuiTransactionBlockResponse, getFullnodeUrl } from '@mysten/sui.js/client';
 import { SerializedSignature, decodeSuiPrivateKey } from '@mysten/sui.js/cryptography';
 import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
@@ -259,12 +259,12 @@ export default class SuiSDK
     * Assemble a zkLogin signature and submit a transaction
     * https://docs.sui.io/concepts/cryptography/zklogin#assemble-the-zklogin-signature-and-submit-the-transaction
     */
-    sendTransaction = async (account: AccountData) =>
+    sendTransaction = async (account: AccountData, txb: TransactionBlock, callback: (result: SuiTransactionBlockResponse) => void) =>
     {
 
         // Sign the transaction bytes with the ephemeral private key
-        const txb = new TransactionBlock();
-        txb.setSender(account.userAddr);
+        // const txb = new TransactionBlock();
+        // txb.setSender(account.userAddr);
 
         const ephemeralKeyPair = this.keypairFromSecretKey(account.ephemeralPrivateKey);
         const { bytes, signature: userSignature } = await txb.sign({
@@ -301,8 +301,7 @@ export default class SuiSDK
         })
             .then(result =>
             {
-                console.debug('[sendTransaction] executeTransactionBlock response:', result);
-                this.fetchBalances([account]);
+                callback(result);
             })
             .catch((error: unknown) =>
             {

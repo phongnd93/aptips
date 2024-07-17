@@ -1,4 +1,4 @@
-import { useAccounts, useAutoConnectWallet, useConnectWallet, useCurrentAccount, useDisconnectWallet, useSuiClient, useWallets } from "@mysten/dapp-kit";
+import { useAccounts, useAutoConnectWallet, useConnectWallet, useCurrentAccount, useDisconnectWallet, useSignAndExecuteTransactionBlock, useSuiClient, useWallets } from "@mysten/dapp-kit";
 import type { WalletAccount } from '@mysten/wallet-standard';
 import { NetworkName } from "@polymedia/suits";
 import { ReactNode, createContext, useEffect, useReducer, useRef, useState } from "react";
@@ -6,6 +6,7 @@ import { ActionMap } from "src/@types/auth";
 import { AddUserInfoDto, UserInfoResponse } from "src/@types/dto/user-dto";
 import UserServices from "src/services/UserServices";
 import SuiSDK, { AccountData } from "src/suiSDK/sdk";
+import { TransactionBlock } from '@mysten/sui.js/transactions';
 
 type SuiAuthState = {
     isInitialized: boolean,
@@ -108,6 +109,9 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
     const currentAccount = useCurrentAccount();
     const { mutate: disconnect } = useDisconnectWallet();
     const autoConnect = useAutoConnectWallet();
+
+    const { mutate: signAndExecuteTransactionBlock } = useSignAndExecuteTransactionBlock();
+
     useEffect(() =>
     {
         if (autoConnect === 'attempted')
@@ -238,6 +242,43 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
         disconnect();
         dispatch({ type: Types.Logout });
     };
+
+    const sendTransaction = (toWallet: string, fromWallet: string, amount: number) =>
+    {
+        const txb = new TransactionBlock();
+        const [coin] = txb.splitCoins(txb.gas, [amount]);
+        txb.transferObjects([coin], toWallet);
+
+        try
+        {
+            if (state?.wallet) signAndExecuteTransactionBlock({
+                transactionBlock: txb,
+                account: state.wallet
+            }, {
+                onSuccess: (result) =>
+                {
+                    console.log('executed transaction block', result);
+                    if (result?.balanceChanges && state.wallet?.address)
+                    {
+                        fetchAccountBalance(state.wallet?.address);
+                    }
+                },
+            });
+            else if (state?.user)
+            {
+                sdk.sendTransaction(state.user, txb, (result) =>
+                {
+                    if (result?.balanceChanges && state.user?.userAddr)
+                    {
+                        fetchAccountBalance(state.user.userAddr);
+                    }
+                });
+            }
+        } catch (error)
+        {
+
+        }
+    }
 
     return <SuiAuthContext.Provider value={{
         balances,

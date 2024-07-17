@@ -7,6 +7,9 @@ import { Container, Grid, Stack, StackProps, useTheme } from '@mui/material';
 import { AppWidgetSummary, AppAreaInstalled, AppNewInvoice } from 'src/sections/@dashboard/general/app';
 import useSettings from 'src/hooks/useSettings';
 import AppTopContributors from 'src/sections/@dashboard/general/app/AppTopContributors';
+import useSuiAuth from 'src/hooks/useSuiAuth';
+import { useEffect, useRef, useState } from 'react';
+import UserServices from 'src/services/UserServices';
 
 HomePage.getLayout = function getLayout(page: React.ReactElement)
 {
@@ -32,8 +35,34 @@ const ContentStyle = styled((props: StackProps) => <Stack spacing={5} {...props}
 export default function HomePage()
 {
   const theme = useTheme();
-
+  const { info } = useSuiAuth();
   const { themeStretch } = useSettings();
+  const isInit = useRef(false);
+  const userSvc = new UserServices();
+
+  const [total, setTotal] = useState<number>();
+  const [donations, setDonations] = useState<number>();
+  const [newDonators, setNewDonators] = useState<number>();
+
+  useEffect(() =>
+  {
+    if (!isInit.current)
+    {
+      initizalize();
+    }
+    return () =>
+    {
+      isInit.current = true;
+    }
+  }, []);
+
+  const initizalize = async () =>
+  {
+    if (info?.id)
+    {
+      const [donation, transtactions] = await Promise.allSettled([userSvc.donation(info?.id), userSvc.transactions(info?.id)]);
+    }
+  }
 
   return (
     <Page title="Home">

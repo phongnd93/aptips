@@ -31,7 +31,7 @@ export default class UserServices
     {
         try
         {
-            return await axios.get(`${API}/user/wallet/${walletAddress}`);
+            return APIResponseObject(200, await axios.get(`${API}/user/wallet/${walletAddress}`));
         } catch (error)
         {
             console.log('userSvc', error)
