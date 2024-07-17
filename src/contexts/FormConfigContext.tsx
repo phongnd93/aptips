@@ -11,7 +11,6 @@ export type TempConfig = {
     title?: string,
     subtitles?: string,
     amounts: (number | boolean)[],
-    code: string,
 }
 
 interface FormConfigContextType {
@@ -34,7 +33,6 @@ const FormConfigProvider: React.FC = ({ children }) =>
         title: '',
         subtitles: '',
         amounts: [1, 3, 5, false],
-        code: '',
     };
 
     const [data, setData] = useState<FormConfigResponse>();
@@ -48,10 +46,7 @@ const FormConfigProvider: React.FC = ({ children }) =>
         if (typeof window !== 'undefined')
         {
             const code = makeid(10);
-            const { protocol, hostname, port } = window.location;
-            const link = `${protocol}//${hostname}${(hostname === 'localhost' && port) ? `:${port}` : ''}/donation/${code}`;
-            setLinkCode(link);
-            setTempConfig(prevState => ({...prevState, code: code }));
+            setLinkCode(code);
         }
     }
 
@@ -78,7 +73,6 @@ const FormConfigProvider: React.FC = ({ children }) =>
                         title: tempConfig.title,
                         subtitles: tempConfig.subtitles,
                         amounts: tempConfig.amounts,
-                        code: data.config.code,
                     }
                 }}
 
