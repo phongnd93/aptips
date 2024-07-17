@@ -1,8 +1,7 @@
-import { capitalCase } from 'change-case';
 // next
 // @mui
 import { styled } from '@mui/material/styles';
-import { Box, Card, Stack, Tooltip, Container, Typography, Grid } from '@mui/material';
+import { Box, Stack, Container, Typography, Grid, Alert } from '@mui/material';
 // routes
 // hooks
 import useResponsive from '../../hooks/useResponsive';
@@ -15,6 +14,8 @@ import Image from '../../components/Image';
 // sections
 import SocialLoginForm from 'src/sections/auth/login/SocialLoginForm';
 import useSuiAuth from 'src/hooks/useSuiAuth';
+import { ConnectModal, useCurrentAccount } from '@mysten/dapp-kit';
+import { useState } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -60,9 +61,9 @@ const TermAndPolicyStyle = styled('span')(({ theme }) => ({
 export default function Login()
 {
   const { login } = useSuiAuth();
+  const [open, setOpen] = useState(false);
 
   const mdUp = useResponsive('up', 'md');
-
   return (
     <GuestGuard>
       <Page title="Login">
@@ -88,7 +89,7 @@ export default function Login()
                       </Typography>
                     </Box>
                   </Stack>
-                  <SocialLoginForm onSocialClick={login} onConnectToWalletClick={() => { }} />
+                  <SocialLoginForm onSocialClick={login} onConnectToWalletClick={() => { setOpen(true); }} />
                 </ContentStyle>
               </Container>
             </Grid>
@@ -123,8 +124,14 @@ export default function Login()
                 </Container>
               </Grid>
             )}
+            <ConnectModal
+              trigger={
+                <></>
+              }
+              open={open}
+              onOpenChange={(isOpen) => setOpen(isOpen)}
+            />
           </Grid>
-
         </RootStyle>
       </Page>
     </GuestGuard>

@@ -1,3 +1,4 @@
+import { useCurrentAccount } from "@mysten/dapp-kit";
 import { NetworkName } from "@polymedia/suits";
 import { ReactNode, createContext, useEffect, useReducer, useRef, useState } from "react";
 import { ActionMap } from "src/@types/auth";
@@ -86,7 +87,8 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
     const sdk = new SuiSDK();
     const [balances, setBalances] = useState<number>(0); // Map<Sui address, SUI balance>
     const isInit = useRef(false);
-
+    const currentAccount = useCurrentAccount();
+    console.log(currentAccount);
     useEffect(() =>
     {
         if (!isInit.current)
