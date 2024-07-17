@@ -4,6 +4,8 @@ import { styled } from '@mui/material/styles';
 import { Button, Box, Container, Typography, Link, Stack } from '@mui/material';
 // components
 import { MotionViewport, varFade } from '../../components/animate';
+import Iconify from 'src/components/Iconify';
+import Image from 'src/components/Image';
 
 // ----------------------------------------------------------------------
 
@@ -37,13 +39,9 @@ export default function SuiHomeFund()
             </Typography>
           </m.div>
           <m.div variants={varFade().inLeft}>
-            <Link href={'/'}>
-              <Button
-                variant="contained"
-                size="large"
-                sx={{ borderRadius: '1.5rem', maxWidth: 300, minWidth: 250 }}
-              >
-                Create Support
+            <Link href={'/dashboard'}>
+              <Button variant='contained' sx={{ borderRadius: 10, px: 5, py: 2 }}>
+                <Typography variant='h6'>Create Support</Typography>
               </Button>
             </Link>
           </m.div>

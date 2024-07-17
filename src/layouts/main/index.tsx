@@ -22,9 +22,9 @@ export default function MainLayout({ children }: Props)
   return (
     <Stack sx={{ minHeight: 1 }}>
       <MainHeader />
-        <LinkDonateProvider NodeId=''>
-          {children}
-        </LinkDonateProvider>
+      <LinkDonateProvider NodeId=''>
+        {children}
+      </LinkDonateProvider>
       <Box sx={{ flexGrow: 1 }} />
 
       <Box
@@ -41,7 +41,7 @@ export default function MainLayout({ children }: Props)
           <Typography variant="caption" component="p">
             © All rights reserved
             <br /> made by &nbsp;
-            <Link href="">Sui Dona team</Link>
+            <Link href="">SubCli team</Link>
           </Typography>
         </Container>
       </Box>

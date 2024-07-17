@@ -38,7 +38,7 @@ export const SUI_CONFIG = {
 };
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
-export const PATH_AFTER_LOGIN = '/'; // as '/dashboard/app'
+export const PATH_AFTER_LOGIN = '/dashboard'; // as '/dashboard/app'
 
 // LAYOUT
 // ----------------------------------------------------------------------

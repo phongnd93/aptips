@@ -2,7 +2,6 @@ import { ReactNode, useEffect } from 'react';
 // next
 import { useRouter } from 'next/router';
 // routes
-import { PATH_DASHBOARD, SUI_DONA_PATH } from '../routes/paths';
 import useSuiAuth from 'src/hooks/useSuiAuth';
 
 // ----------------------------------------------------------------------
@@ -22,7 +21,7 @@ export default function GuestGuard({ children }: Props)
     if (isAuthenticated)
     {
       console.log('First login', firstLogin);
-      !firstLogin ? push('/') : push('/profile');
+      !firstLogin ? push('/dashboard') : push('/profile');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, firstLogin]);

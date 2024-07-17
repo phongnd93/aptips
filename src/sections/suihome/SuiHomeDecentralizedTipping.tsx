@@ -70,7 +70,7 @@ export default function SuiHomeDecentralizedTipping()
                 <Stack spacing={3} alignItems={'center'}>
                     <m.div variants={varFade().inUp}>
                         <Typography variant="h2" fontWeight={'700'}>
-                            Decentralized Tipping
+                            Decentralized Donation
                         </Typography>
                         <Typography variant="h2" fontWeight={'700'}>
                             Platform for Creators

@@ -1,5 +1,5 @@
 import { styled, useTheme } from '@mui/material/styles';
-import { AppBar, Toolbar, Container, Stack, Typography, Button } from '@mui/material';
+import { AppBar, Toolbar, Container, Stack, Typography, Button, Box } from '@mui/material';
 import { ReactNode } from 'react'
 import { HEADER } from 'src/config';
 import useResponsive from 'src/hooks/useResponsive';
@@ -8,6 +8,7 @@ import Image from 'src/components/Image';
 import Link from 'next/link';
 import Iconify from 'src/components/Iconify';
 import useOffSetTop from 'src/hooks/useOffSetTop';
+import Logo from 'src/components/Logo';
 
 type Props = {
     children: ReactNode
@@ -16,15 +17,15 @@ type Props = {
 const ToolbarStyle = styled(Toolbar)(({ theme }) => ({
     height: HEADER.MOBILE_HEIGHT,
     transition: theme.transitions.create(['height', 'background-color'], {
-      easing: theme.transitions.easing.easeInOut,
-      duration: theme.transitions.duration.shorter,
+        easing: theme.transitions.easing.easeInOut,
+        duration: theme.transitions.duration.shorter,
     }),
     [theme.breakpoints.up('md')]: {
-      height: HEADER.MAIN_DESKTOP_HEIGHT,
+        height: HEADER.MAIN_DESKTOP_HEIGHT,
     },
-  }));
-  
-  const ToolbarShadowStyle = styled('div')(({ theme }) => ({
+}));
+
+const ToolbarShadowStyle = styled('div')(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
@@ -35,7 +36,7 @@ const ToolbarStyle = styled(Toolbar)(({ theme }) => ({
     position: 'absolute',
     width: `calc(100% - 48px)`,
     boxShadow: theme.customShadows.z8,
-  }));
+}));
 
 const MainHeader: React.FC = () =>
 {
@@ -78,7 +79,7 @@ const MainHeader: React.FC = () =>
                         </Stack>
                     </Stack>
                     <Link href={'/dashboard'}>
-                        <Button variant='contained' sx={{ borderRadius: '1.25rem' }}>
+                        <Button variant='contained' sx={{ borderRadius: 10 }}>
                             <Stack direction={'row'} spacing={3}>
                                 <Typography variant='h6'>Launch APP</Typography>
                                 <Iconify icon={'grommet-icons:form-next-link'} width={24} height={24} />
@@ -98,6 +99,24 @@ export default function LandingPageLayout({ children }: Props)
         <Stack sx={{ minHeight: 1 }}>
             <MainHeader />
             {children}
+            <Box
+                sx={{
+                    py: 5,
+                    textAlign: 'center',
+                    position: 'relative',
+                    bgcolor: 'background.default',
+                }}
+            >
+                <Container>
+                    <Logo sx={{ mb: 1, mx: 'auto' }} />
+
+                    <Typography variant="caption" component="p">
+                        © All rights reserved
+                        <br /> made by &nbsp;
+                        <Link href="">Sui Dona team</Link>
+                    </Typography>
+                </Container>
+            </Box>
         </Stack>
     );
 }
