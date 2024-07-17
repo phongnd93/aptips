@@ -43,12 +43,12 @@ export default function ShareSocial (props: { value?: string }) {
     {
         if (social !== 'other')
         {
-            setNewValue({ value:`${link}/utm_source=${social}`, copied: false });
+            setNewValue({ value:`${link}?utm_source=${social}`, copied: false });
             setSocial(social);
         }
         else
         {
-            setNewValue({ value: `${link}/utm_source=`, copied: false });
+            setNewValue({ value: `${link}?utm_source=`, copied: false });
             setSocial(social);
         }
     };

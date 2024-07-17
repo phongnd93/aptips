@@ -44,6 +44,19 @@ export default class UserServices
         }
     }
 
+    infoById = async (id: number) =>
+    {
+        try
+        {
+            const res = await axios.get(`${API}/user/${id}`);
+            return APIResponseObject(200, res.data);
+        } catch (error)
+        {
+            console.log('UserSvc.info', error);
+            // return APIResponseObject(500, null, error.message);
+        }
+    }
+
     donation = async (userId: number): Promise<APIResponse> =>
     {
         const donationInfos = ['value', 'num'];

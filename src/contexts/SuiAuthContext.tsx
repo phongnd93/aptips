@@ -27,6 +27,7 @@ interface SuiAuthContextType extends SuiAuthState
     fetchAccountBalance: (walletAddress: string) => Promise<void>,
     logout: () => Promise<void>,
     sendTransaction: (sourceId: number, receiver: number, toWallet: string, amout: number) => Promise<void>,
+    fetchUserInfoById: () => Promise<UserInfoResponse | null>
     // getRevenue: () => Promise<RevenueResponseDTO | null>,
     // getTransactions: () => Promise<Transaction[] | null>,
     // getTopDonators: () => Promise<Donator[] | null>,
@@ -236,6 +237,13 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
         return null;
     };
 
+    const fetchUserInfoById = async (id: number): Promise<UserInfoResponse | null> =>
+    {
+        const res = await userSvc.infoById(id);
+        if (res?.status === 200) return res.data;
+        return null;
+    };
+
     const createUser = async (obj: AddUserInfoDto): Promise<UserInfoResponse | null> =>
     {
         const res = await userSvc.add(obj);
@@ -345,6 +353,7 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
         NETWORK: sdk.NETWORK,
         ...state,
 
+        fetchUserInfoById,
         fetchAccountBalance,
         login,
         logout,

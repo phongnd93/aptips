@@ -23,9 +23,19 @@ const menuConfig = [
   //   path: SUI_DONA_PATH.manager.form,
   // },
   {
+    title: 'Dashboard',
+    icon: <Iconify icon={'eva:file-fill'} {...ICON_SIZE} />,
+    path: '/',
+  },
+  {
     title: 'Management',
     icon: <Iconify icon={'eva:file-fill'} {...ICON_SIZE} />,
     path: SUI_DONA_PATH.manager.link,
+  },
+  {
+    title: 'Profile',
+    icon: <Iconify icon={'eva:file-fill'} {...ICON_SIZE} />,
+    path: '/profile',
   }
   //PHONG:Hide menu item
   // {

@@ -99,7 +99,7 @@ export default function DetailLinkDonation(value?: string)
                                         setIsOpenShare(true);
                                     }}
                                 >
-                                    {detailLink?.linkCode}
+                                    donation/{detailLink?.linkCode}
                                 </Typography>
                                 <Box sx={{ ml: 4, display: 'flex', height: 35, mt: 4 }}>
                                     <Link href={SUI_DONA_PATH.manager.form}>
@@ -117,7 +117,7 @@ export default function DetailLinkDonation(value?: string)
                                     <Button
                                         sx={{ ml: 1, textAlign: 'center' }}
                                         variant="outlined"
-                                        color="error"
+                                        color="warning"
                                         size='small'
                                         startIcon={<Iconify icon="ic:share" />}
                                         onClick={() =>

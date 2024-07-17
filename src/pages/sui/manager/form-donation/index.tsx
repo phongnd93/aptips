@@ -68,7 +68,7 @@ const ManagerFormDonationComponent: React.FC<ManagerFormDonationProps> = (props:
                                     type='button'
                                     onClick={handleSaveConfig}
                                 >
-                                    Save Configuration
+                                    Submit
                                 </Button>
                             </Stack>
                         </CardContent>
