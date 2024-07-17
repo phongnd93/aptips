@@ -18,7 +18,7 @@ type AppAreaInstalledProps = {
 
 export default function AppAreaInstalled({ title, data }: AppAreaInstalledProps)
 {
-  const [seriesData, setSeriesData] = useState(2019);
+  const [seriesData, setSeriesData] = useState(0);
   const temData: RevenueResponseDTO = [{
     source: {
       id: 0,
@@ -100,16 +100,10 @@ export default function AppAreaInstalled({ title, data }: AppAreaInstalledProps)
     },
   ];
 
-  const rebuildData = () =>
-  {
-
-  };
-  rebuildData();
-
   const chartData = useMemo(() =>
   {
     const yearArr: { year?: number, data?: { name: string, data: number[] }[] }[] = [];
-    temData.forEach(d =>
+    data.forEach(d =>
     {
       const item: any = {};
       if (d?.totalRevenueByMonthList?.length)
@@ -123,20 +117,23 @@ export default function AppAreaInstalled({ title, data }: AppAreaInstalledProps)
 
           const yearData = d.totalRevenueByMonthList.filter(r => r.year);
           const yData = [];
-          for (let index = 0; index < 11; index++)
+          const minMonth = yearData.sort((a, b) => a.month - b.month)[0];
+          for (let index = 0; index <= 11; index++)
           {
             const monthData = yearData.find(m => m.month === index + 1);
             if (monthData) yData[index] = monthData.revenue;
-            else yData[index] = 0;
+            else if (minMonth?.month > index) yData[index] = 0;
           }
           item[d.source.utmSource] = { [y]: yData };
           yearArr[yearIndex].data.push({ name: d.source.utmSource, data: yData });
         });
       }
     });
-
+    // if (yearArr?.length) setSeriesData(yearArr[0].year);
     return yearArr;
-  }, [temData]);
+  }, [data]);
+
+  if (chartData?.length && !seriesData) { setSeriesData(chartData[0].year); }
 
   const handleChangeSeriesData = (event: React.ChangeEvent<HTMLInputElement>) =>
   {
@@ -150,44 +147,45 @@ export default function AppAreaInstalled({ title, data }: AppAreaInstalledProps)
   });
 
   return (
-    <Card>
+    <Card sx={{ height: '100%' }}>
       <CardHeader
         title={title || 'Area Installed'}
         // subheader="(+43%) than last year"
         action={
-          <TextField
-            select
-            fullWidth
-            value={seriesData}
-            SelectProps={{ native: true }}
-            onChange={handleChangeSeriesData}
-            sx={{
-              '& fieldset': { border: '0 !important' },
-              '& select': {
-                pl: 1,
-                py: 0.5,
-                pr: '24px !important',
-                typography: 'subtitle2',
-              },
-              '& .MuiOutlinedInput-root': {
-                borderRadius: 0.75,
-                bgcolor: 'background.neutral',
-              },
-              '& .MuiNativeSelect-icon': {
-                top: 4,
-                right: 0,
-                width: 20,
-                height: 20,
-              },
-            }}
-          >
-            {chartData.map((option) => (
-              <option key={option.year} value={option.year}>
-                {option.year}
-              </option>
-            ))}
-          </TextField>
-          // <></>
+          <>
+            {chartData?.length > 0 && <TextField
+              select
+              fullWidth
+              value={seriesData}
+              SelectProps={{ native: true }}
+              onChange={handleChangeSeriesData}
+              sx={{
+                '& fieldset': { border: '0 !important' },
+                '& select': {
+                  pl: 1,
+                  py: 0.5,
+                  pr: '24px !important',
+                  typography: 'subtitle2',
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 0.75,
+                  bgcolor: 'background.neutral',
+                },
+                '& .MuiNativeSelect-icon': {
+                  top: 4,
+                  right: 0,
+                  width: 20,
+                  height: 20,
+                },
+              }}
+            >
+              {chartData.map((option) => (
+                <option key={option.year} value={option.year}>
+                  {option.year}
+                </option>
+              ))}
+            </TextField>}
+          </>
         }
       />
 
