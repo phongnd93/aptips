@@ -21,11 +21,12 @@ interface ManagerFormDonationProps
 
 const ManagerFormDonationComponent: React.FC<ManagerFormDonationProps> = (props: ManagerFormDonationProps) =>
 {
-    const { handleSaveConfig, _fetchConfig, setTempConfig } = useContext(FormConfigContext);
+    const { handleSaveConfig, _fetchConfig, setTempConfig,initTempConfig } = useContext(FormConfigContext);
     const router = useRouter();
     useEffect(() =>
     {
         const { id } = router.query;
+        setTempConfig(initTempConfig);
         if (id)
         {
             _fetchConfig(id as string).then(result =>

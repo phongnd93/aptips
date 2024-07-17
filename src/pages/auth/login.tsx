@@ -86,7 +86,7 @@ export default function Login()
             container
             justifyContent={{ xs: 'center', md: 'space-between' }}
             sx={{ textAlign: { xs: 'center', md: 'left' } }}>
-            <Grid item xs={12} md={6} bgcolor={'white'}>
+            <Grid item xs={12} md={6} bgcolor={(theme) => theme.palette.background.paper}>
               <Container maxWidth="sm">
                 <ContentStyle>
                   <Stack alignItems="center"><Logo /></Stack>
@@ -107,7 +107,7 @@ export default function Login()
             </Grid>
 
             {mdUp && (
-              <Grid item xs={12} md={6} bgcolor={'#F8F9FA'}>
+              <Grid item xs={12} md={6} bgcolor={(theme) => theme.palette.background.neutral}>
                 <Container>
                   <ContentStyle>
                     <Typography variant="h3" sx={{ px: 5, mt: 10 }}>

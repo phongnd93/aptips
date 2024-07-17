@@ -77,7 +77,7 @@ export const FormConfig: React.FC = () =>
                                 direction={'row'}
                                 justifyContent={'center'}
                                 alignItems={'center'}
-                                bgcolor={'#D0F2FF'}
+                                bgcolor={(theme) => theme.palette.background.neutral}
                                 borderRadius={'0.25rem'}
                                 padding={3}
                                 gap={2}
@@ -113,8 +113,6 @@ export const FormConfig: React.FC = () =>
                                                             borderRadius: '50%',
                                                             width: 40,
                                                             height: 40,
-                                                            backgroundColor: 'white',
-                                                            color: 'deepskyblue',
                                                         }}
                                                         value={a}
                                                     >
@@ -126,8 +124,8 @@ export const FormConfig: React.FC = () =>
                                                 <OutlinedInput
                                                     type='number'
                                                     size='small'
-                                                    placeholder='Any Sui'
-                                                    sx={{ width: 120, bgcolor: 'white', borderRadius: 1 }}
+                                                    placeholder='Any APT'
+                                                    sx={{ width: 120, borderRadius: 1 }}
                                                     endAdornment={
                                                         <InputAdornment position="end">
                                                             <IconButton

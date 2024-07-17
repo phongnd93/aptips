@@ -17,7 +17,7 @@ type Props = {
 
 export default function AuthGuard({ children }: Props)
 {
-  const { account, connected, wallet } = useWallet();
+  const { account, connected, wallet, wallets } = useWallet();
   const { firstLogin, isInitialized, isAuthenticated } = useAptos();
 
   const { pathname, push } = useRouter();

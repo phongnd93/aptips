@@ -18,6 +18,7 @@ interface FormConfigContextType
 {
     data: FormConfigResponse | undefined,
     tempConfig: TempConfig,
+    initTempConfig:TempConfig,
     setTempConfig: React.Dispatch<React.SetStateAction<TempConfig>>,
     _fetchConfig: (id: string) => Promise<APIResponse>,
     _fetchConfigByCode: (string: string) => Promise<APIResponse>,
@@ -165,6 +166,7 @@ const FormConfigProvider: React.FC = ({ children }) =>
         <FormConfigContext.Provider value={{
             data,
             tempConfig,
+            initTempConfig,
             setTempConfig,
             handleSaveConfig,
             _fetchConfig,

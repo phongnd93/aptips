@@ -1,10 +1,9 @@
-import { createContext, FC, ReactNode, useEffect, useReducer, useState } from "react";
+import { createContext, FC, ReactNode, useEffect, useLayoutEffect, useReducer, useState } from "react";
 import { AccountInfo, InputTransactionData, useWallet, WalletInfo } from "@aptos-labs/wallet-adapter-react";
 import { Aptos, APTOS_COIN, AptosConfig } from "@aptos-labs/ts-sdk";
 import { AddUserInfoDto, UserInfoResponse } from "src/@types/dto/user-dto";
 import { ActionMap } from "src/@types/auth";
 import { TransasctionHistory } from "src/@types/transaction";
-import TransactionServices from "src/services/TransactionServices";
 import UserServices from "src/services/UserServices";
 
 type AuthState = {
@@ -126,18 +125,21 @@ const AptosProvider: FC<AptosContextProps> = ({ children, createnewAccount }: Ap
     const [balances, setBalances] = useState<number>(0);
     const [loadingBalance, setLoadingBalance] = useState(false);
     const userSvc = new UserServices();
-    const transSvc = new TransactionServices();
-
-    const { account, wallet, connected, isLoading, network, disconnect, signAndSubmitTransaction } = useWallet();
+    const aptosWallet = useWallet();
+    const { account, wallet, connected, network, disconnect, signAndSubmitTransaction, wallets, isLoading } = useWallet();
     const client = new Aptos(new AptosConfig({
         network: network?.name
     }));
     useEffect(() =>
     {
-        if (createnewAccount)
-            initialize();
-        else initWithoutCreateNewAccount();
-    }, [connected]);
+        if (wallets?.length > 0 && !isLoading)
+        {
+            if (createnewAccount)
+                initialize();
+            else initWithoutCreateNewAccount();
+        }
+
+    }, [connected, wallets]);
 
     const initialize = async () =>
     {
@@ -176,6 +178,7 @@ const AptosProvider: FC<AptosContextProps> = ({ children, createnewAccount }: Ap
         {
             console.log('initialize', error.message);
         }
+        console.log(aptosWallet);
         dispatch({
             type: Types.Initial,
             payload: {
@@ -256,7 +259,7 @@ const AptosProvider: FC<AptosContextProps> = ({ children, createnewAccount }: Ap
                     data: {
                         function: '0x1::coin::transfer',
                         typeArguments: [APTOS_COIN],
-                        functionArguments: [toWallet, amount],
+                        functionArguments: [toWallet, amount * Math.pow(10, 8)],
                     },
                 };
                 const txn = await signAndSubmitTransaction(transaction);

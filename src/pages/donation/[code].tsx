@@ -165,10 +165,10 @@ const DonateComponent: React.FC = () =>
         if (user && !wallet)
         {
 
-        } else { doSendSui() };
+        } else { doSendAPT() };
     };
 
-    const doSendSui = () =>
+    const doSendAPT = () =>
     {
         setOpenConfirmDialog(false);
         if (linkCreator?.id)
@@ -204,7 +204,7 @@ const DonateComponent: React.FC = () =>
 
                 } catch (error)
                 {
-                    console.log('doSendSui', error);
+                    console.log('doSendAPT', error);
                     setMessage({
                         type: 'error',
                         content: error
@@ -329,7 +329,7 @@ const DonateComponent: React.FC = () =>
                                         direction={'row'}
                                         justifyContent={'center'}
                                         alignItems={'center'}
-                                        bgcolor={'#D0F2FF'}
+                                        bgcolor={(theme) => theme.palette.background.neutral}
                                         borderRadius={'0.25rem'}
                                         padding={3}
                                         gap={2}
@@ -338,7 +338,8 @@ const DonateComponent: React.FC = () =>
                                         <Iconify icon={'token:aptos'} width={40} height={40} />
                                         <Iconify icon={'eva:close-fill'} width={16} height={16} />
                                         {formConfig.amounts.map((a: any, index: number) => (
-                                            <ToggleButtonGroup color="primary"
+                                            <ToggleButtonGroup
+                                                color="primary"
                                                 exclusive
                                                 onChange={(e, val) => { setFormResult({ ...formResult, ...{ amount: val } }); }}
                                                 aria-label="Platform"
@@ -352,8 +353,7 @@ const DonateComponent: React.FC = () =>
                                                                     borderRadius: '50%',
                                                                     width: 40,
                                                                     height: 40,
-                                                                    backgroundColor: 'white',
-                                                                    color: 'deepskyblue',
+                                                                    border:0
                                                                 }
                                                             ]}
                                                             value={a}
@@ -365,8 +365,8 @@ const DonateComponent: React.FC = () =>
                                                         <OutlinedInput
                                                             type='number'
                                                             size='small'
-                                                            placeholder='Any Sui'
-                                                            sx={{ width: 120, bgcolor: 'white', borderRadius: 1 }}
+                                                            placeholder='Any APT'
+                                                            sx={{ width: 120, borderRadius: 1 }}
                                                             onChange={(e) => { setFormResult({ ...formResult, ...{ amount: e.target.value } }) }}
                                                         />
                                                     )
@@ -482,7 +482,7 @@ const DonateComponent: React.FC = () =>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => { setOpenConfirmDialog(false); }}>Disagree</Button>
-                        <Button onClick={() => { doSendSui(); }}>Agree</Button>
+                        <Button onClick={() => { doSendAPT(); }}>Agree</Button>
                     </DialogActions>
                 </Dialog>
             </>

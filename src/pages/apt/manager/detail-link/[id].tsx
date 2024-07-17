@@ -70,7 +70,7 @@ export default function DetailLinkDonation(value?: string)
         {
             await loadDetail();
             await loadListUserDonate(id);
-            await loadRevenue(id)
+            await loadRevenue(id);
         }
     }
 
@@ -182,7 +182,7 @@ export default function DetailLinkDonation(value?: string)
                     <CardHeader title='Recent donations' />
                     <CardActionArea />
                     <CardContent>
-                        <GroupingListUserDonate />
+                        <GroupingListUserDonate sources={revenue.map(r => r.source)} />
                     </CardContent>
                 </Card>
             </Container>
