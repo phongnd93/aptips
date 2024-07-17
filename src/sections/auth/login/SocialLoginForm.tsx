@@ -1,7 +1,8 @@
-import { Stack } from "@mui/material";
+import { Popover, Stack, Typography } from "@mui/material";
 import { LoadingButton } from '@mui/lab';
 import { useState } from "react";
 import Iconify from "src/components/Iconify";
+import React from "react";
 
 type SocialLoginFormProps = {
     onSocialClick: (provider: 'Google' | 'Facebook' | 'Twitch') => void,
@@ -11,6 +12,21 @@ type SocialLoginFormProps = {
 const SocialLoginForm: React.FC<SocialLoginFormProps> = ({ onSocialClick, onConnectToWalletClick }) =>
 {
     const [isSubmitting, setIsSubmitting] = useState<'Google' | 'Facebook' | 'Twitch' | 'Wallet' | null>(null);
+    const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+
+    const handleComingSoonClick = (event: React.MouseEvent<HTMLButtonElement>) =>
+    {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () =>
+    {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
+
     return <Stack spacing={3} fontFamily={'Inter'}>
         <LoadingButton
             fullWidth
@@ -56,11 +72,12 @@ const SocialLoginForm: React.FC<SocialLoginFormProps> = ({ onSocialClick, onConn
                     background: "#E7ECF7FF",
                 }
             }]}
-            onClick={() =>
-            {
-                setIsSubmitting('Facebook');
-                onSocialClick('Facebook');
-            }}
+            onClick={handleComingSoonClick}
+        // onClick={() =>
+        // {
+        //     setIsSubmitting('Facebook');
+        //     onSocialClick('Facebook');
+        // }}
         >
             <Stack direction={'row'} spacing={1} alignContent={"baseline"} alignItems={"center"}>
                 <Iconify icon={'eva:facebook-fill'} width={24} height={24} />
@@ -83,11 +100,12 @@ const SocialLoginForm: React.FC<SocialLoginFormProps> = ({ onSocialClick, onConn
                     background: "#F1E6FEFF",
                 }
             }]}
-            onClick={() =>
-            {
-                setIsSubmitting('Google');
-                onSocialClick('Twitch')
-            }}
+            onClick={handleComingSoonClick}
+        // onClick={() =>
+        // {
+        //     setIsSubmitting('Twitch');
+        //     onSocialClick('Twitch')
+        // }}
         >
             <Stack direction={'row'} spacing={1} alignContent={"baseline"} alignItems={"center"}>
                 <Iconify icon={'mdi:twitch'} width={24} height={24} />
@@ -117,7 +135,22 @@ const SocialLoginForm: React.FC<SocialLoginFormProps> = ({ onSocialClick, onConn
                 <span>Connect to wallet</span>
             </Stack>
         </LoadingButton>
-    </Stack>
+        <Popover
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+            }}
+        >
+            <Stack direction={"column"} justifyContent={"center"} sx={{ p: 2 }}>
+                <Typography variant="h5" sx={{ color: (theme) => theme.palette.primary.main }}>Coming Soon!</Typography>
+                <Typography variant="body1" >We are currently working hard on this feature!</Typography>
+            </Stack>
+        </Popover>
+    </Stack >
 
 };
 
