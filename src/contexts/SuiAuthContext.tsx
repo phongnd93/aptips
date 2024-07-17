@@ -89,7 +89,6 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
 
     useEffect(() =>
     {
-
         if (!isInit.current)
         {
             initialize();
