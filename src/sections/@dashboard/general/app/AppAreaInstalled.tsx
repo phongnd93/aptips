@@ -99,11 +99,12 @@ export default function AppAreaInstalled({ title, data }: AppAreaInstalledProps)
       ],
     },
   ];
+  const realData = [...data];
 
   const chartData = useMemo(() =>
   {
     const yearArr: { year?: number, data?: { name: string, data: number[] }[] }[] = [];
-    data.forEach(d =>
+    realData.forEach(d =>
     {
       const item: any = {};
       if (d?.totalRevenueByMonthList?.length)
@@ -130,8 +131,9 @@ export default function AppAreaInstalled({ title, data }: AppAreaInstalledProps)
       }
     });
     // if (yearArr?.length) setSeriesData(yearArr[0].year);
+    console.log('yearArr : ', yearArr);
     return yearArr;
-  }, [data]);
+  }, [realData]);
 
   if (chartData?.length && !seriesData) { setSeriesData(chartData[0].year); }
 

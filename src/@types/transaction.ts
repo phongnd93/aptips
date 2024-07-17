@@ -42,6 +42,7 @@ export type Donator = {
 export type Transaction = {
     "id": number,
     "sourceId": number,
+    sourceName: string,
     "senderInfo": Donator,
     "receiverInfo": Donator,
     "amount": number,

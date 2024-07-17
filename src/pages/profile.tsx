@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 // layouts
 import Layout from '../layouts';
 import Page from '../components/Page';
-import { Box, Card, CardContent, Container, Stack, StackProps, TextField, Typography, useTheme } from '@mui/material';
+import { Box, Card, CardContent, Container, Grid, Stack, StackProps, TextField, Typography, useTheme } from '@mui/material';
 
 import useSuiAuth from 'src/hooks/useSuiAuth';
 import { useEffect, useRef, useState } from 'react';
@@ -16,6 +16,7 @@ import Iconify from 'src/components/Iconify';
 import { shortenSuiAddress } from '@polymedia/suits';
 
 import { useSnackbar } from 'notistack';
+import useSettings from 'src/hooks/useSettings';
 
 
 const ContentStyle = styled((props: StackProps) => <Stack spacing={5} {...props} />)(
@@ -46,6 +47,7 @@ Profile.getLayout = function getLayout(page: React.ReactElement)
 
 export default function Profile()
 {
+    const { themeStretch } = useSettings();
     const { user, info, balances, wallet, updateProfile } = useSuiAuth();
     const userSvc = new UserServices();
     const [fullName, setFullName] = useState<string>(info?.fullName!);
@@ -55,7 +57,7 @@ export default function Profile()
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const onChangeInfo = async(e: any) =>
+    const onChangeInfo = async (e: any) =>
     {
         setLoading(true)
         await userSvc.update({
@@ -67,65 +69,66 @@ export default function Profile()
             about: about,
         }).then((res) =>
         {
-            setTimeout(() =>{
+            setTimeout(() =>
+            {
                 if (res?.data)
                 {
                     updateProfile(res.data);
                 }
                 setLoading(false);
-                enqueueSnackbar('Saved successfully', 'success' );
+                enqueueSnackbar('Saved successfully',{
+                    variant:'success'
+                });
             }, 800)
         });
 
     }
 
-    console.log(info);
-
     return (
-        <Page title="Home">
-            <Container sx={{ mt: 20, mb: 5 }}>
-                <Stack alignItems={'center'} flex={2}>
-                    <Box sx={{ display: 'flex' }}>
-                        <Card sx={{ minWidth: 200, mr: 5 }}>
+        <Page title="Profile">
+            <Container maxWidth={themeStretch ? false : 'lg'} sx={{ mt: 20 }}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12} md={4} >
+                        <Card>
                             <Stack spacing={3} alignItems={'center'}>
                                 <Typography align='center' sx={{ pt: 2, display: 'flex' }}>
                                     <MyAvatar sx={{ width: 50, height: 50 }} />
                                 </Typography>
                             </Stack>
                             <CardContent>
-                                <Stack spacing={3}>
-                                    <Typography align='left'>
-                                        <Label color='info' sx={{ minWidth: 60, mr: 3, minHeight: 40 }}>
+                                <Stack spacing={2}>
+                                    <Stack direction={'row'} spacing={2}>
+                                        <Label color='info' sx={{ minWidth: 60, py: 3, textAlign: 'end' }}>
                                             SUI:
                                         </Label>
-                                        <Label color='default' sx={{ minWidth: 210, maxWidth: 220, color: 'text.secondary', minHeight: 40  }}>
+                                        <Label color='default' sx={{ flex: 1, py: 3 }}>
                                             {balances} <Iconify icon={'token-branded:sui'} width={24} height={24} />
                                         </Label>
-                                    </Typography>
-                                    <Typography align='left'>
-                                        <Label color='info' sx={{ minWidth: 60, mr: 3, minHeight: 40  }}>
+                                    </Stack>
+                                    <Stack direction={'row'} spacing={2}>
+                                        <Label color='info' sx={{ minWidth: 60, py: 3, textAlign: 'end' }}>
                                             Wallet:
                                         </Label>
-                                        <Label color='default' sx={{ minWidth: 210, maxWidth: 220, color: 'text.secondary', minHeight: 40  }}>
+                                        <Label color='default' sx={{ flex: 1, py: 3 }}>
                                             {shortenSuiAddress(user?.userAddr || wallet?.address, 6, 15, '...', '_wallet_')}
                                         </Label>
-                                    </Typography>
-                                   
-                                    <Typography align='left'>
-                                        <Label color='info' sx={{ minWidth: 60, mr: 3, minHeight: 40  }}>
+                                    </Stack>
+                                    <Stack direction={'row'} spacing={2}>
+                                        <Label color='info' sx={{ minWidth: 60, py: 3, textAlign: 'end' }}>
                                             Email:
                                         </Label>
                                         {
-                                            wallet?.label && <Label 
-                                            sx={{ color: 'text.secondary', minWidth: 210, maxWidth: 220, minHeight: 40  }} color='default'>
-                                            {wallet.label}
+                                            wallet?.label && <Label
+                                                sx={{ flex: 1, py: 3 }} color='default'>
+                                                {wallet.label}
                                             </Label>
                                         }
-                                    </Typography>
-                    
+                                    </Stack>
                                 </Stack>
                             </CardContent>
                         </Card>
+                    </Grid>
+                    <Grid item xs={12} md={8}>
                         <Card sx={{ minWidth: 500 }}>
                             <Stack spacing={3}>
                                 <Typography variant='h3' align='center' sx={{ pt: 2 }}>
@@ -147,14 +150,14 @@ export default function Profile()
                                     <TextField
                                         id="outlined-number"
                                         label="About"
-                                        rows={3}
+                                        rows={10}
                                         placeholder='Say something nice...(optional)'
                                         fullWidth
                                         multiline
                                         value={about}
                                         InputLabelProps={{
                                             shrink: true,
-                                    }}
+                                        }}
                                         onChange={(e) => { setAbout(e.target.value) }}
                                     />
                                     <LoadingButton
@@ -168,9 +171,9 @@ export default function Profile()
                                 </Stack>
                             </CardContent>
                         </Card>
-                    </Box>
-                </Stack>
+                    </Grid>
+                </Grid>
             </Container>
-        </Page>
+        </Page >
     );
 }

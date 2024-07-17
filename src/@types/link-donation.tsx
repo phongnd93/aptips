@@ -9,7 +9,10 @@ export type LinkDonationModel = {
     amount: number,
     name: string,
     config: string
+    createdAt: string,
 
     sui: number,
     orderdate?: string,
+    totalDonations: number,
+    totalNumberDonations: number
 }
