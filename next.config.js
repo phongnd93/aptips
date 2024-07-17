@@ -30,7 +30,7 @@ module.exports = withTM({
     AUTH0_DOMAIN: '',
     //
     MAPBOX: '',
-    // API: 'http://164.68.106.205:3000/api',
-    API: 'http://localhost:3000/api'
+    API: 'http://143.198.196.98:3000/api',
+    // API: 'http://localhost:3000/api'
   },
 });

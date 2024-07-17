@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 // layouts
 import Layout from '../layouts';
 import Page from '../components/Page';
-import { Container, Grid, Stack, StackProps, useTheme } from '@mui/material';
+import { Button, Container, Grid, Stack, StackProps, useTheme } from '@mui/material';
 import { AppWidgetSummary, AppAreaInstalled, AppNewInvoice } from 'src/sections/@dashboard/general/app';
 import useSettings from 'src/hooks/useSettings';
 import AppTopContributors from 'src/sections/@dashboard/general/app/AppTopContributors';
@@ -35,7 +35,7 @@ const ContentStyle = styled((props: StackProps) => <Stack spacing={5} {...props}
 export default function HomePage()
 {
   const theme = useTheme();
-  const { info } = useSuiAuth();
+  const { info, sendTransaction } = useSuiAuth();
   const { themeStretch } = useSettings();
   const isInit = useRef(false);
   const userSvc = new UserServices();
@@ -46,21 +46,25 @@ export default function HomePage()
 
   useEffect(() =>
   {
-    if (!isInit.current)
+    console.log(info);
+    if (!isInit.current && info?.id)
     {
+      console.log(info);
       initizalize();
     }
     return () =>
     {
       isInit.current = true;
     }
-  }, []);
+  }, [info]);
 
   const initizalize = async () =>
   {
     if (info?.id)
     {
-      const [donation, transtactions] = await Promise.allSettled([userSvc.donation(info?.id), userSvc.transactions(info?.id)]);
+      const donation = await userSvc.donation(info.id);
+      const transtactions = await userSvc.transactions(info.id);
+      console.log(donation, transtactions);
     }
   }
 
@@ -68,6 +72,10 @@ export default function HomePage()
     <Page title="Home">
       <ContentStyle>
         <Container maxWidth={themeStretch ? false : 'lg'}>
+          {/* <Button onClick={() =>
+          {
+            sendTransaction('0xa7ba69b76239e5920e27d7275e3da73fb00cfdc5023572ce0e29dfa4cca3e84a', '', 100);
+          }}>Test send</Button> */}
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={4}>
               <Grid container direction={'column'} spacing={1}>

@@ -23,7 +23,8 @@ interface SuiAuthContextType extends SuiAuthState
 
     login: (provider: 'Google' | 'Facebook' | 'Twitch') => Promise<void>,
     fetchAccountBalance: (walletAddress: string) => Promise<void>,
-    logout: () => Promise<void>
+    logout: () => Promise<void>,
+    sendTransaction: (toWallet: string, fromWallet: string, amout: number) => Promise<void>
 }
 
 enum Types
@@ -225,6 +226,7 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
     const fetchUserInfo = async (walletAddress: string): Promise<UserInfoResponse | null> =>
     {
         const res = await userSvc.info(walletAddress);
+        console.log(res);
         if (res?.status === 200) return res.data;
         return null;
     }
@@ -243,30 +245,41 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
         dispatch({ type: Types.Logout });
     };
 
-    const sendTransaction = (toWallet: string, fromWallet: string, amount: number) =>
+    const sendTransaction = async (toWallet: string, fromWallet: string, amount: number) =>
     {
         const txb = new TransactionBlock();
-        const [coin] = txb.splitCoins(txb.gas, [amount]);
-        txb.transferObjects([coin], toWallet);
+        const bigAmount = BigInt(amount * 10 ** 9); // 5 SUI (SUI sử dụng đơn vị 10^9, vì vậy nhân với 10^9 để chuyển đổi)
+        // const [coin] = txb.splitCoins(txb.gas, [300000000]);
+        // debugger
+        // txb.transferObjects([coin], txb.pure.address(toWallet));
 
         try
         {
-            if (state?.wallet) signAndExecuteTransactionBlock({
-                transactionBlock: txb,
-                account: state.wallet
-            }, {
-                onSuccess: (result) =>
+            if (state?.wallet)
+            {
+                const coins = await suiClient.getAllCoins({ owner: state.wallet.address });
+
+                if (coins?.data?.length && coins?.data[0]?.coinObjectId)
                 {
-                    console.log('executed transaction block', result);
-                    if (result?.balanceChanges && state.wallet?.address)
-                    {
-                        fetchAccountBalance(state.wallet?.address);
-                    }
-                },
-            });
+                    txb.transferObjects([coins.data[0].coinObjectId], txb.pure.address(toWallet))
+                    signAndExecuteTransactionBlock({
+                        transactionBlock: txb,
+                        account: state.wallet
+                    }, {
+                        onSuccess: (result) =>
+                        {
+                            console.log('executed transaction block', result);
+                            if (result?.balanceChanges && state.wallet?.address)
+                            {
+                                fetchAccountBalance(state.wallet?.address);
+                            }
+                        },
+                    });
+                }
+            }
             else if (state?.user)
             {
-                sdk.sendTransaction(state.user, txb, (result) =>
+                sdk.sendTransaction(toWallet, state.user, txb, (result) =>
                 {
                     if (result?.balanceChanges && state.user?.userAddr)
                     {
@@ -287,7 +300,8 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
 
         fetchAccountBalance,
         login,
-        logout
+        logout,
+        sendTransaction
     }}>
         {children}
     </SuiAuthContext.Provider>

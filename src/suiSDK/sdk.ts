@@ -259,9 +259,8 @@ export default class SuiSDK
     * Assemble a zkLogin signature and submit a transaction
     * https://docs.sui.io/concepts/cryptography/zklogin#assemble-the-zklogin-signature-and-submit-the-transaction
     */
-    sendTransaction = async (account: AccountData, txb: TransactionBlock, callback: (result: SuiTransactionBlockResponse) => void) =>
+    sendTransaction = async (toWallet: string, account: AccountData, txb: TransactionBlock, callback: (result: SuiTransactionBlockResponse) => void) =>
     {
-
         // Sign the transaction bytes with the ephemeral private key
         // const txb = new TransactionBlock();
         // txb.setSender(account.userAddr);
@@ -273,19 +272,19 @@ export default class SuiSDK
         });
 
         // Generate an address seed by combining userSalt, sub (subject ID), and aud (audience)
-        const addressSeed = genAddressSeed(
-            BigInt(account.userSalt),
-            'sub',
-            account.sub,
-            account.aud,
-        ).toString();
+        // const addressSeed = genAddressSeed(
+        //     BigInt(account.userSalt),
+        //     'sub',
+        //     account.sub,
+        //     account.aud,
+        // ).toString();
 
         // Serialize the zkLogin signature by combining the ZK proof (inputs), the maxEpoch,
         // and the ephemeral signature (userSignature)
         const zkLoginSignature: SerializedSignature = getZkLoginSignature({
             inputs: {
                 ...account.zkProofs,
-                addressSeed,
+                toWallet,
             },
             maxEpoch: account.maxEpoch,
             userSignature,

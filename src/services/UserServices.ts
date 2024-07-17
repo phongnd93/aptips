@@ -9,7 +9,8 @@ export default class UserServices
     {
         try
         {
-            return APIResponseObject(200, await axios.post(`${API}/user`, data));
+            const res = await axios.post(`${API}/user`, data);
+            return APIResponseObject(200, res.data);
         } catch (error)
         {
             return APIResponseObject(500, null, error.message);
@@ -20,7 +21,8 @@ export default class UserServices
     {
         try
         {
-            return APIResponseObject(200, await axios.patch(`${API}/user/${data.id}`, data));
+            const res = await axios.patch(`${API}/user/${data.id}`, data);
+            return APIResponseObject(200, res.data);
         } catch (error)
         {
             return APIResponseObject(500, null, error.message);
@@ -31,7 +33,8 @@ export default class UserServices
     {
         try
         {
-            return APIResponseObject(200, await axios.get(`${API}/user/wallet/${walletAddress}`));
+            const res = await axios.get(`${API}/user/wallet/${walletAddress}`);
+            return APIResponseObject(200, res.data);
         } catch (error)
         {
             console.log('userSvc', error)
@@ -43,7 +46,8 @@ export default class UserServices
     {
         try
         {
-            return await axios.get(`${API}/transaction-history/transactions-by-user/${userId}`);
+            const res = await axios.get(`${API}/transaction-history/transactions-by-user/${userId}`)
+            return APIResponseObject(200, res.data);
         } catch (error)
         {
             return APIResponseObject(500, null, error.message);
@@ -56,6 +60,7 @@ export default class UserServices
         try
         {
             const res = await Promise.allSettled(donationInfos.map(di => axios.get(`${API}/user/donate-all-time/${di}/${userId}`)));
+            console.log('donation', res);
             return res.map(r => r.value);
         } catch (error)
         {
