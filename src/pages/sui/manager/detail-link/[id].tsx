@@ -136,7 +136,7 @@ export default function DetailLinkDonation(value?: string)
                                 <Grid spacing={3} sx={{ width: '50%', mr: 3 }} >
                                     <Grid item md={11} sx={{ mb: 2}}>
                                         <AppWidgetSummary
-                                            title="Total"
+                                            title="Total SUI"
                                             itemIcon='token-branded:sui'
                                             percent={detailLink?.totalDonations > 0 ? 100 : 0}
                                             total={detailLink?.totalDonations}

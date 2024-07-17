@@ -115,56 +115,55 @@ export default function GroupingListUserDonate()
         const ava = createAvatar(row.name);
         return (
           <TableRow hover role="checkbox" tabIndex={-1} key={row.sourceId}>
-          <TableCell>{i + page * rowsPerPage + 1}</TableCell>
-          <TableCell>
-            <Stack direction="row" alignItems="center" spacing={2}>
-              <Avatar
-                src={''}
-                alt={row.name}
-                sx={{ bgcolor: (theme) => alpha(theme.palette[ava.color].main, 0.08) }}
-              >
-                {ava.name}
-              </Avatar>
-              <Label sx={{ ml: 1 }} color='default'>
-                {row.name}
-              </Label>
-            </Stack>
-          </TableCell>
-          <TableCell align="justify">
-            <Stack direction={'row'} spacing={1} justifyContent={'left'} alignContent={'center'} alignItems={'center'} alignSelf={'center'}>
-              <Label color='primary' sx={{ minWidth: 60 }}>
-                {row.amount}
-              </Label>
-              <Iconify icon={'token-branded:sui'} width={24} height={24} />
-            </Stack>
-          </TableCell>
-          <TableCell>
-            {row.note && (
-                <Tooltip title={row.note} placement="top-start">
-                <Typography  
-                  width={'80px'}
-                  sx={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }} 
+            <TableCell>{i + page * rowsPerPage + 1}</TableCell>
+            <TableCell>
+              <Stack direction="row" alignItems="center" spacing={2}>
+                <Avatar
+                  src={''}
+                  alt={row.name}
+                  sx={{ bgcolor: (theme) => alpha(theme.palette[ava.color].main, 0.08) }}
                 >
-                    <Label color='info' sx={{ width: 80, pr: 1, pl: 1 }}> {row.note}</Label>
-                </Typography >
-              </Tooltip>
-            )}
-            {!row.note && (<Label sx={{ width: 80, fontWeight: 100 }}>no data</Label>)}
-          </TableCell>
-          <TableCell>{row.timeStamp}</TableCell>
-          <TableCell>
-            <Stack direction="row" alignItems="center" spacing={2}>
-              <Label
-                sx={{ ml: 1, minWidth: 70 }}
-                color={
-                  (row.sourceId === 0 && 'warning') ||
-                  (row.sourceId === 1 && 'success') ||
-                  'info'
-                }
-              >{row.sourceId}</Label>
-            </Stack>
-          </TableCell>
-        </TableRow>
+                  {ava.name}
+                </Avatar>
+                <Label sx={{ ml: 1 }} color='default'>
+                  {row.name}
+                </Label>
+              </Stack>
+            </TableCell>
+            <TableCell align="justify">
+              <Stack direction={'row'}>
+                <Label color='primary'>
+                  {row.amount}
+                </Label>
+                <Iconify icon={'token-branded:sui'} width={24} height={24} />
+              </Stack>
+            </TableCell>
+            <TableCell>
+              {row.note && (
+                <Tooltip title={row.note} placement="top-start">
+                  <Typography
+                    sx={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}
+                  >
+                    <Label color='info'> {row.note}</Label>
+                  </Typography >
+                </Tooltip>
+              )}
+              {!row.note && (<Label color='default'>No data</Label>)}
+            </TableCell>
+            <TableCell>{row.timeStamp ? <Label color='secondary'>{new Date(row.timeStamp).toDateString()}</Label> : <Label color='default'>No data</Label>}</TableCell>
+            <TableCell>
+              <Stack direction="row" alignItems="center" spacing={2}>
+                <Label
+                  sx={{ ml: 1, minWidth: 70 }}
+                  color={
+                    (row.sourceId === 0 && 'warning') ||
+                    (row.sourceId === 1 && 'success') ||
+                    'info'
+                  }
+                >{row.sourceId}</Label>
+              </Stack>
+            </TableCell>
+          </TableRow>
         );
       })
 

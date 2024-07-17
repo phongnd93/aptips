@@ -80,7 +80,7 @@ export default function AppWidgetSummary({ title, percent, total, chartColor, ch
           </Stack>
         </Box>
 
-        <Typography variant="h5" sx={{ pl: 1 }}>{fNumber(total)} {itemIcon && (<Iconify icon={itemIcon} width={20} height={20} />)}</Typography>
+        <Typography variant="h5" sx={{ pl: 1 }}>{fNumber(total)}</Typography>
       </Box>
 
       <ReactApexChart

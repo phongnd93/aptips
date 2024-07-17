@@ -97,7 +97,7 @@ export default function HomePage()
               <Grid container direction={'column'} spacing={1}>
                 <Grid item xs={12} md={4}>
                   <AppWidgetSummary
-                    title="Total"
+                    title="Total SUI"
                     percent={total > 0 ? 100 : 0}
                     total={total}
                     chartColor={theme.palette.primary.main}
