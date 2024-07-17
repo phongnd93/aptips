@@ -9,7 +9,8 @@ const EmptyDataContainerStyle = styled(Stack)(({ theme }) => ({
     position: 'absolute',
     width: '100%',
     height: '100%',
-    paddingY: theme.spacing(5)
+    paddingY: theme.spacing(5),
+    paddingX: theme.spacing(5)
 }));
 
 const EmptyData: React.FC = () =>

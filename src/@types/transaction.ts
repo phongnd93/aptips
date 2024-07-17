@@ -45,6 +45,8 @@ export type Transaction = {
     "senderInfo": Donator,
     "receiverInfo": Donator,
     "amount": number,
-    "timeStamp": string
+    "timeStamp": string,
+    name: string,
+    note: string
 
 };

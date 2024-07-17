@@ -10,37 +10,26 @@ import
   TablePagination,
   Stack,
   Avatar,
-  Box,
-  Typography,
-  styled,
+  Card,
+  CardHeader,
+  Divider,
 } from '@mui/material';
 // hooks
-import useTable from '../../../../../hooks/useTable';
+
 // components
-import Scrollbar from '../../../../../components/Scrollbar';
 import Label from 'src/components/Label';
 import Iconify from 'src/components/Iconify';
-import { useContext, useEffect, useMemo, useState } from 'react';
-import LinksServices from 'src/services/LinksServices';
+import { useEffect, useMemo, useState } from 'react';
 
 import EmptyData from 'src/components/EmptyData';
-import MyAvatar from 'src/components/MyAvatar';
 import createAvatar from 'src/utils/createAvatar';
-import { LinkDonateContext } from 'src/contexts/ManagerLinkProvider';
-import { UserLinkDonateModel } from 'src/@types/link-donation';
+import Scrollbar from 'src/components/Scrollbar';
+import { Transaction } from 'src/@types/transaction';
+import { _appTransactions } from '../../../../_mock/_app';
+import { alpha } from '@mui/material';
 
 
 // ----------------------------------------------------------------------
-
-const EmptyDataContainerStyle = styled(Stack)(({ theme }) => ({
-  left: 0,
-  top: 0,
-  zIndex: 10,
-  position: 'absolute',
-  width: '100%',
-  height: '100%',
-  paddingY: theme.spacing(5)
-}));
 
 interface Column
 {
@@ -85,18 +74,18 @@ const COLUMNS: Column[] = [
   },
 ];
 
+type AppNewInvoiceProps = {
+  dataReport: Transaction[]
+}
+
 // ----------------------------------------------------------------------
 
-export default function GroupingListUserDonate()
+export default function TableReportData({ dataReport }: AppNewInvoiceProps)
 {
-
-  const {
-    listUserDonate,
-    setListUserDonates,
-  } = useContext(LinkDonateContext);
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const mockData = _appTransactions;
 
   const handleChangePage = (event: any, newPage: any) =>
   {
@@ -109,43 +98,42 @@ export default function GroupingListUserDonate()
     setPage(0);
   };
 
-
-  const avataURl = (user?: any) =>
-  {
-    const template = (
-      <Avatar
-        src={user?.photoURL || ''}
-        alt={user?.userAddr}
-        color={user?.photoURL ? 'default' : createAvatar(user?.ephemeralPrivateKey || user?.userAddr || '').color}
-      >
-        {createAvatar(user?.ephemeralPrivateKey || user?.userAddr || '').name}
-      </Avatar>
-    )
-    return template;
-  }
-
   const listUserTable = useMemo(() =>
   {
-    if (listUserDonate?.length > 0)
+    if (dataReport?.length > 0)
     {
-      const temp = (rowsPerPage > 0 ? listUserDonate.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : listUserDonate).map((row: UserLinkDonateModel) =>
+      const temp = (rowsPerPage > 0 ? dataReport.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : dataReport).map((row: Transaction, i: number) =>
       {
+        const ava = createAvatar(row.name);
         return (
           <TableRow hover role="checkbox" tabIndex={-1} key={row.sourceId}>
-            <TableCell>{row.id}</TableCell>
+            <TableCell>{i + page * rowsPerPage + 1}</TableCell>
             <TableCell>
               <Stack direction="row" alignItems="center" spacing={2}>
-                {avataURl} <Label sx={{ ml: 1 }}>{row.name} </Label>
+                <Avatar
+                  src={''}
+                  alt={row.name}
+                  sx={{ bgcolor: (theme) => alpha(theme.palette[ava.color].main, 0.08) }}
+                >
+                  {ava.name}
+                </Avatar>
+                <Label sx={{ ml: 1 }}>
+                  {row.name}
+                </Label>
               </Stack>
             </TableCell>
             <TableCell align="justify">
-              <Label color='info'>
-                {row.amount} $
-              </Label>
+              <Stack direction={'row'} spacing={1} justifyContent={'flex-end'} alignContent={'center'} alignItems={'center'} alignSelf={'center'}>
+                <Label color='primary'>
+                  {row.amount}
+                </Label>
+                <Iconify icon={'token-branded:sui'} width={24} height={24} />
+              </Stack>
             </TableCell>
-            <TableCell><Label color='default'>
-              {row.note}
-            </Label>
+            <TableCell>
+              <Label color='default'>
+                {row.note}
+              </Label>
             </TableCell>
             <TableCell>{row.timeStamp}</TableCell>
             <TableCell>
@@ -166,32 +154,18 @@ export default function GroupingListUserDonate()
 
       return temp;
     }
-    else
-    {
-      const temp = (
-        <Box sx={{ height: 300 }}>
-          <EmptyDataContainerStyle justifyContent={'center'} alignContent={'center'} alignItems={"center"}>
-            <Box className={'background'} sx={{ opacity: 0.7, background: (theme) => theme.palette.background.default }} width={'100%'} height={'100%'}></Box>
-            <Stack sx={{ position: 'absolute' }} justifyContent={'center'} alignContent={'center'} alignItems={"center"} spacing={2}>
-              <Typography variant="h5">No user donate </Typography>
-            </Stack>
-          </EmptyDataContainerStyle>
-        </Box>
-        // <EmptyData  />
-      )
-
-      return temp;
-    };
-  }, [listUserDonate]);
+    return [];
+  }, [dataReport, page, rowsPerPage]);
 
   useEffect(() =>
   {
   }, []);
 
   return (
-    <>
+    <Card sx={{ minHeight: '30vh' }}>
+      <CardHeader title="Recent Donate" sx={{ mb: 3 }} />
       <Scrollbar>
-        <TableContainer sx={{ minWidth: 800, maxHeight: 400 }}>
+        <TableContainer>
           <Table stickyHeader>
             <TableHead sx={{ mb: 20 }}>
               <TableRow>
@@ -214,15 +188,18 @@ export default function GroupingListUserDonate()
         </TableContainer>
       </Scrollbar>
 
+      <Divider />
+
       <TablePagination
         rowsPerPageOptions={[10, 25, 50]}
         component="div"
-        count={listUserDonate.length}
+        count={dataReport.length}
         page={page}
         onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
-    </>
+      {!listUserTable?.length && <EmptyData />}
+    </Card >
   );
 }

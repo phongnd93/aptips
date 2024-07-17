@@ -8,13 +8,15 @@ import { styled } from '@mui/material/styles';
 import Page from 'src/components/Page';
 import Layout from 'src/layouts';
 import { useRouter } from 'next/router';
+import React from 'react';
 
 const RootStyle = styled('div')(({ theme }) => ({
     paddingTop: theme.spacing(15),
     paddingBottom: theme.spacing(5),
 }));
 
-interface ManagerFormDonationProps {
+interface ManagerFormDonationProps
+{
 }
 
 const ManagerFormDonationComponent: React.FC<ManagerFormDonationProps> = (props: ManagerFormDonationProps) =>
@@ -23,9 +25,11 @@ const ManagerFormDonationComponent: React.FC<ManagerFormDonationProps> = (props:
 
     const router = useRouter();
 
-    useEffect(() => {
+    useEffect(() =>
+    {
         const { id } = router.query;
-        if (id) {
+        if (id)
+        {
             _fetchConfig(id as string);
         }
     }, [router.query.id]);

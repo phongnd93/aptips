@@ -1,7 +1,7 @@
 import { Router, useRouter } from "next/router";
 import React, { createContext, useEffect, useState } from "react";
 import { APIResponse } from "src/@types/dto/api-response";
-import { AddFormConfig, FormConfigResponse  } from "src/@types/dto/form-config-dto";
+import { AddFormConfig, FormConfigResponse } from "src/@types/dto/form-config-dto";
 import useSuiAuth from "src/hooks/useSuiAuth";
 import { SUI_DONA_PATH } from "src/routes/paths";
 import FormConfigServices from "src/services/FormConfigServices";
@@ -11,13 +11,16 @@ export type TempConfig = {
     title?: string,
     subtitles?: string,
     amounts: (number | boolean)[],
+    code: string,
 }
 
-interface FormConfigContextType {
+interface FormConfigContextType
+{
     data: FormConfigResponse | undefined,
     tempConfig: TempConfig,
     setTempConfig: React.Dispatch<React.SetStateAction<TempConfig>>,
     _fetchConfig: (id: string) => Promise<APIResponse>,
+    _fetchConfigByCode: (string: string) => Promise<APIResponse>,
     _addConfig: (obj: AddFormConfig) => Promise<boolean | APIResponse>,
     _updateConfig: (obj: FormConfigResponse) => Promise<boolean | APIResponse>,
     handleSaveConfig: () => Promise<void>,
@@ -33,6 +36,7 @@ const FormConfigProvider: React.FC = ({ children }) =>
         title: '',
         subtitles: '',
         amounts: [1, 3, 5, false],
+        code: '',
     };
 
     const [data, setData] = useState<FormConfigResponse>();
@@ -46,6 +50,10 @@ const FormConfigProvider: React.FC = ({ children }) =>
         if (typeof window !== 'undefined')
         {
             const code = makeid(10);
+            const { protocol, hostname, port } = window.location;
+            const link = `${protocol}//${hostname}${(hostname === 'localhost' && port) ? `:${port}` : ''}/donation/${code}`;
+            setLinkCode(link);
+            setTempConfig(prevState => ({ ...prevState, code: code }));
             setLinkCode(code);
         }
     }
@@ -68,13 +76,16 @@ const FormConfigProvider: React.FC = ({ children }) =>
         {
             if (data && data.id)
             {
-                const newData: FormConfigResponse = {...data, ...{
-                    config: {
-                        title: tempConfig.title,
-                        subtitles: tempConfig.subtitles,
-                        amounts: tempConfig.amounts,
+                const newData: FormConfigResponse = {
+                    ...data, ...{
+                        config: {
+                            title: tempConfig.title,
+                            subtitles: tempConfig.subtitles,
+                            amounts: tempConfig.amounts,
+                            code: data.config.code,
+                        }
                     }
-                }}
+                }
 
                 if (newData && typeof newData.config === 'object')
                 {
@@ -92,7 +103,28 @@ const FormConfigProvider: React.FC = ({ children }) =>
         {
             if (res.data.config && typeof res.data.config !== 'object')
             {
-                try {
+                try
+                {
+                    res.data.config = JSON.parse(res.data.config);
+                }
+                catch {
+                    res.data.config = res.data.config;
+                }
+            }
+            setData(res.data);
+        }
+        return res;
+    }
+
+    const _fetchConfigByCode = async (code: string) =>
+    {
+        const res = await formCogSvc.getByLinkCode(code);
+        if (res?.data)
+        {
+            if (res.data.config && typeof res.data.config !== 'object')
+            {
+                try
+                {
                     res.data.config = JSON.parse(res.data.config);
                 }
                 catch {
@@ -136,6 +168,7 @@ const FormConfigProvider: React.FC = ({ children }) =>
             setTempConfig,
             handleSaveConfig,
             _fetchConfig,
+            _fetchConfigByCode,
             _addConfig,
             _updateConfig,
         }}>
@@ -143,5 +176,5 @@ const FormConfigProvider: React.FC = ({ children }) =>
         </FormConfigContext.Provider>
     );
 }
- 
+
 export { FormConfigProvider, FormConfigContext };

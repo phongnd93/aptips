@@ -46,6 +46,15 @@ export const _appInvoices = [...Array(5)].map((_, index) => ({
   status: randomInArray(['paid', 'out_of_date', 'in_progress']),
 }));
 
+export const _appTransactions = [...Array(32)].map((_, index) => ({
+  id: `${Date.now() + index}`,
+  sourceId: 'zalo',
+  amount: randomNumberRange(999, 99999),
+  timeStamp: new Date().toDateString(),
+  name: _mock.name.fullName(index),
+  note: 'Harry Potter and the Deathly Hallows - Part 2',
+}));
+
 export const _appFeatured = [...Array(3)].map((_, index) => ({
   id: _mock.id(index),
   title: [
