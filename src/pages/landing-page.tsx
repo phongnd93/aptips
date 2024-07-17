@@ -1,5 +1,6 @@
 import { Button, Stack, Typography } from "@mui/material";
 import { Container, Grid, Paper, styled } from "@mui/material";
+import Link from "next/link";
 import Image from "src/components/Image";
 import Page from "src/components/Page";
 import useSettings from "src/hooks/useSettings";
@@ -31,13 +32,15 @@ const LadingPageComponent = () =>
                         <Typography fontSize={32} fontWeight={'400'}>
                             Transparently, securely receive support from your fan
                         </Typography>
-                        <Button
-                            variant="contained"
-                            size="large"
-                            sx={{ borderRadius: '1.5rem', maxWidth: 300, minWidth: 250 }}
-                        >
-                            Create Support
-                        </Button>
+                        <Link href={'/'}>
+                            <Button
+                                variant="contained"
+                                size="large"
+                                sx={{ borderRadius: '1.5rem', maxWidth: 300, minWidth: 250 }}
+                            >
+                                Create Support
+                            </Button>
+                        </Link>
                         <Typography fontSize={24}>It's free and takes less than a minute</Typography>
                     </Stack>
                 </Paper>
@@ -50,7 +53,7 @@ const LadingPageComponent = () =>
                             disabledEffect
                             sx={{ zIndex: 2, height: 513 , width: 574 }}
                             src="/imgs/example_config.png"
-                            alt="thank-to-donate"
+                            alt="example config"
                         />
                     </Stack>
                 </Paper>

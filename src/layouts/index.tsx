@@ -5,12 +5,13 @@ import AuthGuard from '../guards/AuthGuard';
 import MainLayout from './main';
 import DashboardLayout from './dashboard';
 import LogoOnlyLayout from './LogoOnlyLayout';
+import LandingPageLayout from './LandingPageLayout';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   children: ReactNode;
-  variant?: 'main' | 'dashboard' | 'logoOnly';
+  variant?: 'main' | 'dashboard' | 'logoOnly' | 'landingPage';
 };
 
 export default function Layout({ variant = 'dashboard', children }: Props)
@@ -18,6 +19,11 @@ export default function Layout({ variant = 'dashboard', children }: Props)
   if (variant === 'logoOnly')
   {
     return <LogoOnlyLayout> {children} </LogoOnlyLayout>;
+  }
+
+  if (variant === 'landingPage')
+  {
+    return <LandingPageLayout>{children}</LandingPageLayout>
   }
 
   // if (variant === 'main')
