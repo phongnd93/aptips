@@ -5,7 +5,7 @@ import { API } from "src/config"
 
 export default class UserServices
 {
-    add = async (data: SuiUser): Promise<APIResponse> =>
+    add = async (data: SuiUser) =>
     {
         try
         {
@@ -13,7 +13,8 @@ export default class UserServices
             return APIResponseObject(200, res.data);
         } catch (error)
         {
-            return APIResponseObject(500, null, error.message);
+            console.log('UserSvc.add', error);
+            // return APIResponseObject(500, null, error.message);
         }
     }
 
@@ -25,7 +26,8 @@ export default class UserServices
             return APIResponseObject(200, res.data);
         } catch (error)
         {
-            return APIResponseObject(500, null, error.message);
+            console.log('UserSvc.update', error);
+            // return APIResponseObject(500, null, error.message);
         }
     }
 
@@ -37,8 +39,8 @@ export default class UserServices
             return APIResponseObject(200, res.data);
         } catch (error)
         {
-            console.log('userSvc', error)
-            return APIResponseObject(500, null, error.message);
+            console.log('UserSvc.info', error);
+            // return APIResponseObject(500, null, error.message);
         }
     }
 
@@ -46,26 +48,35 @@ export default class UserServices
     {
         try
         {
-            const res = await axios.get(`${API}/transaction-history/transactions-by-user/${userId}`)
-            return APIResponseObject(200, res.data);
+            const res = await axios.get(`${API}/transaction-history/transactions-by-user/${userId}`);
+            if (res?.data)
+                return APIResponseObject(200, res.data);
         } catch (error)
         {
-            return APIResponseObject(500, null, error.message);
+            console.log('UserSvc.transactions', error);
+            // APIResponseObject(500, null, error.message);
         }
+        return [];
     }
 
-    donation = async (userId: number) =>
+    donation = async (userId: number): Promise<APIResponse> =>
     {
         const donationInfos = ['value', 'num'];
+        const res: { value: number, num: number } = {
+            value: 0,
+            num: 0
+        };
         try
         {
-            const res = await Promise.allSettled(donationInfos.map(di => axios.get(`${API}/user/donate-all-time/${di}/${userId}`)));
-            console.log('donation', res);
-            return res.map(r => r.value);
+            const [value, num] = await Promise.allSettled(donationInfos.map(di => axios.get(`${API}/user/donate-all-time/${di}/${userId}`)));
+            if (value?.status === 'fulfilled') res.value = value.value.data;
+            if (num?.status === 'fulfilled') res.num = num.value.data;
         } catch (error)
         {
-            return APIResponseObject(500, null, error.message);
+            console.log('UserSvc.donation', error);
+            // return APIResponseObject(500, null, error.message);
         }
+        return APIResponseObject(200, res);
     }
 
 }

@@ -10,6 +10,7 @@ import AppTopContributors from 'src/sections/@dashboard/general/app/AppTopContri
 import useSuiAuth from 'src/hooks/useSuiAuth';
 import { useEffect, useRef, useState } from 'react';
 import UserServices from 'src/services/UserServices';
+import EmptyData from 'src/components/EmptyData';
 
 HomePage.getLayout = function getLayout(page: React.ReactElement)
 {
@@ -40,16 +41,17 @@ export default function HomePage()
   const isInit = useRef(false);
   const userSvc = new UserServices();
 
-  const [total, setTotal] = useState<number>();
-  const [donations, setDonations] = useState<number>();
-  const [newDonators, setNewDonators] = useState<number>();
+  const [total, setTotal] = useState<number>(0);
+  const [donations, setDonations] = useState<number>(0);
+  const [newDonators, setNewDonators] = useState<number>(0);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [topDonators, setTopDonators] = useState<any[]>([]);
+  const [revenue, setRevenue] = useState<any[]>([]);
 
   useEffect(() =>
   {
-    console.log(info);
     if (!isInit.current && info?.id)
     {
-      console.log(info);
       initizalize();
     }
     return () =>
@@ -64,7 +66,13 @@ export default function HomePage()
     {
       const donation = await userSvc.donation(info.id);
       const transtactions = await userSvc.transactions(info.id);
-      console.log(donation, transtactions);
+      if (donation?.data)
+      {
+        const { value, num } = donation.data;
+        setTotal(value);
+        setDonations(num);
+        setNewDonators(num);
+      }
     }
   }
 
@@ -72,18 +80,18 @@ export default function HomePage()
     <Page title="Home">
       <ContentStyle>
         <Container maxWidth={themeStretch ? false : 'lg'}>
-          {/* <Button onClick={() =>
+          <Button onClick={() =>
           {
             sendTransaction('0xa7ba69b76239e5920e27d7275e3da73fb00cfdc5023572ce0e29dfa4cca3e84a', '', 100);
-          }}>Test send</Button> */}
+          }}>Test send</Button>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={4}>
               <Grid container direction={'column'} spacing={1}>
                 <Grid item xs={12} md={4}>
                   <AppWidgetSummary
                     title="Total"
-                    percent={25}
-                    total={18765}
+                    percent={total > 0 ? 100 : 0}
+                    total={total}
                     chartColor={theme.palette.primary.main}
                     chartData={[5, 18, 12, 51, 68, 11, 39, 37, 27, 20]}
                   />
@@ -92,8 +100,8 @@ export default function HomePage()
                 <Grid item xs={12} md={4}>
                   <AppWidgetSummary
                     title="Donations"
-                    percent={-5}
-                    total={4876}
+                    percent={donations > 0 ? 100 : 0}
+                    total={donations}
                     chartColor={theme.palette.chart.blue[0]}
                     chartData={[20, 41, 63, 33, 28, 35, 50, 46, 11, 26]}
                   />
@@ -102,8 +110,8 @@ export default function HomePage()
                 <Grid item xs={12} md={4}>
                   <AppWidgetSummary
                     title="New donators"
-                    percent={5}
-                    total={678}
+                    percent={newDonators > 0 ? 100 : 0}
+                    total={newDonators}
                     chartColor={theme.palette.chart.red[0]}
                     chartData={[8, 9, 31, 8, 16, 37, 8, 33, 46, 31]}
                   />
@@ -112,15 +120,15 @@ export default function HomePage()
             </Grid>
 
             <Grid item xs={12} md={6} lg={8}>
-              <AppAreaInstalled title='Revenue' />
+              <AppAreaInstalled title='Revenue' data={revenue} />
             </Grid>
 
             <Grid item xs={12}>
-              <AppTopContributors />
+              <AppTopContributors data={topDonators} />
             </Grid>
 
             <Grid item xs={12}>
-              <AppNewInvoice />
+              <AppNewInvoice data={transactions} />
             </Grid>
           </Grid>
         </Container>

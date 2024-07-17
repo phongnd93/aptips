@@ -7,6 +7,7 @@ import { AddUserInfoDto, UserInfoResponse } from "src/@types/dto/user-dto";
 import UserServices from "src/services/UserServices";
 import SuiSDK, { AccountData } from "src/suiSDK/sdk";
 import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { MIST_PER_SUI } from "@mysten/sui.js/utils";
 
 type SuiAuthState = {
     isInitialized: boolean,
@@ -104,12 +105,12 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
 {
     const [state, dispatch] = useReducer(SuiAuthReducer, initialState);
     const suiClient = useSuiClient();
-    const sdk = new SuiSDK(suiClient);
     const [balances, setBalances] = useState<number>(0); // Map<Sui address, SUI balance>
     const userSvc = new UserServices();
     const currentAccount = useCurrentAccount();
     const { mutate: disconnect } = useDisconnectWallet();
     const autoConnect = useAutoConnectWallet();
+    const [sdk, setSdk] = useState<SuiSDK>();
 
     const { mutate: signAndExecuteTransactionBlock } = useSignAndExecuteTransactionBlock();
 
@@ -117,6 +118,7 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
     {
         if (autoConnect === 'attempted')
         {
+            setSdk(new SuiSDK(suiClient));
             initialize();
         }
     }, [autoConnect, currentAccount]);
@@ -248,34 +250,32 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
     const sendTransaction = async (toWallet: string, fromWallet: string, amount: number) =>
     {
         const txb = new TransactionBlock();
-        const bigAmount = BigInt(amount * 10 ** 9); // 5 SUI (SUI sử dụng đơn vị 10^9, vì vậy nhân với 10^9 để chuyển đổi)
-        // const [coin] = txb.splitCoins(txb.gas, [300000000]);
-        // debugger
-        // txb.transferObjects([coin], txb.pure.address(toWallet));
-
+        const bigAmount = BigInt(5 * 10 ** 9); // 5 SUI (SUI sử dụng đơn vị 10^9, vì vậy nhân với 10^9 để chuyển đổi)
+        const res = txb.splitCoins(txb.gas, [bigAmount]);
+        txb.transferObjects([res[0]], txb.pure.address(toWallet));
+        // debugger       
         try
         {
             if (state?.wallet)
             {
-                const coins = await suiClient.getAllCoins({ owner: state.wallet.address });
-
-                if (coins?.data?.length && coins?.data[0]?.coinObjectId)
-                {
-                    txb.transferObjects([coins.data[0].coinObjectId], txb.pure.address(toWallet))
-                    signAndExecuteTransactionBlock({
-                        transactionBlock: txb,
-                        account: state.wallet
-                    }, {
-                        onSuccess: (result) =>
+                signAndExecuteTransactionBlock({
+                    transactionBlock: txb,
+                    account: state.wallet,
+                    chain: 'sui:devnet',
+                }, {
+                    onSuccess: (result) =>
+                    {
+                        console.log('executed transaction block', result);
+                        if (result?.balanceChanges && state.wallet?.address)
                         {
-                            console.log('executed transaction block', result);
-                            if (result?.balanceChanges && state.wallet?.address)
-                            {
-                                fetchAccountBalance(state.wallet?.address);
-                            }
-                        },
-                    });
-                }
+                            fetchAccountBalance(state.wallet?.address);
+                        }
+                    },
+                    onError: (err) =>
+                    {
+                        console.log('executed transaction block', err);
+                    }
+                });
             }
             else if (state?.user)
             {
@@ -289,7 +289,7 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
             }
         } catch (error)
         {
-
+            console.log('sendTransaction', error);
         }
     }
 

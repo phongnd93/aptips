@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Card, CardHeader, Box, TextField } from '@mui/material';
 // components
 import ReactApexChart, { BaseOptionChart } from '../../../../components/chart';
+import EmptyData from 'src/components/EmptyData';
 
 // ----------------------------------------------------------------------
 
@@ -11,9 +12,9 @@ const CHART_DATA = [
   {
     year: 2019,
     data: [
-      { name: 'Facebook', data: [10, 41, 35, 51, 49, 62, 69, 91, 148] },
-      { name: 'Twitter', data: [10, 34, 13, 56, 77, 88, 99, 77, 45] },
-      { name: 'Zalo', data: [12, 3, 15, 70, 79, 85, 90, 77, 45] },
+      { name: 'Facebook', data: [10, 32] },
+      // { name: 'Twitter', data: [10, 34, 13, 56, 77, 88, 99, 77, 45] },
+      // { name: 'Zalo', data: [12, 3, 15, 70, 79, 85, 90, 77, 45] },
     ],
   },
   {
@@ -25,7 +26,12 @@ const CHART_DATA = [
   },
 ];
 
-export default function AppAreaInstalled({ title }: any)
+type AppAreaInstalledProps = {
+  title: string,
+  data: any[]
+}
+
+export default function AppAreaInstalled({ title, data }: AppAreaInstalledProps)
 {
   const [seriesData, setSeriesData] = useState(2019);
 
@@ -89,6 +95,7 @@ export default function AppAreaInstalled({ title }: any)
           )}
         </Box>
       ))}
+      {!data?.length && <EmptyData />}
     </Card>
   );
 }

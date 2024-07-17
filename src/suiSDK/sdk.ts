@@ -263,7 +263,7 @@ export default class SuiSDK
     {
         // Sign the transaction bytes with the ephemeral private key
         // const txb = new TransactionBlock();
-        // txb.setSender(account.userAddr);
+        txb.setSender(account.userAddr);
 
         const ephemeralKeyPair = this.keypairFromSecretKey(account.ephemeralPrivateKey);
         const { bytes, signature: userSignature } = await txb.sign({

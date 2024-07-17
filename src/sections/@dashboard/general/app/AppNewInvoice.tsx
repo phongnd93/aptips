@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { sentenceCase } from 'change-case';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import {
+import
+{
   Box,
   Card,
   Table,
@@ -26,10 +27,15 @@ import Label from '../../../../components/Label';
 import Iconify from '../../../../components/Iconify';
 import Scrollbar from '../../../../components/Scrollbar';
 import MenuPopover from '../../../../components/MenuPopover';
+import EmptyData from 'src/components/EmptyData';
 
 // ----------------------------------------------------------------------
+type AppNewInvoiceProps = {
+  data: any[]
+}
 
-export default function AppNewInvoice() {
+export default function AppNewInvoice({ data }: AppNewInvoiceProps)
+{
   const theme = useTheme();
 
   return (
@@ -86,20 +92,26 @@ export default function AppNewInvoice() {
           View All
         </Button>
       </Box>
+      {
+        !data?.length && <EmptyData />
+      }
     </Card>
   );
 }
 
 // ----------------------------------------------------------------------
 
-function MoreMenuButton() {
+function MoreMenuButton()
+{
   const [open, setOpen] = useState<HTMLElement | null>(null);
 
-  const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
+  const handleOpen = (event: React.MouseEvent<HTMLElement>) =>
+  {
     setOpen(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleClose = () =>
+  {
     setOpen(null);
   };
 

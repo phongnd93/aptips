@@ -8,6 +8,7 @@ import { fShortenNumber } from '../../../../utils/formatNumber';
 import { _appAuthors } from '../../../../_mock';
 // components
 import Iconify from '../../../../components/Iconify';
+import EmptyData from 'src/components/EmptyData';
 
 // ----------------------------------------------------------------------
 
@@ -23,10 +24,13 @@ const IconWrapperStyle = styled('div')(({ theme }) => ({
 }));
 
 // ----------------------------------------------------------------------
+type AppTopContributorsProps = {
+    data: any[]
+}
 
-export default function AppTopContributors()
+export default function AppTopContributors({ data }: AppTopContributorsProps)
 {
-    const displayAuthor = orderBy(_appAuthors, ['favourite'], ['desc']);
+    const displayAuthor = [];
 
     return (
         <Card>
@@ -36,6 +40,7 @@ export default function AppTopContributors()
                     <AuthorItem key={author.id} author={author} index={index} />
                 ))}
             </Stack>
+            {!data?.length && <EmptyData />}
         </Card>
     );
 }
