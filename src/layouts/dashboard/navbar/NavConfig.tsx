@@ -3,6 +3,7 @@ import { PATH_DASHBOARD } from '../../../routes/paths';
 // components
 import Label from '../../../components/Label';
 import SvgIconStyle from '../../../components/SvgIconStyle';
+import path from 'path';
 
 // ----------------------------------------------------------------------
 
@@ -121,6 +122,13 @@ const navConfig = [
       { title: 'calendar', path: PATH_DASHBOARD.calendar, icon: ICONS.calendar },
       { title: 'kanban', path: PATH_DASHBOARD.kanban, icon: ICONS.kanban },
     ],
+  },
+
+  // PROFILE
+  // ----------------------------------------------------------------------
+  {
+    subheader: 'profile',
+    path: '/profile',
   },
 ];
 
