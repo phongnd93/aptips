@@ -113,7 +113,7 @@ export default function LandingPageLayout({ children }: Props)
                     <Typography variant="caption" component="p">
                         © All rights reserved
                         <br /> made by &nbsp;
-                        <Link href="">Sui Dona team</Link>
+                        <Link href="">SubCli team</Link>
                     </Typography>
                 </Container>
             </Box>
