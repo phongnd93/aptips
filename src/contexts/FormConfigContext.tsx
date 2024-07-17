@@ -125,7 +125,7 @@ const FormConfigProvider: React.FC = ({ children }) =>
         const res = await formCogSvc.update(obj);
         if (res?.data && res?.status === 200)
         {
-            return router.push(`${SUI_DONA_PATH.manager.detail}${res.data.id}`);
+            return router.push(`${SUI_DONA_PATH.manager.detail}/${res.data.data.id}`);
         }
         return res;
     }
