@@ -19,11 +19,11 @@ import Label from 'src/components/Label';
 import Iconify from 'src/components/Iconify';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import LinksServices from 'src/services/LinksServices';
-import { LinkDonationModel } from 'src/pages/model/LinkDonationModel';
+import { LinkDonationModel } from 'src/@types/link-donation';
 import EmptyData from 'src/components/EmptyData';
 import MyAvatar from 'src/components/MyAvatar';
 import createAvatar from 'src/utils/createAvatar';
-import { LinkDonateContext } from '../../ManagerLinkProvider';
+import { LinkDonateContext } from '../../../../../contexts/ManagerLinkProvider';
 
 // ----------------------------------------------------------------------
 

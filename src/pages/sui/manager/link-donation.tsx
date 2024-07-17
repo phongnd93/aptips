@@ -6,7 +6,7 @@ import useSettings from 'src/hooks/useSettings';
 import TableLinkDonate from './table-link-donation/TableLinkDonate';
 import EmptyData from 'src/components/EmptyData';
 import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
-import { LinkDonateProvider } from './ManagerLinkProvider';
+import { LinkDonateProvider } from '../../../contexts/ManagerLinkProvider';
 // import EmptyPage from 'src/components/empty-page/EmptyPage';
 // ----------------------------------------------------------------------
 

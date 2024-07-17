@@ -7,7 +7,7 @@ import { AddUserInfoDto, UserInfoResponse } from "src/@types/dto/user-dto";
 import UserServices from "src/services/UserServices";
 import SuiSDK, { AccountData } from "src/suiSDK/sdk";
 import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { Donator, RevenueResponseDTO, Transaction, TransasctionHistory } from "src/pages/model/TransactionModel";
+import { Donator, RevenueResponseDTO, Transaction, TransasctionHistory } from "src/@types/transaction";
 import TransactionServices from "src/services/TransactionServices";
 
 type SuiAuthState = {

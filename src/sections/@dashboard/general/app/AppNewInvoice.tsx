@@ -28,7 +28,7 @@ import Iconify from '../../../../components/Iconify';
 import Scrollbar from '../../../../components/Scrollbar';
 import MenuPopover from '../../../../components/MenuPopover';
 import EmptyData from 'src/components/EmptyData';
-import { Transaction } from 'src/pages/model/TransactionModel';
+import { Transaction } from 'src/@types/transaction';
 
 // ----------------------------------------------------------------------
 type AppNewInvoiceProps = {

@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { LinkDonationModel, UserLinkDonateModel } from "src/pages/model/LinkDonationModel";
+import { LinkDonationModel, UserLinkDonateModel } from "src/@types/link-donation";
 import LinksServices from "src/services/LinksServices";
 
 

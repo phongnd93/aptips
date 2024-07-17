@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from 'react';
 import UserServices from 'src/services/UserServices';
 import EmptyData from 'src/components/EmptyData';
 import TransactionServices from 'src/services/TransactionServices';
-import { Donator, RevenueResponseDTO, Transaction } from './model/TransactionModel';
+import { Donator, RevenueResponseDTO, Transaction } from '../@types/transaction';
 
 HomePage.getLayout = function getLayout(page: React.ReactElement)
 {

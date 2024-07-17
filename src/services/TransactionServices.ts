@@ -1,7 +1,6 @@
 import axios from "axios"
-import { APIResponseObject } from "src/@types/dto/api-response"
 import { API } from "src/config"
-import { Donator, RevenueResponseDTO, Transaction, TransactionHistoryResponse, TransasctionHistory } from '../pages/model/TransactionModel';
+import { Donator, RevenueResponseDTO, Transaction, TransactionHistoryResponse, TransasctionHistory } from '../@types/transaction';
 
 export default class TransactionServices
 {

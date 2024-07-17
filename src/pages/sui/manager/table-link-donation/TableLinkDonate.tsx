@@ -21,11 +21,11 @@ import Iconify from 'src/components/Iconify';
 import { SUI_DONA_PATH } from 'src/routes/paths';
 import EmptyData from 'src/components/EmptyData';
 import Link from "next/link";
-import { LinkDonationModel } from 'src/pages/model/LinkDonationModel';
+import { LinkDonationModel } from 'src/@types/link-donation';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import LinksServices from 'src/services/LinksServices';
 import MyAvatar from 'src/components/MyAvatar';
-import { LinkDonateContext } from '../ManagerLinkProvider';
+import { LinkDonateContext } from '../../../../contexts/ManagerLinkProvider';
 
 // ----------------------------------------------------------------------
 

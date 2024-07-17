@@ -5,7 +5,7 @@ import { Card, CardHeader, Box, TextField } from '@mui/material';
 // components
 import ReactApexChart, { BaseOptionChart } from '../../../../components/chart';
 import EmptyData from 'src/components/EmptyData';
-import { RevenueItem, RevenueResponseDTO } from 'src/pages/model/TransactionModel';
+import { RevenueItem, RevenueResponseDTO } from 'src/@types/transaction';
 
 // ----------------------------------------------------------------------
 

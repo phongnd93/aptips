@@ -9,7 +9,7 @@ import { _appAuthors } from '../../../../_mock';
 // components
 import Iconify from '../../../../components/Iconify';
 import EmptyData from 'src/components/EmptyData';
-import { Donator } from 'src/pages/model/TransactionModel';
+import { Donator } from 'src/@types/transaction';
 
 // ----------------------------------------------------------------------
 
