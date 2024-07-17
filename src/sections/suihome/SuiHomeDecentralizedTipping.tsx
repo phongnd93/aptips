@@ -10,9 +10,7 @@ import { MotionViewport, varFade } from '../../components/animate';
 const RootStyle = styled('div')(({ theme }) => ({
     paddingTop: theme.spacing(15),
     backgroundColor: theme.palette.background.default,
-    [theme.breakpoints.up('md')]: {
-        paddingBottom: theme.spacing(15),
-    },
+    paddingBottom: theme.spacing(15),    
 }));
 const CardStyle = styled(Card)(({ theme }) =>
 {
@@ -90,7 +88,7 @@ export default function SuiHomeDecentralizedTipping()
                             >
                                 <Stack alignItems={'center'}>
                                     <Typography variant="h4">Motivate contributions</Typography>
-                                    <Typography variant='body1'>Increase motivation for Web3 community with tokens of Sui ecosystem</Typography>
+                                    <Typography variant='body1'>Increase motivation for Web3 community with tokens of Aptos ecosystem</Typography>
                                 </Stack>
                             </CardStyle>
                         </m.div>

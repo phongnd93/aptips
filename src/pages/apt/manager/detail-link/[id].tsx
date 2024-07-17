@@ -76,7 +76,7 @@ export default function DetailLinkDonation(value?: string)
 
     const handleClickEdit = useCallback((e: any) =>
     {
-        const path = `${SUI_DONA_PATH.manager.form}?id=${id}`;
+        const path = `${APT_DONA_PATH.manager.form}?id=${id}`;
         router.push(path);
     }, [id]);
 

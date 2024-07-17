@@ -12,9 +12,7 @@ import Image from 'src/components/Image';
 const RootStyle = styled('div')(({ theme }) => ({
   paddingTop: theme.spacing(15),
   backgroundColor: '#00BDD612',
-  [theme.breakpoints.up('md')]: {
-    paddingBottom: theme.spacing(15),
-  },
+  paddingBottom: theme.spacing(15)
 }));
 
 // ----------------------------------------------------------------------

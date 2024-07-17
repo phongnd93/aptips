@@ -1,7 +1,7 @@
 {
-  "name": "cup-of-token",
+  "name": "aptips",
   "author": "subcli-team",
-  "version": "3.3.0",
+  "version": "0.0.1",
   "description": "Next.Js & Typescript",
   "private": true,
   "scripts": {

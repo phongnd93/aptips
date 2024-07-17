@@ -11,10 +11,8 @@ import Iconify from 'src/components/Iconify';
 
 const RootStyle = styled('div')(({ theme }) => ({
     paddingTop: theme.spacing(15),
-    backgroundColor: theme.palette.background.default,
-    [theme.breakpoints.up('md')]: {
-        paddingBottom: theme.spacing(15),
-    },
+    paddingBottom: theme.spacing(15),
+    backgroundColor: theme.palette.background.default
 }));
 
 // ----------------------------------------------------------------------
@@ -31,13 +29,13 @@ export default function SuiHomeFormSuiMeCoffee()
         <RootStyle>
             <Container component={MotionViewport} maxWidth={'sm'} textAlign={'center'}>
                 <Stack spacing={0} alignItems={'center'}>
-                    <m.div variants={varFade().inDown}>
+                    <m.div variants={varFade().inDown} style={{ width: '100%' }}>
                         <Card>
                             <CardContent>
                                 <Stack spacing={2} alignSelf={'center'} alignItems={'center'}>
                                     <Stack>
-                                        <Typography variant="h4">Donate for my postcast</Typography>
-                                        <Typography variant="body1">Enjoy my postcast</Typography>
+                                        <Typography variant="h4">Donate for my podcast</Typography>
+                                        <Typography variant="body1">Enjoy my podcast</Typography>
                                     </Stack>
                                     <Typography variant='h6'>Donation amount</Typography>
                                     <Stack

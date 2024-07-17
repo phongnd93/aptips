@@ -16,6 +16,7 @@ type Props = {
 
 const ToolbarStyle = styled(Toolbar)(({ theme }) => ({
     height: HEADER.MOBILE_HEIGHT,
+    width: '100%',
     transition: theme.transitions.create(['height', 'background-color'], {
         easing: theme.transitions.easing.easeInOut,
         duration: theme.transitions.duration.shorter,
@@ -23,6 +24,9 @@ const ToolbarStyle = styled(Toolbar)(({ theme }) => ({
     [theme.breakpoints.up('md')]: {
         height: HEADER.MAIN_DESKTOP_HEIGHT,
     },
+    [theme.breakpoints.down('sm')]: {
+        p1: 1
+    }
 }));
 
 const ToolbarShadowStyle = styled('div')(({ theme }) => ({
@@ -73,9 +77,9 @@ const MainHeader: React.FC = () =>
                             visibleByDefault
                             disabledEffect
                         />
-                        <Stack>
+                        <Stack sx={{ display: isDesktop ? 'block' : 'none' }}>
                             <Typography variant="h4" color={(theme) => theme.palette.primary.main}>APTips</Typography>
-                            <Typography variant='h6' color={(theme) => theme.palette.primary.main}>Tips me an Aptos</Typography>
+                            <Typography variant='h6' color={(theme) => theme.palette.primary.main}>Tip me an Aptos</Typography>
                         </Stack>
                     </Stack>
                     <Link href={'/dashboard'}>
