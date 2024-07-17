@@ -2,6 +2,7 @@ import { noCase } from 'change-case';
 // _mock
 import _mock from './_mock';
 import { randomNumberRange, randomInArray } from './funcs';
+import { Transaction } from 'src/@types/transaction';
 
 // ----------------------------------------------------------------------
 
@@ -46,13 +47,16 @@ export const _appInvoices = [...Array(5)].map((_, index) => ({
   status: randomInArray(['paid', 'out_of_date', 'in_progress']),
 }));
 
-export const _appTransactions = [...Array(32)].map((_, index) => ({
+export const _appTransactions: Transaction[] = [...Array(32)].map((_, index) => ({
   id: `${Date.now() + index}`,
   sourceId: 'zalo',
-  amount: randomNumberRange(999, 99999),
+  amount: randomNumberRange(1, 99),
   timeStamp: new Date().toDateString(),
   name: _mock.name.fullName(index),
-  note: 'Harry Potter and the Deathly Hallows - Part 2',
+  note: _mock.text.sentence(index),
+  sourceName: '', senderInfo: {
+    walletAddress: _mock.wallet.address(index)
+  }, receiverInfo: {}
 }));
 
 export const _appFeatured = [...Array(3)].map((_, index) => ({

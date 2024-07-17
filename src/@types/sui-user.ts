@@ -6,3 +6,8 @@ export type SuiUser = {
     fullName?: string,
     about?: string,
 }
+
+export type UserSocialInfo = {
+    name: string,
+    link: string
+}

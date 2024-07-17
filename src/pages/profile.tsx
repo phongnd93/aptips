@@ -16,6 +16,7 @@ import { shortenSuiAddress } from '@polymedia/suits';
 
 import { useSnackbar } from 'notistack';
 import useSettings from 'src/hooks/useSettings';
+import { _SOCIALS } from '../constants/social';
 
 Profile.getLayout = function getLayout(page: React.ReactElement)
 {
@@ -24,22 +25,6 @@ Profile.getLayout = function getLayout(page: React.ReactElement)
 
 export default function Profile()
 {
-    const _SOCIALS = [{
-        name: 'twitter',
-        icon: 'foundation:social-twitter',
-        color: '#1DA1F2'
-    }, {
-        name: 'telegram',
-        icon: 'fa-brands:telegram-plane',
-        color: '#26a4e3'
-    }, {
-        name: 'discord',
-        icon: 'logos:discord-icon',
-    }, {
-        name: 'facebook',
-        icon: 'foundation:social-facebook',
-        color: '#1877F2'
-    }];
     const { themeStretch } = useSettings();
     const { user, info, balances, wallet, updateProfile } = useSuiAuth();
     const userSvc = new UserServices();
@@ -117,79 +102,77 @@ export default function Profile()
                                 <Stack spacing={2}>
                                     <Stack direction={'row'} spacing={2}>
                                         <Label color='info' sx={{ minWidth: 60, py: 3, textAlign: 'end' }}>
-                                            SUI:
+                                            <Iconify icon={'token-branded:sui'} width={24} height={24} />
                                         </Label>
                                         <Label color='default' sx={{ flex: 1, py: 3 }}>
-                                            {balances} <Iconify icon={'token-branded:sui'} width={24} height={24} />
+                                            {balances}
                                         </Label>
                                     </Stack>
                                     <Stack direction={'row'} spacing={2}>
                                         <Label color='info' sx={{ minWidth: 60, py: 3, textAlign: 'end' }}>
-                                            Wallet:
+                                            <Iconify icon={'game-icons:wallet'} color={(theme) => theme.palette.primary.main} width={24} height={24} />
                                         </Label>
                                         <Label color='default' sx={{ flex: 1, py: 3 }}>
                                             {shortenSuiAddress(user?.userAddr || wallet?.address, 6, 15, '...', '_wallet_')}
                                         </Label>
                                     </Stack>
-                                    <Stack direction={'row'} spacing={2}>
+                                    <Stack direction={'row'} spacing={2} alignItems={'center'}>
+                                        <Label color='info' sx={{ minWidth: 60, py: 3, textAlign: 'end' }}>
+                                            <Iconify icon="material-symbols:attach-email-outline-rounded" color={(theme) => theme.palette.primary.main} width={24} height={24} />
+                                        </Label>
                                         <TextField
                                             fullWidth
                                             variant="outlined"
                                             value={info?.email || wallet.label}
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <Iconify icon="material-symbols:attach-email-outline-rounded" width={24} height={24} />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
                                         />
                                     </Stack>
                                     {socials?.length > 0 && socials.map((s, i) =>
                                     {
                                         const sInfo = _SOCIALS.find(si => si.name === s.name);
-                                        return <TextField
-                                            key={`${s.name}-${i}`}
-                                            fullWidth
-                                            variant="outlined"
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <Iconify icon={sInfo.icon} color={sInfo.color} width={24} height={24} />
-                                                    </InputAdornment>
-                                                ),
-                                                endAdornment: (
-                                                    <InputAdornment position="end">
-                                                        <IconButton onClick={() => { handleRemoveSocialLink(s, i) }}>
-                                                            <Iconify icon='lets-icons:close-ring-duotone' color='text.danger' width={24} height={24} />
-                                                        </IconButton>
-                                                    </InputAdornment>
-                                                )
-                                            }}
-                                        />;
+                                        return <Stack direction={'row'} spacing={2} alignItems={'center'}>
+                                            <Label color='info' sx={{ minWidth: 60, py: 3, textAlign: 'end' }}>
+                                                <Iconify icon={sInfo.icon} color={sInfo.color} width={24} height={24} />
+                                            </Label>
+                                            <TextField
+                                                key={`${s.name}-${i}`}
+                                                fullWidth
+                                                variant="outlined"
+                                                InputProps={{
+                                                    endAdornment: (
+                                                        <InputAdornment position="end">
+                                                            <IconButton sx={{ m: 0, p: 0 }} onClick={() => { handleRemoveSocialLink(s, i) }}>
+                                                                <Iconify icon='lets-icons:close-ring-duotone' color='text.danger' width={24} height={24} />
+                                                            </IconButton>
+                                                        </InputAdornment>
+                                                    )
+                                                }}
+                                            />
+                                        </Stack>;
                                     })}
                                 </Stack>
+                                <Button
+                                    variant='outlined'
+                                    title='Add Social Link'
+                                    onClick={handleAddMoreSocialMenuClick}
+                                    sx={{ mt: 2 }}>
+                                    <Iconify icon={'fluent:link-add-24-filled'} width={24} height={24} />
+                                </Button>
+                                <Menu
+                                    id="basic-menu"
+                                    anchorEl={anchorEl}
+                                    open={open}
+                                    onClose={handleClose}
+                                    MenuListProps={{
+                                        'aria-labelledby': 'basic-button',
+                                    }}
+                                >
+                                    {_SOCIALS.map(s => (
+                                        <MenuItem onClick={() => { handleAddSocial(s.name); }}><Iconify icon={s.icon} width={24} height={24} color={s.color} /></MenuItem>
+                                    ))}
+                                </Menu>
                             </CardContent>
                         </Card>
-                        <Button
-                            variant='contained'
-                            title='Add Social Link'
-                            onClick={handleAddMoreSocialMenuClick}>
-                            <Iconify icon={'fluent:link-add-24-filled'} width={24} height={24} />
-                        </Button>
-                        <Menu
-                            id="basic-menu"
-                            anchorEl={anchorEl}
-                            open={open}
-                            onClose={handleClose}
-                            MenuListProps={{
-                                'aria-labelledby': 'basic-button',
-                            }}
-                        >
-                            {_SOCIALS.map(s => (
-                                <MenuItem onClick={() => { handleAddSocial(s.name); }}><Iconify icon={s.icon} width={24} height={24} color={s.color} /></MenuItem>
-                            ))}
-                        </Menu>
+
                     </Grid>
                     <Grid item xs={12} md={7}>
                         <Card sx={{ minWidth: 500 }}>

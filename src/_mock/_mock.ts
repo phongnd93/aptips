@@ -9,6 +9,7 @@ import { fullAddress, country } from './address';
 import { firstName, lastName, fullName } from './name';
 import { title, sentence, description } from './text';
 import { price, rating, age, percent } from './number';
+import { address } from './wallet';
 
 // ----------------------------------------------------------------------
 
@@ -33,6 +34,9 @@ const _mock = {
     title: (index: number) => title[index],
     sentence: (index: number) => sentence[index],
     description: (index: number) => description[index],
+  },
+  wallet: {
+    address: (index: number) => address[index]
   },
   number: {
     percent: (index: number) => percent[index],

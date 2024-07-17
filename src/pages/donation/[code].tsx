@@ -23,6 +23,12 @@ import SourceServices from "src/services/SourceServices";
 import TransactionServices from "src/services/TransactionServices";
 import { TransitionProps } from "@mui/material/transitions";
 import createAvatar from "src/utils/createAvatar";
+import { UserSocialInfo } from "src/@types/sui-user";
+import { _SOCIALS } from "src/constants/social";
+import { Transaction } from "src/@types/transaction";
+import { randomNumber, randomNumberRange } from "src/_mock/funcs";
+import { _appTransactions } from "src/_mock";
+import Label from "src/components/Label";
 
 const RootStyle = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -202,8 +208,16 @@ const DonateComponent: React.FC = () =>
                 setLoadingSendSui(false);
             });
         }
-    }
+    };
     const aava = createAvatar(linkCreator?.avatarUrl || linkCreator?.fullName || linkCreator?.walletAddress);
+    const socials: UserSocialInfo[] = [{
+        name: 'facebook',
+        link: ''
+    }, {
+        name: 'twitter',
+        link: ''
+    }];
+    const recentDonations = _appTransactions.slice(0, 5);
     return <>
         {
             loading && < LoadingScreen />
@@ -212,7 +226,7 @@ const DonateComponent: React.FC = () =>
         {(!loading && (!formConfig)) && <Page404 />}
         {(!loading && formConfig) &&
             <>
-                <Stack direction={'row'} spacing={4}>
+                <Stack direction={'row'} spacing={2}>
                     <Stack flex={1}>
                         <Card sx={{ height: '100%' }}>
                             <CardContent sx={{ height: '100%' }}>
@@ -220,13 +234,6 @@ const DonateComponent: React.FC = () =>
                                     <Avatar color={aava.color} sx={{ width: 80, height: 80, bgcolor: (theme) => alpha(theme.palette[aava.color].main, 1) }}>
                                         <Typography variant="h2">{aava.name}</Typography>
                                     </Avatar>
-                                    <TextField
-                                        color='info'
-                                        label='Name'
-                                        fullWidth
-                                        value={linkCreator?.fullName}
-                                        disabled
-                                    />
                                     <TextField
                                         color='info'
                                         label='Wallet'
@@ -242,16 +249,66 @@ const DonateComponent: React.FC = () =>
                                         value={linkCreator?.about}
                                         disabled
                                     />
+                                    <Stack spacing={2} width={'100%'}>
+                                        {recentDonations.map((r) =>
+                                        {
+                                            const dAva = createAvatar(r.name);
+                                            return <Card sx={{ width: '100%' }}>
+                                                <CardContent>
+                                                    <Stack direction={'row'} justifyContent={'space-between'} alignContent={'baseline'} spacing={4}>
+                                                        <Stack spacing={2} direction={'row'}>
+                                                            <Avatar
+                                                                sx={{
+                                                                    width: 42, height: 42,
+                                                                    color: (theme) => theme.palette.text.primary,
+                                                                    bgcolor: (theme) => alpha(theme.palette[dAva.color].main, 1)
+                                                                }}>
+                                                                <Typography variant="h6">{dAva.name}</Typography>
+                                                            </Avatar>
+                                                            <Stack direction={'column'} justifyContent={'start'} alignContent={'start'} textAlign={'left'}>
+                                                                <Typography variant="body1">{r.name}</Typography>
+                                                                <Typography variant="caption">{r.note}</Typography>
+                                                            </Stack>
+                                                        </Stack>
+                                                        <Label height={'auto'} color="success" sx={{ p: 2, minWidth: 40, width: 75, textAlign: 'right' }}>
+                                                            <Typography variant="h6">{r.amount}</Typography>
+                                                            <Iconify icon={'token-branded:sui'} width={28} height={28} />
+                                                        </Label>
+                                                    </Stack>
+                                                </CardContent>
+                                            </Card>
+                                        }
+                                        )}
+                                    </Stack>
                                 </Stack>
                             </CardContent>
                         </Card>
                     </Stack>
-                    <Stack flex={1}>
+                    <Stack flex={1} spacing={2}>
+                        <Card>
+                            <CardContent>
+                                <Stack alignSelf={'center'} alignItems={'center'}>
+                                    <Typography variant="h4">{linkCreator?.fullName}</Typography>
+                                    <Typography variant="body1" sx={{ opacity: 0.7 }}>351 supporter</Typography>
+                                </Stack>
+                                <Stack mt={1} direction={'row'} alignSelf={'center'} alignItems={'center'} justifyContent={'center'} spacing={3}>
+                                    {socials.map(s =>
+                                    {
+                                        const si = _SOCIALS.find(si => si.name === s.name);
+                                        return <Button variant="contained" sx={{ bgcolor: si?.color }}>
+                                            <Iconify icon={si.icon} width={48} height={48} />
+                                        </Button>
+                                    })}
+                                </Stack>
+                            </CardContent>
+                        </Card>
                         <Card>
                             <CardContent>
                                 <Stack spacing={2} alignSelf={'center'} alignItems={'center'}>
-                                    <Typography variant="h4">{formConfig.title}</Typography>
-                                    <Typography variant="body1">{formConfig.subtitles}</Typography>
+                                    <Stack>
+                                        <Typography variant="h4">{formConfig.title}</Typography>
+                                        <Typography variant="body1">{formConfig.subtitles}</Typography>
+                                    </Stack>
                                     <Typography variant='h6'>Donation amount</Typography>
                                     <Stack
                                         direction={'row'}
@@ -354,26 +411,24 @@ const DonateComponent: React.FC = () =>
                                                         <span>Donate</span>
                                                     </Stack>
                                                 </LoadingButton>
-                                                {
-                                                    formResult.amount > balances && <LoadingButton
-                                                        loading={loadingBuySui}
-                                                        title='Request Sui From Faucet'
-                                                        variant="contained"
-                                                        sx={[{ bgcolor: '#ffc107FF', fontSize: '1rem', color: (theme) => theme.palette.warning.lighter, borderRadius: '22px', boxShadow: '0 8px 16px 0 #ffc10780' }, {
-                                                            '&:hover': {
-                                                                color: '#ffc107FF',
-                                                                background: '#ffc10780'
-                                                            }
-                                                        }, {
-                                                            '&:hover:active': {
-                                                                color: "#ffc107FF",
-                                                                background: "#ffc10780",
-                                                            }
-                                                        }]}
-                                                        onClick={handleRequestSui}>
-                                                        <span>Not enough SUI ? Buy SUI here</span>
-                                                    </LoadingButton>
-                                                }
+                                                <LoadingButton
+                                                    loading={loadingBuySui}
+                                                    title='Request Sui From Faucet'
+                                                    variant="contained"
+                                                    sx={[{ bgcolor: '#ffc107FF', fontSize: '1rem', color: (theme) => theme.palette.warning.lighter, borderRadius: '22px', boxShadow: '0 8px 16px 0 #ffc10780' }, {
+                                                        '&:hover': {
+                                                            color: '#ffc107FF',
+                                                            background: '#ffc10780'
+                                                        }
+                                                    }, {
+                                                        '&:hover:active': {
+                                                            color: "#ffc107FF",
+                                                            background: "#ffc10780",
+                                                        }
+                                                    }]}
+                                                    onClick={handleRequestSui}>
+                                                    <span>Not enough SUI ? Buy SUI here</span>
+                                                </LoadingButton>
 
                                             </Stack>
                                             {

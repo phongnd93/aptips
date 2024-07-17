@@ -6,6 +6,7 @@ import Page from '../components/Page';
 import useSettings from '../hooks/useSettings';
 import Image from 'src/components/Image';
 import Iconify from 'src/components/Iconify';
+import { PATH_DASHBOARD } from 'src/routes/paths';
 
 const RootStyle = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -68,12 +69,18 @@ export default function ThankToDonate()
                                 </Stack>
                             </Typography>
                         </Stack>
-                        <Button variant='outlined' href='/'>
+                        <Link href={PATH_DASHBOARD.root}>
+                            <Stack direction={'row'} justifyContent={'center'} alignItems={'center'}>
+                                <Typography variant='h6'>Start your SuiCup</Typography>
+                                <Iconify icon={'grommet-icons:form-next-link'} width={24} height={24} />
+                            </Stack>
+                        </Link>
+                        {/* <Button variant='outlined' href='/'>
                             <Stack spacing={1} direction={'row'}>
                                 <Iconify icon={'fxemoji:loveletter'} width={20} height={20} />
                                 <Typography component={'span'}>Join us to get your own CoffeeChain</Typography>
                             </Stack>
-                        </Button>
+                        </Button> */}
                         {/* <MaintenanceIllustration sx={{ my: 10, height: 240 }} /> */}
                     </Stack>
                 </Container>
