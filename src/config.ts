@@ -27,9 +27,17 @@ export const AUTH0_API = {
 };
 
 export const MAPBOX_API = process.env.MAPBOX;
+export const API = process.env.API || 'http://164.68.106.205:3000/api';
+export const SUI_CONFIG = {
+  "URL_ZK_PROVER": process.env.URL_ZK_PROVER || "https://prover-dev.mystenlabs.com/v1",
+  "URL_SALT_SERVICE": process.env.URL_SALT_SERVICE || "/dummy-salt-service.json",
+  "CLIENT_ID_GOOGLE": process.env.CLIENT_ID_GOOGLE || "759483717679-4psela87sjf61731nd40bsss9f0n47uh.apps.googleusercontent.com",
+  "CLIENT_ID_TWITCH": process.env.TWITCH_CLIENT_ID || "YOUR_TWITCH_CLIENT_ID",
+  "CLIENT_ID_FACEBOOK": process.env.FACEBOOK_CLIENT_ID || "YOUR_FACEBOOK_CLIENT_ID"
+};
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
-export const PATH_AFTER_LOGIN = SUI_DONA_PATH.manager.root; // as '/dashboard/app'
+export const PATH_AFTER_LOGIN = '/'; // as '/dashboard/app'
 
 // LAYOUT
 // ----------------------------------------------------------------------

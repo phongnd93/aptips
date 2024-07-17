@@ -1,13 +1,15 @@
-import { useCurrentAccount } from "@mysten/dapp-kit";
+import { useAccounts, useAutoConnectWallet, useConnectWallet, useCurrentAccount, useDisconnectWallet, useSuiClient, useWallets } from "@mysten/dapp-kit";
+import type { WalletAccount } from '@mysten/wallet-standard';
 import { NetworkName } from "@polymedia/suits";
 import { ReactNode, createContext, useEffect, useReducer, useRef, useState } from "react";
 import { ActionMap } from "src/@types/auth";
-import SuiSDK, { AccountData } from "src/sui/sdk";
+import SuiSDK, { AccountData } from "src/suiSDK/sdk";
 
 type SuiAuthState = {
     isInitialized: boolean,
     isAuthenticated: boolean,
     user: AccountData | null,
+    wallet: WalletAccount | null
 }
 
 interface SuiAuthContextType extends SuiAuthState
@@ -16,7 +18,7 @@ interface SuiAuthContextType extends SuiAuthState
     balances: number,
 
     login: (provider: 'Google' | 'Facebook' | 'Twitch') => Promise<void>,
-    fetchAccountBalance: (acc: AccountData) => Promise<void>,
+    fetchAccountBalance: (walletAddress: string) => Promise<void>,
     logout: () => Promise<void>
 }
 
@@ -33,9 +35,11 @@ type SuiAuthPayload = {
     [Types.Initial]: {
         isAuthenticated: boolean;
         user: AccountData | null;
+        wallet: WalletAccount | null;
     };
     [Types.Login]: {
-        user: AccountData;
+        user: AccountData | null;
+        wallet: WalletAccount | null;
     };
     [Types.Logout]: undefined;
 }
@@ -46,6 +50,7 @@ const initialState: SuiAuthState = {
     isInitialized: false,
     isAuthenticated: false,
     user: null,
+    wallet: null
 }
 
 const SuiAuthReducer = (state: SuiAuthState, action: SuiAuthActions) =>
@@ -57,18 +62,21 @@ const SuiAuthReducer = (state: SuiAuthState, action: SuiAuthActions) =>
                 isAuthenticated: action.payload.isAuthenticated,
                 isInitialized: true,
                 user: action.payload.user,
+                wallet: action.payload.wallet
             };
         case Types.Login:
             return {
                 ...state,
                 isAuthenticated: true,
                 user: action.payload.user,
+                wallet: action.payload.wallet
             };
         case Types.Logout:
             return {
                 ...state,
                 isAuthenticated: false,
                 user: null,
+                wallet: null
             };
         default:
             return state;
@@ -84,69 +92,95 @@ type SuiAuthContextProps = {
 const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthContextProps) =>
 {
     const [state, dispatch] = useReducer(SuiAuthReducer, initialState);
-    const sdk = new SuiSDK();
+    const suiClient = useSuiClient();
+    const sdk = new SuiSDK(suiClient);
     const [balances, setBalances] = useState<number>(0); // Map<Sui address, SUI balance>
     const isInit = useRef(false);
     const currentAccount = useCurrentAccount();
-    console.log(currentAccount);
+    const { mutate: disconnect } = useDisconnectWallet();
+    const autoConnect = useAutoConnectWallet();
     useEffect(() =>
     {
-        if (!isInit.current)
+        if (autoConnect === 'attempted')
         {
+            console.log(autoConnect);
             initialize();
         }
-        return () =>
-        {
-            isInit.current = true;
-        }
-    }, []);
+    }, [autoConnect, currentAccount]);
+
+    // useEffect(() =>
+    // {
+    //     console.log(currentAccount);
+    //     if (currentAccount && state.isInitialized && !state.isAuthenticated)
+    //     {
+    //         fetchAccountBalance(currentAccount.address);
+
+    //         dispatch({
+    //             type: Types.Initial,
+    //             payload: {
+    //                 isAuthenticated: currentAccount !== null,
+    //                 user: null,
+    //                 wallet: currentAccount
+    //             },
+    //         });
+    //     }
+    // }, [currentAccount]);
 
     const initialize = async () =>
     {
         try
         {
+            if (currentAccount)
+            {
+                await fetchAccountBalance(currentAccount.address);
+
+                dispatch({
+                    type: Types.Initial,
+                    payload: {
+                        isAuthenticated: currentAccount !== null,
+                        user: null,
+                        wallet: currentAccount
+                    },
+                });
+                return;
+            }
+
             let account = await sdk.completeZkLogin();
             if (!account) account = await sdk.loadAccount();
 
             if (account)
             {
-                await fetchAccountBalance(account);
+                await fetchAccountBalance(account.userAddr);
 
                 dispatch({
                     type: Types.Initial,
                     payload: {
                         isAuthenticated: account !== null,
                         user: account,
+                        wallet: null
                     },
                 });
                 return;
             }
-            dispatch({
-                type: Types.Initial,
-                payload: {
-                    isAuthenticated: false,
-                    user: null,
-                },
-            });
-
         } catch (error)
         {
             console.log('initialize', error.message);
-            dispatch({
-                type: Types.Initial,
-                payload: {
-                    isAuthenticated: false,
-                    user: null,
-                },
-            });
         }
+        dispatch({
+            type: Types.Initial,
+            payload: {
+                isAuthenticated: false,
+                user: null,
+                wallet: null
+            },
+        });
     };
 
-    const fetchAccountBalance = async (account: AccountData) =>
+    const fetchAccountBalance = async (walletAddress: string) =>
     {
-        const res = await sdk.fetchBalances(account);
+        const res = await sdk.fetchBalances(walletAddress);
 
-        setBalances(res?.get(account.userAddr) || 0);
+        setBalances(res?.get(walletAddress) || 0);
     }
 
     const login = async (provider: 'Google' | 'Facebook' | 'Twitch') =>
@@ -158,6 +192,7 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
     const logout = async () =>
     {
         sdk.clearState();
+        disconnect();
         dispatch({ type: Types.Logout });
     };
 

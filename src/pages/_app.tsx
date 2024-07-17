@@ -36,10 +36,7 @@ import Head from 'next/head';
 import App, { AppProps, AppContext } from 'next/app';
 //
 import { Provider as ReduxProvider } from 'react-redux';
-import { PersistGate } from 'redux-persist/lib/integration/react';
 // @mui
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
 // redux
 import { store, persistor } from '../redux/store';
 // utils
@@ -51,7 +48,6 @@ import { CollapseDrawerProvider } from '../contexts/CollapseDrawerContext';
 // theme
 import ThemeProvider from '../theme';
 // components
-import Settings from '../components/settings';
 import { ChartStyle } from '../components/chart';
 import RtlLayout from '../components/RtlLayout';
 import ProgressBar from '../components/ProgressBar';
@@ -71,6 +67,7 @@ import { SuiAuthProvider } from 'src/contexts/SuiAuthContext';
 import { createNetworkConfig, SuiClientProvider, WalletProvider } from '@mysten/dapp-kit';
 import { getFullnodeUrl } from '@mysten/sui.js/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { PersistGate } from 'redux-persist/integration/react';
 
 // ----------------------------------------------------------------------
 
@@ -103,7 +100,7 @@ export default function MyApp(props: MyAppProps)
       </Head>
       <QueryClientProvider client={queryClient}>
         <SuiClientProvider defaultNetwork='devnet' networks={networkConfig}>
-          <WalletProvider>
+          <WalletProvider autoConnect>
             <SuiAuthProvider>
               <ReduxProvider store={store}>
                 <PersistGate loading={null} persistor={persistor}>

@@ -9,16 +9,16 @@ import Avatar, { Props as AvatarProps } from './Avatar';
 
 export default function MyAvatar({ ...other }: AvatarProps)
 {
-  const { user } = useSuiAuth();
+  const { user, wallet } = useSuiAuth();
 
   return (
     <Avatar
       src={user?.photoURL | ''}
-      alt={user?.userAddr}
-      color={user?.photoURL ? 'default' : createAvatar(user?.ephemeralPrivateKey || user?.userAddr || '').color}
+      alt={user?.userAddr || wallet?.address}
+      color={user?.photoURL ? 'default' : createAvatar(user?.ephemeralPrivateKey || user?.userAddr || wallet?.label || '').color}
       {...other}
     >
-      {createAvatar(user?.ephemeralPrivateKey || user?.userAddr || '').name}
+      {createAvatar(user?.ephemeralPrivateKey || user?.userAddr || wallet?.label || '').name}
     </Avatar>
   );
 }

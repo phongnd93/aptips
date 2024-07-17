@@ -41,7 +41,7 @@ export default function AccountPopover()
 {
   const router = useRouter();
 
-  const { NETWORK, balances, user, logout, fetchAccountBalance } = useSuiAuth();
+  const { NETWORK, balances, user, wallet, logout, fetchAccountBalance } = useSuiAuth();
 
   const isMountedRef = useIsMountedRef();
 
@@ -80,13 +80,13 @@ export default function AccountPopover()
   };
   const handleBuySuiClick = async () =>
   {
-    if (user)
+    if (user || wallet)
     {
       setRequesting(true);
-      await requestSuiFromFaucet(NETWORK, user?.userAddr);
+      await requestSuiFromFaucet(NETWORK, user?.userAddr || wallet?.address);
       setTimeout(async () =>
       {
-        await fetchAccountBalance(user);
+        await fetchAccountBalance(user?.userAddr || wallet?.address);
         setRequesting(false);
       }, 3000);
     }
@@ -130,8 +130,15 @@ export default function AccountPopover()
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {shortenSuiAddress(user?.userAddr, 6, 15, '...', '_wallet_')}
+            {shortenSuiAddress(user?.userAddr || wallet?.address, 6, 15, '...', '_wallet_')}
           </Typography>
+          {
+            wallet?.label && <Typography
+              variant="body2"
+              sx={{ color: 'text.secondary' }} noWrap align='center' alignContent={'baseline'} alignSelf={'center'}>
+              {wallet.label}
+            </Typography>
+          }
           <Stack direction={'row'} justifyContent={'space-between'} justifyItems={'baseline'}>
             <Typography
               variant="body2"

@@ -4,10 +4,9 @@ import { styled } from '@mui/material/styles';
 import Layout from '../layouts';
 import Page from '../components/Page';
 import { Container, Grid, Stack, StackProps, useTheme } from '@mui/material';
-import { AppWelcome, AppFeatured, AppWidgetSummary, AppCurrentDownload, AppAreaInstalled, AppNewInvoice, AppTopRelated, AppTopInstalledCountries, AppTopAuthors, AppWidget } from 'src/sections/@dashboard/general/app';
+import { AppWidgetSummary, AppAreaInstalled, AppNewInvoice } from 'src/sections/@dashboard/general/app';
 import useSettings from 'src/hooks/useSettings';
 import AppTopContributors from 'src/sections/@dashboard/general/app/AppTopContributors';
-import useSuiAuth from '../hooks/useSuiAuth';
 
 HomePage.getLayout = function getLayout(page: React.ReactElement)
 {
@@ -18,9 +17,10 @@ const ContentStyle = styled((props: StackProps) => <Stack spacing={5} {...props}
   ({ theme }) => ({
     margin: 'auto',
     textAlign: 'center',
-    position: 'relative',
     paddingTop: theme.spacing(15),
     paddingBottom: theme.spacing(1),
+    alignContent: 'center',
+    alignItems: 'center',
     [theme.breakpoints.up('md')]: {
       margin: 'unset',
       textAlign: 'left',
@@ -31,8 +31,6 @@ const ContentStyle = styled((props: StackProps) => <Stack spacing={5} {...props}
 
 export default function HomePage()
 {
-  const { user } = useSuiAuth();
-
   const theme = useTheme();
 
   const { themeStretch } = useSettings();

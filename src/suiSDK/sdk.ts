@@ -13,7 +13,7 @@ import
 } from '@mysten/zklogin';
 import { NetworkName } from '@polymedia/suits';
 import { jwtDecode } from 'jwt-decode';
-import config from './config.json'; // copy and modify config.example.json with your own values
+import { SUI_CONFIG } from '../config';
 
 /* Types */
 
@@ -41,15 +41,18 @@ export default class SuiSDK
     NETWORK: NetworkName = 'devnet';
     MAX_EPOCH = 2; // keep ephemeral keys active for this many Sui epochs from now (1 epoch ~= 24h)
 
-    suiClient = new SuiClient({
-        url: getFullnodeUrl(this.NETWORK),
-    });
-
+    suiClient = new SuiClient({ url: getFullnodeUrl(this.NETWORK) });
     /* Session storage keys */
 
     setupDataKey = 'zklogin-demo.setup';
     accountDataKey = 'zklogin-demo.accounts';
+    config = SUI_CONFIG;
+    constructor(client: SuiClient)
+    {
+        if (client)
+            this.suiClient = client
 
+    }
     /* zkLogin end-to-end */
 
     /**
@@ -86,7 +89,7 @@ export default class SuiSDK
             case 'Google': {
                 const urlParams = new URLSearchParams({
                     ...urlParamsBase,
-                    client_id: config.CLIENT_ID_GOOGLE,
+                    client_id: this.config.CLIENT_ID_GOOGLE,
                 });
                 loginUrl = `https://accounts.google.com/o/oauth2/v2/auth?${urlParams.toString()}`;
                 break;
@@ -94,7 +97,7 @@ export default class SuiSDK
             case 'Twitch': {
                 const urlParams = new URLSearchParams({
                     ...urlParamsBase,
-                    client_id: config.CLIENT_ID_TWITCH,
+                    client_id: this.config.CLIENT_ID_TWITCH,
                     force_verify: 'true',
                     lang: 'en',
                     login_type: 'login',
@@ -105,7 +108,7 @@ export default class SuiSDK
             case 'Facebook': {
                 const urlParams = new URLSearchParams({
                     ...urlParamsBase,
-                    client_id: config.CLIENT_ID_FACEBOOK,
+                    client_id: this.config.CLIENT_ID_FACEBOOK,
                 });
                 loginUrl = `https://www.facebook.com/v19.0/dialog/oauth?${urlParams.toString()}`;
                 break;
@@ -149,7 +152,7 @@ export default class SuiSDK
         // https://docs.sui.io/concepts/cryptography/zklogin#user-salt-management
 
         const requestOptions =
-            config.URL_SALT_SERVICE === '/dummy-salt-service.json'
+            this.config.URL_SALT_SERVICE === '/dummy-salt-service.json'
                 ? // dev, using a JSON file (same salt all the time)
                 {
                     method: 'GET',
@@ -162,7 +165,7 @@ export default class SuiSDK
                 };
 
         const saltResponse: { salt: string } | null =
-            await fetch(config.URL_SALT_SERVICE, requestOptions)
+            await fetch(this.config.URL_SALT_SERVICE, requestOptions)
                 .then(res =>
                 {
                     console.debug('[completeZkLogin] salt service success');
@@ -210,7 +213,7 @@ export default class SuiSDK
 
         console.debug('[completeZkLogin] Requesting ZK proof with:', payload);
 
-        const zkProofs = await fetch(config.URL_ZK_PROVER, {
+        const zkProofs = await fetch(this.config.URL_ZK_PROVER, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: payload,
@@ -324,19 +327,19 @@ export default class SuiSDK
     /**
     * Get the SUI balance for each account
     */
-    fetchBalances = async (account: AccountData): Promise<Map<string, number> | null> =>
+    fetchBalances = async (walletAddress: string): Promise<Map<string, number> | null> =>
     {
-        if (!account)
+        if (!walletAddress)
         {
             return null;
         }
         const newBalances = new Map<string, number>();
         const suiBalance = await this.suiClient.getBalance({
-            owner: account.userAddr,
+            owner: walletAddress,
             coinType: '0x2::sui::SUI',
         });
         newBalances.set(
-            account.userAddr,
+            walletAddress,
             +suiBalance.totalBalance / 1_000_000_000
         );
         return newBalances;
