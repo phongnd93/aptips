@@ -7,11 +7,16 @@ import {
   TableCell,
   TableContainer,
   TablePagination,
+  Stack,
+  Avatar,
+  Box,
 } from '@mui/material';
 // hooks
 import useTable from '../../../../../hooks/useTable';
 // components
 import Scrollbar from '../../../../../components/Scrollbar';
+import Label from 'src/components/Label';
+import Iconify from 'src/components/Iconify';
 
 // ----------------------------------------------------------------------
 
@@ -25,9 +30,9 @@ const TABLE_DATA = [
   createData('1', 'Admin', '20-5-2024', 'facebook', 10),
   createData('2', 'Admin', '20-5-2024', 'zalo', 10),
   createData('3', 'Admin', '20-5-2024', 'facebook', 10),
-  createData('4', 'Admin', '20-5-2024', 'facebook', 10),
+  createData('4', 'Admin', '20-5-2024', 'twitter', 10),
   createData('5', 'Admin', '20-5-2024', 'facebook', 10),
-  createData('6', 'Admin', '20-5-2024', 'facebook', 10),
+  createData('6', 'Admin', '20-5-2024', 'twitter', 10),
 ];
 
 interface Column {
@@ -87,7 +92,7 @@ export default function GroupingListUserDonate() {
                   <TableCell
                     key={column.id}
                     align={column.align}
-                    style={{ top: 10, minWidth: column.minWidth }}
+                    style={{ minWidth: column.minWidth }}
                   >
                     {column.label}
                   </TableCell>
@@ -98,14 +103,30 @@ export default function GroupingListUserDonate() {
             <TableBody>
               {TABLE_DATA.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
                 <TableRow hover role="checkbox" tabIndex={-1} key={row.no}>
-                  {COLUMNS.map((column) => {
-                    const value = row[column.id];
-                    return (
-                      <TableCell key={column.id} align={column.align}>
-                        {column.format && typeof value === 'number' ? column.format(value) : value}
-                      </TableCell>
-                    );
-                  })}
+                    <TableCell>{row.no}</TableCell>
+                    <TableCell>
+                      <Stack direction="row" alignItems="center" spacing={2}>
+                        <Avatar /> <Label sx={{ ml: 1 }}>{row.userdonate}</Label>
+                      </Stack>
+                    </TableCell>
+                    <TableCell>{row.orderdate}</TableCell>
+                    <TableCell>
+                      <Stack direction="row" alignItems="center" spacing={2}>
+                        <Label 
+                          sx={{ ml: 1, minWidth: 70 }}
+                          color={
+                            (row.source === 'zalo' && 'warning') ||
+                            (row.source === 'facebook' && 'success') ||
+                            'info'
+                          }
+                        >{row.source}</Label>
+                      </Stack>
+                    </TableCell>
+                    <TableCell align="justify">
+                        <Label color='info'>
+                          {row.moneydonate} $
+                        </Label>
+                    </TableCell>
                 </TableRow>
               ))}
             </TableBody>

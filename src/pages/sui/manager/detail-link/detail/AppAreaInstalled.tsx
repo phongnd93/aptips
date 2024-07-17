@@ -20,7 +20,7 @@ const CHART_DATA = [
     year: 2024,
     data: [
       { name: 'Facebook', data: [148, 91, 69, 62, 49, 51, 35, 41, 10] },
-      { name: 'America', data: [45, 77, 99, 88, 77, 56, 13, 34, 10] },
+      { name: 'Zalo', data: [45, 77, 99, 88, 77, 56, 13, 34, 10] },
       { name: 'Twitter', data: [10, 34, 13, 56, 77, 88, 99, 77, 45] },
     ],
   },

@@ -8,11 +8,17 @@ import {
   TableContainer,
   TablePagination,
   Button,
+  Avatar,
+  Stack,
+  Box,
 } from '@mui/material';
 // hooks
 import useTable from '../../../../hooks/useTable';
 // components
 import Scrollbar from '../../../../components/Scrollbar';
+import Label from 'src/components/Label';
+import Iconify from 'src/components/Iconify';
+import { SUI_DONA_PATH } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -81,14 +87,11 @@ export default function TableLinkDonate() {
   const {
     page,
     rowsPerPage,
-    //
+    
     onChangePage,
     onChangeRowsPerPage,
   } = useTable({ defaultRowsPerPage: 10 });
 
-  const handleChangeConnect = (row: string) =>{
-    
-  }
 
   return (
     <>
@@ -101,42 +104,61 @@ export default function TableLinkDonate() {
                   <TableCell
                     key={column.id}
                     align={column.align}
-                    style={{ top: 10, minWidth: column.minWidth }}
+                    style={{ top: 0, minWidth: column.minWidth }}
                   >
-                    {column.label}
+                      {column.label}
                   </TableCell>
                 ))}
-                <TableCell style={{ top: 10 }}>
+                <TableCell>
                     {/* Detail */}
                 </TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
-              {TABLE_DATA.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.no}>
-                  {COLUMNS.map((column) => {
-                    const value = row[column.id];
-                    return (
-                      <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === 'number' ? column.format(value) : value}
-                      </TableCell>
-                    );
-                  })}
-                  <TableCell align="justify">
-                    <Button
-                      sx={{ right: 40, top: 2 }}
-                      variant="text"
-                      color='info'
-                      onClick={() => {
-                        handleChangeConnect(row.no);
-                      }}
-                    >
-                      detail
-                    </Button>
-              </TableCell>
-                </TableRow>
-              ))}
+              {TABLE_DATA.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                return (
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row.no} sx={{ pl: 1, pr: 1 }}>
+                    <TableCell>{row.no}</TableCell>
+                    <TableCell>
+                      <Stack direction="row" alignItems="center" spacing={2}>
+                        <Avatar /> <Label sx={{ ml: 1 }}>{row.usercreator}</Label>
+                      </Stack>
+                    </TableCell>
+                    <TableCell>{row.orderdate}</TableCell>
+                    <TableCell>
+                      <Label
+                        color='info'
+                        onClick={() => {
+                        } }
+                      >
+                        {row.link}
+                      </Label>
+                    </TableCell>
+                    <TableCell>
+                      <Stack direction="row" alignItems="center" spacing={2}>
+                        <Avatar /> <Box sx={{ ml: 1 }}> {row.donation}</Box>
+                      </Stack>
+                    </TableCell>
+                    <TableCell>
+                      <Stack direction="row" alignItems="center" spacing={2}>
+                        <Iconify icon={'ph:user'} sx={{ width: 16, height: 16, mr: 1 }} />
+                        <Box sx={{ ml: 1 }}>{row.donators}</Box>
+                      </Stack>
+                    </TableCell>
+                    <TableCell align="justify">
+                      <Button
+                        sx={{ right: 40, top: 0, mt: 0 }}
+                        variant='text'
+                        color='info'
+                        href={SUI_DONA_PATH.manager.detail}
+                      >
+                        Detail
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>

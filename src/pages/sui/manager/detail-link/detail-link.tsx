@@ -1,6 +1,6 @@
 import Layout from '../../../../layouts';
 import Page from '../../../../components/Page';
-import { Box, Button, Card, CardActionArea, CardContent, CardHeader, Container, Grid, Icon, ListItemIcon, Typography, useTheme } from '@mui/material';
+import { Box, Button, Card, CardActionArea, CardContent, CardHeader, Container, Dialog, Grid, Icon, ListItemIcon, Popover, Typography, useTheme } from '@mui/material';
 import useSettings from 'src/hooks/useSettings';
 import { useState } from 'react';
 
@@ -10,6 +10,11 @@ import AppWidgetSummary from './detail/AppWidgetSummary';
 import GroupingListUserDonate from './detail/GroupingListUserDonate';
 import Iconify from 'src/components/Iconify';
 import { FabButtonAnimate } from 'src/components/animate';
+import { ShareSocial } from 'src/components/share';
+import { Popup } from 'react-map-gl';
+import { MapControlPopup } from 'src/components/map';
+import { SUI_DONA_PATH } from 'src/routes/paths';
+
 // ----------------------------------------------------------------------
 
 DetailLinkDonation.getLayout = function getLayout(page: React.ReactElement) {
@@ -18,22 +23,28 @@ DetailLinkDonation.getLayout = function getLayout(page: React.ReactElement) {
 
 // ----------------------------------------------------------------------
 
-export default function DetailLinkDonation() {
+export default function DetailLinkDonation(props: { value?: string }) {
     const { themeStretch } = useSettings();
     const [idLinkSui, setIdLinkSui ] = useState('sui/623-567-7355');
+
+    const [isOpenShare, setIsOpenShare] = useState<boolean>(false);
     const theme = useTheme();
 
     return (
         <Page title="Manager: Link Donation" sx={{ mt: 10 }}>
             <Container maxWidth={themeStretch ? false : 'lg'} >
-                {/* <Button sx={{ fontSize: 8 }} variant='contained' >
-                    <Iconify icon="ic:edit" width={1} height={1} />
-                </Button> */}
                 <Box sx={{ display: 'flex', mt: 3, mb: 3, ml: 0 }}>
                     <Typography variant="h4" sx={{ display: 'flex'}}>
                         {/* <Iconify icon="ic:edit" fontSize={30} /> */}
                             Detail Link Donate 
-                        <Typography variant='h4' sx={{ ml: 1, color: 'Highlight' }}>
+                        <Typography 
+                            variant='h4' 
+                            sx={{ ml: 1, color: 'Highlight' }}
+                            onClick={() => 
+                            {
+                                setIsOpenShare(true);
+                            }}
+                        >
                             {idLinkSui}
                         </Typography>
                     </Typography>
@@ -43,10 +54,7 @@ export default function DetailLinkDonation() {
                             color="info"
                             size='small'
                             startIcon={<Iconify icon="ic:edit" />}
-                            onClick={() =>
-                            {
-                                
-                            }}
+                            href={SUI_DONA_PATH.manager.form}
                         >Edit</Button>
                         <Button
                             sx={{ ml: 1, textAlign: 'center' }}
@@ -56,7 +64,7 @@ export default function DetailLinkDonation() {
                             startIcon={<Iconify icon="ic:share" />}
                             onClick={() =>
                             {
-                                    
+                                setIsOpenShare(true);
                             }}
                         >Share</Button>  
                     </Box>
@@ -66,7 +74,7 @@ export default function DetailLinkDonation() {
                     <CardActionArea/>
                     <CardContent >
                         <Grid sx={{ display: 'flex' }}>
-                            <Grid spacing={3} sx={{ width: '50%', }} >
+                            <Grid spacing={3} sx={{ width: '50%', mr: 3 }} >
                                 <Grid item md={11} sx={{ mb: 2}}>
                                     <AppWidgetSummary
                                         title="Total Active Users"
@@ -106,13 +114,20 @@ export default function DetailLinkDonation() {
                 <Card sx={{ mt: 2, mb: 2 }}>
                     <ListItemIcon />
                     <CardHeader title=' List user donate' />
-                    
                     <CardActionArea/>
                     <CardContent >
                         <GroupingListUserDonate />
                     </CardContent>
                 </Card>
             </Container>
+
+            <Dialog
+                open={isOpenShare}
+                closeAfterTransition
+                onClose={() => {setIsOpenShare(false) }}
+            >
+                <ShareSocial  />
+            </Dialog>
         </Page>
     )
 };

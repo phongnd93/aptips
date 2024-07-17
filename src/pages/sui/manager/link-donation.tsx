@@ -1,6 +1,6 @@
 import Layout from '../../../layouts';
 import Page from '../../../components/Page';
-import { Box, Breadcrumbs, Card, CardActionArea, CardHeader, Container, Grid, Typography } from '@mui/material';
+import { Box, Breadcrumbs, Card, CardActionArea, CardContent, CardHeader, Container, Grid, Rating, Typography } from '@mui/material';
 import useSettings from 'src/hooks/useSettings';
 import { useState } from 'react';
 
@@ -8,6 +8,7 @@ import TableLinkDonate from './table-link-donation/TableLinkDonate';
 import TextIconLabel from 'src/components/TextIconLabel';
 import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import other from 'src/sections/overview/extra/animate/other';
+import EmptyPage from 'src/components/empty-page/EmptyPage';
 // ----------------------------------------------------------------------
 
 ManagerLinkDonation.getLayout = function getLayout(page: React.ReactElement) {
@@ -27,9 +28,14 @@ export default function ManagerLinkDonation() {
                             Detail Link Donate 
                 </Typography>
                 <Card>
-                    <CardActionArea/>
-                    <TableLinkDonate />
+                    <CardHeader>
+                    
+                    </CardHeader>
+                    <CardContent>
+                        <TableLinkDonate />
+                    </CardContent>
                 </Card>
+                <EmptyPage />
             </Container>
         </Page>
     )
