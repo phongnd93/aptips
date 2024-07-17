@@ -59,7 +59,7 @@ export default function MainHeader()
 
   const isDesktop = useResponsive('up', 'md');
 
-  const isHome = pathname === '/';
+  const isHome = pathname === '/dashboard';
 
   return (
     <AppBar sx={{ boxShadow: 0, bgcolor: 'transparent' }}>

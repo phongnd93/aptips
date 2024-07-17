@@ -25,7 +25,7 @@ const menuConfig = [
   {
     title: 'Dashboard',
     icon: <Iconify icon={'eva:file-fill'} {...ICON_SIZE} />,
-    path: '/',
+    path: '/dashboard',
   },
   {
     title: 'Management',

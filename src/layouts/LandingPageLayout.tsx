@@ -1,4 +1,4 @@
-import { styled, useTheme } from '@mui/material/styles'; 
+import { styled, useTheme } from '@mui/material/styles';
 import { AppBar, Toolbar, Container, Stack, Typography, Button } from '@mui/material';
 import { ReactNode } from 'react'
 import { HEADER } from 'src/config';
@@ -6,6 +6,8 @@ import useResponsive from 'src/hooks/useResponsive';
 import cssStyles from 'src/utils/cssStyles';
 import Image from 'src/components/Image';
 import Link from 'next/link';
+import Iconify from 'src/components/Iconify';
+import useOffSetTop from 'src/hooks/useOffSetTop';
 
 type Props = {
     children: ReactNode
@@ -14,15 +16,15 @@ type Props = {
 const ToolbarStyle = styled(Toolbar)(({ theme }) => ({
     height: HEADER.MOBILE_HEIGHT,
     transition: theme.transitions.create(['height', 'background-color'], {
-        easing: theme.transitions.easing.easeInOut,
-        duration: theme.transitions.duration.shorter,
+      easing: theme.transitions.easing.easeInOut,
+      duration: theme.transitions.duration.shorter,
     }),
     [theme.breakpoints.up('md')]: {
-        height: HEADER.MAIN_DESKTOP_HEIGHT,
+      height: HEADER.MAIN_DESKTOP_HEIGHT,
     },
-}));
-
-const ToolbarShadowStyle = styled('div')(({ theme }) => ({
+  }));
+  
+  const ToolbarShadowStyle = styled('div')(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
@@ -31,13 +33,13 @@ const ToolbarShadowStyle = styled('div')(({ theme }) => ({
     margin: 'auto',
     borderRadius: '50%',
     position: 'absolute',
-    width: `calc(100% - 50px)`,
-    // boxShadow: theme.customShadows.z8,
-}));
+    width: `calc(100% - 48px)`,
+    boxShadow: theme.customShadows.z8,
+  }));
 
 const MainHeader: React.FC = () =>
 {
-    const isOffset = true;
+    const isOffset = useOffSetTop(HEADER.MAIN_DESKTOP_HEIGHT);;
 
     const theme = useTheme();
 
@@ -49,13 +51,13 @@ const MainHeader: React.FC = () =>
                 disableGutters
                 sx={{
                     ...(isOffset && {
-                      ...cssStyles(theme).bgBlur(),
-                      height: { md: HEADER.MAIN_DESKTOP_HEIGHT - 16 },
+                        ...cssStyles(theme).bgBlur(),
+                        height: { md: HEADER.MAIN_DESKTOP_HEIGHT - 16 },
                     }),
-                    backgroundColor: 'rgba(0, 189, 214, 0.07)',
                 }}
             >
                 <Container
+                    maxWidth={'md'}
                     sx={{
                         display: 'flex',
                         alignItems: 'center',
@@ -64,22 +66,23 @@ const MainHeader: React.FC = () =>
                 >
                     <Stack direction={'row'} alignItems={'center'} gap={2}>
                         <Image
-                            sx={{ zIndex: 2, height: 60 , width: 60 }}
+                            sx={{ zIndex: 2, height: 60, width: 60 }}
                             src="/imgs/SuiCup_Logo_2.png"
                             alt="suicuplogo2"
                             visibleByDefault
                             disabledEffect
                         />
                         <Stack>
-                            <Typography variant="h5" color={'#00BDD6'}>SUICUP</Typography>
-                            <Typography color={'black'}>Sui Me a Coffee</Typography>
+                            <Typography variant="h4" color={(theme) => theme.palette.primary.main}>SUICUP</Typography>
+                            <Typography variant='h6' color={(theme) => theme.palette.secondary.main}>Sui Me a Coffee</Typography>
                         </Stack>
                     </Stack>
-                    <Link
-                        href={'/auth/login'}
-                    >
-                        <Button variant='contained' size='medium' sx={{ borderRadius: '1.25rem', width: '100px' }}>
-                            Login
+                    <Link href={'/dashboard'}>
+                        <Button variant='contained' sx={{ borderRadius: '1.25rem' }}>
+                            <Stack direction={'row'} spacing={3}>
+                                <Typography variant='h6'>Launch APP</Typography>
+                                <Iconify icon={'grommet-icons:form-next-link'} width={24} height={24} />
+                            </Stack>
                         </Button>
                     </Link>
                 </Container>
@@ -89,7 +92,8 @@ const MainHeader: React.FC = () =>
     );
 }
 
-export default function LandingPageLayout({ children }: Props) {
+export default function LandingPageLayout({ children }: Props)
+{
     return (
         <Stack sx={{ minHeight: 1 }}>
             <MainHeader />

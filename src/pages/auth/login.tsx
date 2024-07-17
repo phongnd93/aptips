@@ -34,7 +34,7 @@ const HeaderStyle = styled('header')(({ theme }) => ({
   alignItems: 'center',
   position: 'absolute',
   padding: theme.spacing(3),
-  justifyContent: 'space-between',
+  justifyContent: 'center',
   [theme.breakpoints.up('md')]: {
     alignItems: 'flex-start',
     padding: theme.spacing(7, 5, 0, 7),
@@ -68,9 +68,6 @@ export default function Login()
     <GuestGuard>
       <Page title="Login">
         <RootStyle>
-          <HeaderStyle>
-            <Logo />
-          </HeaderStyle>
           <Grid
             container
             justifyContent={{ xs: 'center', md: 'space-between' }}
@@ -78,6 +75,7 @@ export default function Login()
             <Grid item xs={12} md={6} bgcolor={'white'}>
               <Container maxWidth="sm">
                 <ContentStyle>
+                  <Stack alignItems="center"><Logo /></Stack>
                   <Stack direction="row" alignItems="center" sx={{ mb: 5 }}>
                     <Box sx={{ flexGrow: 1, textAlign: 'center' }}>
                       <Typography variant="h3" gutterBottom>
