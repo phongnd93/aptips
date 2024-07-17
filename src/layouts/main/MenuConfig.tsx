@@ -21,6 +21,11 @@ const menuConfig = [
     title: 'Form Donation',
     icon: <Iconify icon={'eva:file-fill'} {...ICON_SIZE} />,
     path: SUI_DONA_PATH.manager.form,
+  },
+  {
+    title: 'List Link Donation',
+    icon: <Iconify icon={'eva:file-fill'} {...ICON_SIZE} />,
+    path: SUI_DONA_PATH.manager.link,
   }
   //PHONG:Hide menu item
   // {
