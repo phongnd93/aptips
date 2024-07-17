@@ -5,7 +5,7 @@ import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import { SUI_DONA_PATH } from 'src/routes/paths';
 import { styled } from '@mui/material/styles';
 import { QRCode } from 'react-qrcode-logo';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Iconify from 'src/components/Iconify';
 import { ShareSocial } from 'src/components/share';
 import { makeid } from 'src/utils/makeid';
@@ -14,12 +14,13 @@ import { FormDonationConfig } from 'src/components/form/FormDonationConfig';
 const RootStyle = styled('div')(({ theme }) => ({
     paddingTop: theme.spacing(15),
     paddingBottom: theme.spacing(5),
-  }));
-  
+}));
+
 // ----------------------------------------------------------------------
-ManagerFormDonation.getLayout = function getLayout(page: React.ReactElement) {
+ManagerFormDonation.getLayout = function getLayout(page: React.ReactElement)
+{
     return <Layout>{page}</Layout>;
-  };
+};
 // ----------------------------------------------------------------------
 
 export default function ManagerFormDonation()
@@ -33,14 +34,21 @@ export default function ManagerFormDonation()
     }
 
     const [tempConfig, setTempConfig] = useState<Record<string, any>>(initTempConfig);
-    const [isOpenShare, setIsOpenShare] = useState<null | HTMLElement>(null);    
+    const [isOpenShare, setIsOpenShare] = useState<null | HTMLElement>(null);
     const [donationLink, setDonationLink] = useState<string>('');
 
-    const handleOpenShare = (event: React.MouseEvent<HTMLButtonElement>) => {
+    useEffect(() =>
+    {
+        handleGenerateLink();
+    }, []);
+
+    const handleOpenShare = (event: React.MouseEvent<HTMLButtonElement>) =>
+    {
         setIsOpenShare(event.currentTarget);
     };
 
-    const handleCloseShare = () => {
+    const handleCloseShare = () =>
+    {
         setIsOpenShare(null);
     };
 
@@ -48,8 +56,8 @@ export default function ManagerFormDonation()
     {
         if (typeof window !== 'undefined')
         {
-            const { protocol, hostname } = window.location;
-            setDonationLink(`${protocol}//${hostname}/${makeid(10)}`)
+            const { protocol, hostname, port } = window.location;
+            setDonationLink(`${protocol}//${hostname}${(hostname === 'localhost' && port) ? `:${port}` : ''}/${makeid(10)}`)
         }
     };
 
@@ -74,7 +82,7 @@ export default function ManagerFormDonation()
                 target.name = file.name;
                 target.value = reader.result
                 target.logoName = file.name;
-                setTempConfig(prevState => ({...prevState, logoImage: target}))
+                setTempConfig(prevState => ({ ...prevState, logoImage: target }))
             }
             reader.readAsDataURL(file);
         }
@@ -127,7 +135,7 @@ export default function ManagerFormDonation()
                     <Grid item xs={6}>
                         <Stack spacing={4} alignItems={'center'}>
                             <Card
-                                sx={{ width: '100%'}}
+                                sx={{ width: '100%' }}
                             >
                                 <CardContent sx={{ textAlign: 'center' }}>
                                     <Tooltip
@@ -138,7 +146,7 @@ export default function ManagerFormDonation()
                                         <Box
                                             onClick={() => fileInputRef.current?.click()}
                                             sx={{ cursor: 'pointer' }}
-                                        >                                   
+                                        >
                                             <QRCode
                                                 qrStyle='fluid'
                                                 size={250}
@@ -147,6 +155,7 @@ export default function ManagerFormDonation()
                                                 logoWidth={80}
                                                 logoHeight={80}
                                                 logoImage={tempConfig?.logoImage?.value}
+                                                value={donationLink}
                                             />
                                         </Box>
                                     </Tooltip>
@@ -190,7 +199,7 @@ export default function ManagerFormDonation()
                 name='logoImage'
                 accept='image/*'
                 hidden
-                onChange={(event) => {retrievePathFile(event.target.files)}}
+                onChange={(event) => { retrievePathFile(event.target.files) }}
             />
             <Popover
                 anchorEl={isOpenShare}

@@ -6,7 +6,6 @@ import { Box, Link, Container, Typography, Stack } from '@mui/material';
 // components
 import Logo from '../../components/Logo';
 //
-import MainFooter from './MainFooter';
 import MainHeader from './MainHeader';
 
 // ----------------------------------------------------------------------
@@ -18,7 +17,6 @@ type Props = {
 export default function MainLayout({ children }: Props)
 {
   const { pathname } = useRouter();
-  const isHome = pathname === '/';
 
   return (
     <Stack sx={{ minHeight: 1 }}>
@@ -28,28 +26,24 @@ export default function MainLayout({ children }: Props)
 
       <Box sx={{ flexGrow: 1 }} />
 
-      {!isHome ? (
-        <MainFooter />
-      ) : (
-        <Box
-          sx={{
-            py: 5,
-            textAlign: 'center',
-            position: 'relative',
-            bgcolor: 'background.default',
-          }}
-        >
-          <Container>
-            <Logo sx={{ mb: 1, mx: 'auto' }} />
+      <Box
+        sx={{
+          py: 5,
+          textAlign: 'center',
+          position: 'relative',
+          bgcolor: 'background.default',
+        }}
+      >
+        <Container>
+          <Logo sx={{ mb: 1, mx: 'auto' }} />
 
-            <Typography variant="caption" component="p">
-              © All rights reserved
-              <br /> made by &nbsp;
-              <Link href="">Sui Dona team</Link>
-            </Typography>
-          </Container>
-        </Box>
-      )}
+          <Typography variant="caption" component="p">
+            © All rights reserved
+            <br /> made by &nbsp;
+            <Link href="">Sui Dona team</Link>
+          </Typography>
+        </Container>
+      </Box>
     </Stack>
   );
 }

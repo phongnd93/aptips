@@ -12,18 +12,18 @@ const ICON_SIZE = {
 };
 
 const menuConfig = [
+  // {
+  //   title: 'Donation Link',
+  //   icon: <Iconify icon={'eva:home-fill'} {...ICON_SIZE} />,
+  //   path: SUI_DONA_PATH.root,
+  // },
+  // {
+  //   title: 'Form Donation',
+  //   icon: <Iconify icon={'eva:file-fill'} {...ICON_SIZE} />,
+  //   path: SUI_DONA_PATH.manager.form,
+  // },
   {
-    title: 'Donation Link',
-    icon: <Iconify icon={'eva:home-fill'} {...ICON_SIZE} />,
-    path: SUI_DONA_PATH.root,
-  },
-  {
-    title: 'Form Donation',
-    icon: <Iconify icon={'eva:file-fill'} {...ICON_SIZE} />,
-    path: SUI_DONA_PATH.manager.form,
-  },
-  {
-    title: 'List Link Donation',
+    title: 'Management',
     icon: <Iconify icon={'eva:file-fill'} {...ICON_SIZE} />,
     path: SUI_DONA_PATH.manager.link,
   }

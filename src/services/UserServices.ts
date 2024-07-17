@@ -1,21 +1,18 @@
 import axios, { AxiosResponse } from "axios"
+import { APIResponse, APIResponseObject } from "src/@types/dto/api-response"
 import { SuiUser } from "src/@types/sui-user"
 import { API } from "src/config"
 
 export default class UserServices
 {
-    add = async (data: SuiUser) =>
+    add = async (data: SuiUser): Promise<APIResponse> =>
     {
         try
         {
-            return await axios.post(`${API}/user`, data);
+            return APIResponseObject(200, await axios.post(`${API}/user`, data));
         } catch (error)
         {
-            return {
-                status: 500,
-                statusText: error.message,
-                data: null,
-            };
+            return APIResponseObject(500, null, error.message);
         }
     }
 
@@ -23,14 +20,10 @@ export default class UserServices
     {
         try
         {
-            return await axios.patch(`${API}/user/${data.id}`, data);
+            return APIResponseObject(200, await axios.patch(`${API}/user/${data.id}`, data));
         } catch (error)
         {
-            return {
-                status: 500,
-                statusText: error.message,
-                data: null,
-            };
+            return APIResponseObject(500, null, error.message);
         }
     }
 
@@ -38,14 +31,11 @@ export default class UserServices
     {
         try
         {
-            return await axios.get(`${API}/user/${walletAddress}`);
+            return await axios.get(`${API}/user/wallet/${walletAddress}`);
         } catch (error)
         {
-            return {
-                status: 500,
-                statusText: error.message,
-                data: null,
-            };
+            console.log('userSvc', error)
+            return APIResponseObject(500, null, error.message);
         }
     }
 
@@ -56,11 +46,7 @@ export default class UserServices
             return await axios.get(`${API}/transaction-history/transactions-by-user/${userId}`);
         } catch (error)
         {
-            return {
-                status: 500,
-                statusText: error.message,
-                data: null,
-            };
+            return APIResponseObject(500, null, error.message);
         }
     }
 
@@ -73,11 +59,7 @@ export default class UserServices
             return res.map(r => r.value);
         } catch (error)
         {
-            return {
-                status: 500,
-                statusText: error.message,
-                data: null,
-            };
+            return APIResponseObject(500, null, error.message);
         }
     }
 

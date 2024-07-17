@@ -27,7 +27,8 @@ export const AUTH0_API = {
 };
 
 export const MAPBOX_API = process.env.MAPBOX;
-export const API = process.env.API || 'http://164.68.106.205:3000/api';
+// export const API = process.env.API || 'http://164.68.106.205:3000/api';
+export const API = process.env.API || 'http://localhost:3000/api';
 export const SUI_CONFIG = {
   "URL_ZK_PROVER": process.env.URL_ZK_PROVER || "https://prover-dev.mystenlabs.com/v1",
   "URL_SALT_SERVICE": process.env.URL_SALT_SERVICE || "/dummy-salt-service.json",
