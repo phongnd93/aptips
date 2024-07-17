@@ -5,7 +5,6 @@ import { styled } from '@mui/material/styles';
 import { Box, Card, Stack, Tooltip, Container, Typography, Grid } from '@mui/material';
 // routes
 // hooks
-import useAuth from '../../hooks/useAuth';
 import useResponsive from '../../hooks/useResponsive';
 // guards
 import GuestGuard from '../../guards/GuestGuard';
@@ -15,6 +14,7 @@ import Logo from '../../components/Logo';
 import Image from '../../components/Image';
 // sections
 import SocialLoginForm from 'src/sections/auth/login/SocialLoginForm';
+import useSuiAuth from 'src/hooks/useSuiAuth';
 
 // ----------------------------------------------------------------------
 
@@ -40,15 +40,6 @@ const HeaderStyle = styled('header')(({ theme }) => ({
   },
 }));
 
-const SectionStyle = styled(Card)(({ theme }) => ({
-  width: '100%',
-  maxWidth: 464,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  margin: theme.spacing(2, 0, 2, 2),
-}));
-
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: 480,
   margin: 'auto',
@@ -68,9 +59,7 @@ const TermAndPolicyStyle = styled('span')(({ theme }) => ({
 
 export default function Login()
 {
-  const { method } = useAuth();
-
-  const smUp = useResponsive('up', 'sm');
+  const { login } = useSuiAuth();
 
   const mdUp = useResponsive('up', 'md');
 
@@ -98,19 +87,8 @@ export default function Login()
                         <TermAndPolicyStyle>Terms</TermAndPolicyStyle> and <TermAndPolicyStyle>Privacy Policy</TermAndPolicyStyle>
                       </Typography>
                     </Box>
-
-                    <Tooltip title={capitalCase(method)} placement="right">
-                      <>
-                        <Image
-                          disabledEffect
-                          alt={method}
-                          src={`https://minimal-assets-api.vercel.app/assets/icons/auth/ic_${method}.png`}
-                          sx={{ width: 32, height: 32 }}
-                        />
-                      </>
-                    </Tooltip>
                   </Stack>
-                  <SocialLoginForm />
+                  <SocialLoginForm onSocialClick={login} onConnectToWalletClick={() => { }} />
                 </ContentStyle>
               </Container>
             </Grid>

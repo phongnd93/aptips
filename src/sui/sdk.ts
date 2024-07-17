@@ -17,7 +17,7 @@ import config from './config.json'; // copy and modify config.example.json with 
 
 /* Types */
 
-type OpenIdProvider = 'Google' | 'Twitch' | 'Facebook';
+export type OpenIdProvider = 'Google' | 'Twitch' | 'Facebook';
 
 type SetupData = {
     provider: OpenIdProvider;
@@ -26,7 +26,7 @@ type SetupData = {
     ephemeralPrivateKey: string;
 }
 
-type AccountData = {
+export type AccountData = {
     provider: OpenIdProvider;
     userAddr: string;
     zkProofs: any;
@@ -66,12 +66,12 @@ export default class SuiSDK
         const nonce = generateNonce(ephemeralKeyPair.getPublicKey(), maxEpoch, randomness);
 
         // Save data to session storage so completeZkLogin() can use it after the redirect
-        // saveSetupData({
-        //     provider,
-        //     maxEpoch,
-        //     randomness: randomness.toString(),
-        //     ephemeralPrivateKey: ephemeralKeyPair.getSecretKey(),
-        // });
+        this.saveSetupData({
+            provider,
+            maxEpoch,
+            randomness: randomness.toString(),
+            ephemeralPrivateKey: ephemeralKeyPair.getSecretKey(),
+        });
 
         // Start the OAuth flow with the OpenID provider
         const urlParamsBase = {
@@ -120,7 +120,7 @@ export default class SuiSDK
      * it derives the user address from the JWT and the salt, and finally
      * it gets a zero-knowledge proof from the Mysten Labs proving service.
      */
-    completeZkLogin = async (accounts: AccountData[]) =>
+    completeZkLogin = async (): Promise<AccountData | null> =>
     {
         // === Grab and decode the JWT that beginZkLogin() produced ===
         // https://docs.sui.io/concepts/cryptography/zklogin#decoding-jwt
@@ -131,7 +131,7 @@ export default class SuiSDK
         const jwt = urlParams.get('id_token');
         if (!jwt)
         {
-            return;
+            return null;
         }
 
         // remove the URL fragment
@@ -142,7 +142,7 @@ export default class SuiSDK
         if (!jwtPayload.sub || !jwtPayload.aud)
         {
             console.warn('[completeZkLogin] missing jwt.sub or jwt.aud');
-            return;
+            return null;
         }
 
         // === Get the salt ===
@@ -176,7 +176,7 @@ export default class SuiSDK
 
         if (!saltResponse)
         {
-            return;
+            return null;
         }
 
         const userSalt = BigInt(saltResponse.salt);
@@ -191,15 +191,7 @@ export default class SuiSDK
         if (!setupData)
         {
             console.warn('[completeZkLogin] missing session storage data');
-            return;
-        }
-        for (const account of accounts)
-        {
-            if (userAddr === account.userAddr)
-            {
-                console.warn(`[completeZkLogin] already logged in with this ${setupData.provider} account`);
-                return;
-            }
+            return null;
         }
 
         // === Get the zero-knowledge proof ===
@@ -240,11 +232,12 @@ export default class SuiSDK
 
         if (!zkProofs)
         {
-            return;
+            console.warn('[completeZkLogin] ZkProofs is undefined');
+            return null;
         }
 
         // === Save data to session storage so sendTransaction() can use it ===
-        this.saveAccount({
+        const account = {
             provider: setupData.provider,
             userAddr,
             zkProofs,
@@ -253,7 +246,10 @@ export default class SuiSDK
             sub: jwtPayload.sub,
             aud: typeof jwtPayload.aud === 'string' ? jwtPayload.aud : jwtPayload.aud[0],
             maxEpoch: setupData.maxEpoch,
-        }, accounts);
+        };
+        this.saveAccount(account);
+        this.clearSetupData();
+        return account;
     }
 
     /**
@@ -315,6 +311,7 @@ export default class SuiSDK
 
             });
     }
+
     /**
      * Create a keypair from a base64-encoded secret key
      */
@@ -323,38 +320,37 @@ export default class SuiSDK
         const keyPair = decodeSuiPrivateKey(privateKeyBase64);
         return Ed25519Keypair.fromSecretKey(keyPair.secretKey);
     }
+
     /**
     * Get the SUI balance for each account
     */
-    fetchBalances = async (accounts: AccountData[]): Promise<Map<string, number> | null> =>
+    fetchBalances = async (account: AccountData): Promise<Map<string, number> | null> =>
     {
-        if (accounts.length == 0)
+        if (!account)
         {
             return null;
         }
         const newBalances = new Map<string, number>();
-        for (const account of accounts)
-        {
-            const suiBalance = await this.suiClient.getBalance({
-                owner: account.userAddr,
-                coinType: '0x2::sui::SUI',
-            });
-            newBalances.set(
-                account.userAddr,
-                +suiBalance.totalBalance / 1_000_000_000
-            );
-        }
+        const suiBalance = await this.suiClient.getBalance({
+            owner: account.userAddr,
+            coinType: '0x2::sui::SUI',
+        });
+        newBalances.set(
+            account.userAddr,
+            +suiBalance.totalBalance / 1_000_000_000
+        );
         return newBalances;
     }
+
     /* Session storage */
     saveSetupData = (data: SetupData) =>
     {
-        sessionStorage.setItem(this.setupDataKey, JSON.stringify(data))
+        window.sessionStorage.setItem(this.setupDataKey, JSON.stringify(data))
     }
 
     loadSetupData = (): SetupData | null =>
     {
-        const dataRaw = sessionStorage.getItem(this.setupDataKey);
+        const dataRaw = window.sessionStorage.getItem(this.setupDataKey);
         if (!dataRaw)
         {
             return null;
@@ -365,32 +361,28 @@ export default class SuiSDK
 
     clearSetupData = (): void =>
     {
-        sessionStorage.removeItem(this.setupDataKey);
+        window.sessionStorage.removeItem(this.setupDataKey);
     }
 
-    saveAccount = (account: AccountData, accounts: AccountData[]): AccountData[] =>
+    saveAccount = (account: AccountData): void =>
     {
-        const newAccounts = [account, ...accounts];
-        sessionStorage.setItem(this.accountDataKey, JSON.stringify(newAccounts));
-        // accounts.current = newAccounts;
-        this.fetchBalances([account]);
-        return newAccounts;
+        sessionStorage.setItem(this.accountDataKey, JSON.stringify(account));
     }
 
-    loadAccounts = (): AccountData[] =>
+    loadAccount = (): AccountData | null =>
     {
-        const dataRaw = sessionStorage.getItem(this.accountDataKey);
+        const dataRaw = window.sessionStorage.getItem(this.accountDataKey);
         if (!dataRaw)
         {
-            return [];
+            return null;
         }
-        const data: AccountData[] = JSON.parse(dataRaw);
+        const data: AccountData = JSON.parse(dataRaw);
         return data;
     }
 
     clearState = (): void =>
     {
-        sessionStorage.clear();
+        window.sessionStorage.clear();
         // accounts.current = [];
         // setBalances(new Map());
     }

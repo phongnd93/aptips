@@ -11,7 +11,7 @@ import { LoadingButton } from '@mui/lab';
 // routes
 import { PATH_AUTH } from '../../../routes/paths';
 // hooks
-import useAuth from '../../../hooks/useAuth';
+import useSuiAuth from 'src/hooks/useSuiAuth';
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
 // components
 import Iconify from '../../../components/Iconify';
@@ -27,7 +27,7 @@ type FormValuesProps = {
 };
 
 export default function LoginForm() {
-  const { login } = useAuth();
+  const { login } = useSuiAuth();
 
   const isMountedRef = useIsMountedRef();
 

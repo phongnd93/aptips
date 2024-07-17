@@ -4,7 +4,7 @@ import NextLink from 'next/link';
 import { styled } from '@mui/material/styles';
 import { Box, Link, Typography } from '@mui/material';
 // hooks
-import useAuth from '../../../hooks/useAuth';
+import useSuiAuth from 'src/hooks/useSuiAuth';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // components
@@ -29,8 +29,9 @@ type Props = {
   isCollapse: boolean | undefined;
 };
 
-export default function NavbarAccount({ isCollapse }: Props) {
-  const { user } = useAuth();
+export default function NavbarAccount({ isCollapse }: Props)
+{
+  const { user, balances } = useSuiAuth();
 
   return (
     <NextLink href={PATH_DASHBOARD.user.account} passHref>
@@ -58,10 +59,10 @@ export default function NavbarAccount({ isCollapse }: Props) {
             }}
           >
             <Typography variant="subtitle2" noWrap>
-              {user?.displayName}
+              {user?.userAddr}
             </Typography>
             <Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
-              {user?.role}
+              SUI : {balances}
             </Typography>
           </Box>
         </RootStyle>

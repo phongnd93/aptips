@@ -7,7 +7,8 @@ import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
 
 // ----------------------------------------------------------------------
 
-enum Types {
+enum Types
+{
   Initial = 'INITIALIZE',
   Login = 'LOGIN',
   Logout = 'LOGOUT',
@@ -36,8 +37,10 @@ const initialState: AuthState = {
   user: null,
 };
 
-const JWTReducer = (state: AuthState, action: JWTActions) => {
-  switch (action.type) {
+const JWTReducer = (state: AuthState, action: JWTActions) =>
+{
+  switch (action.type)
+  {
     case 'INITIALIZE':
       return {
         isAuthenticated: action.payload.isAuthenticated,
@@ -77,38 +80,37 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
-function AuthProvider({ children }: AuthProviderProps) {
+function AuthProvider({ children }: AuthProviderProps)
+{
   const [state, dispatch] = useReducer(JWTReducer, initialState);
 
-  useEffect(() => {
-    const initialize = async () => {
-      try {
-        const accessToken = window.localStorage.getItem('accessToken');
+  useEffect(() =>
+  {
+    initialize();
+  }, []);
 
-        if (accessToken && isValidToken(accessToken)) {
-          setSession(accessToken);
+  const initialize = async () =>
+  {
+    try
+    {
+      const accessToken = window.localStorage.getItem('accessToken');
 
-          const response = await axios.get('/api/account/my-account');
-          const { user } = response.data;
+      if (accessToken && isValidToken(accessToken))
+      {
+        setSession(accessToken);
 
-          dispatch({
-            type: Types.Initial,
-            payload: {
-              isAuthenticated: true,
-              user,
-            },
-          });
-        } else {
-          dispatch({
-            type: Types.Initial,
-            payload: {
-              isAuthenticated: false,
-              user: null,
-            },
-          });
-        }
-      } catch (err) {
-        console.error(err);
+        const response = await axios.get('/api/account/my-account');
+        const { user } = response.data;
+
+        dispatch({
+          type: Types.Initial,
+          payload: {
+            isAuthenticated: true,
+            user,
+          },
+        });
+      } else
+      {
         dispatch({
           type: Types.Initial,
           payload: {
@@ -117,12 +119,21 @@ function AuthProvider({ children }: AuthProviderProps) {
           },
         });
       }
-    };
+    } catch (err)
+    {
+      console.error(err);
+      dispatch({
+        type: Types.Initial,
+        payload: {
+          isAuthenticated: false,
+          user: null,
+        },
+      });
+    }
+  };
 
-    initialize();
-  }, []);
-
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string) =>
+  {
     const response = await axios.post('/api/account/login', {
       email,
       password,
@@ -138,7 +149,8 @@ function AuthProvider({ children }: AuthProviderProps) {
     });
   };
 
-  const register = async (email: string, password: string, firstName: string, lastName: string) => {
+  const register = async (email: string, password: string, firstName: string, lastName: string) =>
+  {
     const response = await axios.post('/api/account/register', {
       email,
       password,
@@ -156,7 +168,8 @@ function AuthProvider({ children }: AuthProviderProps) {
     });
   };
 
-  const logout = async () => {
+  const logout = async () =>
+  {
     setSession(null);
     dispatch({ type: Types.Logout });
   };

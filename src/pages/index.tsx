@@ -5,9 +5,9 @@ import Layout from '../layouts';
 import Page from '../components/Page';
 import { Container, Grid, Stack, StackProps, useTheme } from '@mui/material';
 import { AppWelcome, AppFeatured, AppWidgetSummary, AppCurrentDownload, AppAreaInstalled, AppNewInvoice, AppTopRelated, AppTopInstalledCountries, AppTopAuthors, AppWidget } from 'src/sections/@dashboard/general/app';
-import useAuth from 'src/hooks/useAuth';
 import useSettings from 'src/hooks/useSettings';
 import AppTopContributors from 'src/sections/@dashboard/general/app/AppTopContributors';
+import useSuiAuth from '../hooks/useSuiAuth';
 
 HomePage.getLayout = function getLayout(page: React.ReactElement)
 {
@@ -31,7 +31,7 @@ const ContentStyle = styled((props: StackProps) => <Stack spacing={5} {...props}
 
 export default function HomePage()
 {
-  const { user } = useAuth();
+  const { user } = useSuiAuth();
 
   const theme = useTheme();
 
@@ -40,7 +40,7 @@ export default function HomePage()
   return (
     <Page title="Home">
       <ContentStyle>
-        <Container maxWidth={themeStretch ? false : 'xl'}>
+        <Container maxWidth={themeStretch ? false : 'lg'}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={4}>
               <Grid container direction={'column'} spacing={1}>

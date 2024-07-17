@@ -1,10 +1,9 @@
 import { ReactNode, useEffect } from 'react';
 // next
 import { useRouter } from 'next/router';
-// hooks
-import useAuth from '../hooks/useAuth';
 // routes
 import { PATH_DASHBOARD } from '../routes/paths';
+import useSuiAuth from 'src/hooks/useSuiAuth';
 
 // ----------------------------------------------------------------------
 
@@ -12,13 +11,16 @@ type Props = {
   children: ReactNode;
 };
 
-export default function GuestGuard({ children }: Props) {
+export default function GuestGuard({ children }: Props)
+{
   const { push } = useRouter();
 
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useSuiAuth();
 
-  useEffect(() => {
-    if (isAuthenticated) {
+  useEffect(() =>
+  {
+    if (isAuthenticated)
+    {
       push(PATH_DASHBOARD.root);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

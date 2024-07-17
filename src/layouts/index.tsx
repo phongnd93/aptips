@@ -26,6 +26,6 @@ export default function Layout({ variant = 'dashboard', children }: Props)
   // }
 
   return (
-    <MainLayout> {children} </MainLayout>
+    <AuthGuard><MainLayout> {children} </MainLayout></AuthGuard>
   );
 }

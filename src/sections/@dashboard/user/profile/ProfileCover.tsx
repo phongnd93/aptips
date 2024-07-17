@@ -47,7 +47,7 @@ type Props = {
 };
 
 export default function ProfileCover({ myProfile }: Props) {
-  const { user } = useAuth();
+  const { user } = useSuiAuth();
   const { position, cover } = myProfile;
 
   return (

@@ -36,7 +36,7 @@ interface Props {
 }
 
 export default function ProfilePostCard({ post }: Props) {
-  const { user } = useAuth();
+  const { user } = useSuiAuth();
   const commentInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLiked, setLiked] = useState(post.isLiked);

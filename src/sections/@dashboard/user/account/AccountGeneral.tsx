@@ -41,7 +41,7 @@ type FormValuesProps = {
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { user } = useAuth();
+  const { user } = useSuiAuth();
 
   const UpdateUserSchema = Yup.object().shape({
     displayName: Yup.string().required('Name is required'),

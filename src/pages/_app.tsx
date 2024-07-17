@@ -64,7 +64,8 @@ import MotionLazyContainer from '../components/animate/MotionLazyContainer';
 // Check our docs
 // https://docs-minimals.vercel.app/authentication/ts-version
 
-import { AuthProvider } from '../contexts/JWTContext';
+import { SuiAuthProvider } from 'src/contexts/SuiAuthContext';
+// import { AuthProvider } from '../contexts/JWTContext';
 // import { AuthProvider } from '../contexts/Auth0Context';
 // import { AuthProvider } from '../contexts/FirebaseContext';
 // import { AuthProvider } from '../contexts/AwsCognitoContext';
@@ -75,12 +76,14 @@ type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
 
-interface MyAppProps extends AppProps {
+interface MyAppProps extends AppProps
+{
   settings: SettingsValueProps;
   Component: NextPageWithLayout;
 }
 
-export default function MyApp(props: MyAppProps) {
+export default function MyApp(props: MyAppProps)
+{
   const { Component, pageProps, settings } = props;
 
   const getLayout = Component.getLayout ?? ((page) => page);
@@ -91,7 +94,7 @@ export default function MyApp(props: MyAppProps) {
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
 
-      <AuthProvider>
+      <SuiAuthProvider>
         <ReduxProvider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -105,7 +108,7 @@ export default function MyApp(props: MyAppProps) {
                             <RtlLayout>
                               <ChartStyle />
                               {/* PHONG: Hide setting buttons
-                              <Settings /> */} 
+                              <Settings /> */}
                               <ProgressBar />
                               {getLayout(<Component {...pageProps} />)}
                             </RtlLayout>
@@ -119,14 +122,15 @@ export default function MyApp(props: MyAppProps) {
             </LocalizationProvider>
           </PersistGate>
         </ReduxProvider>
-      </AuthProvider>
+      </SuiAuthProvider>
     </>
   );
 }
 
 // ----------------------------------------------------------------------
 
-MyApp.getInitialProps = async (context: AppContext) => {
+MyApp.getInitialProps = async (context: AppContext) =>
+{
   const appProps = await App.getInitialProps(context);
 
   const cookies = cookie.parse(
