@@ -128,17 +128,20 @@ export default function TableLinkDonate() {
                           onClick={() => {
                           } }
                         >
-                          {row.linkCode || ''}
+                          {row.linkCode || <Label color='default'>No Data</Label>}
                         </Label>
               </TableCell>
-              <TableCell>{row?.orderdate || ''}</TableCell>
+              <TableCell>{row?.orderdate || <Label color='default'>No Data</Label>}</TableCell>
               <TableCell>
                   <Stack direction="row" alignItems="center" spacing={2}>
-                    {row.amount && (
+                    {row.amount !== 0 && (
                       <>
                         <Iconify icon={'ph:user'} sx={{ width: 16, height: 16, mr: 1 }} />
                         <Box sx={{ ml: 1 }}>{row.amount}</Box>
                       </>
+                    )}
+                    {!row.amount && (
+                      <Label color='default'>No Data</Label>
                     )}
                   </Stack>
               </TableCell>
@@ -147,8 +150,12 @@ export default function TableLinkDonate() {
                     {row.sui &&(
                       <Label
                         color='info'
-                      ><Box sx={{}}>{row.sui}</Box></Label>
+                      ><Box>{row.sui}</Box></Label>
                     )}
+                    {!row.sui &&(
+                      <Label color='default'>No Data</Label>
+                    )}
+                    <Iconify icon={'token-branded:sui'} width={24} height={24} />
                   </Stack>
               </TableCell>
 

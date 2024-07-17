@@ -111,7 +111,7 @@ export default function AppAreaInstalled({ title, data }: AppAreaInstalledProps)
   const chartData = useMemo(() =>
   {
     const yearArr: { year?: number, data?: { name: string, data: number[] }[] }[] = [];
-    data.forEach(d =>
+    data?.forEach(d =>
     {
       const item: any = {};
       if (d?.totalRevenueByMonthList?.length)
