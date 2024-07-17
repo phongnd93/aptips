@@ -7,7 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Stack, IconButton, InputAdornment, Alert } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // hooks
-import useSuiAuth from 'src/hooks/useSuiAuth';
+import useAptos from 'src/hooks/useAptos';
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
 // components
 import Iconify from '../../../components/Iconify';
@@ -24,7 +24,7 @@ type FormValuesProps = {
 };
 
 export default function RegisterForm() {
-  const { register } = useSuiAuth();
+  // const { register } = useAptos();
 
   const isMountedRef = useIsMountedRef();
 
@@ -59,7 +59,7 @@ export default function RegisterForm() {
 
   const onSubmit = async (data: FormValuesProps) => {
     try {
-      await register(data.email, data.password, data.firstName, data.lastName);
+      // await register(data.email, data.password, data.firstName, data.lastName);
     } catch (error) {
       console.error(error);
 

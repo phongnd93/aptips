@@ -3,7 +3,7 @@ import { FormConfigContext, FormConfigProvider } from 'src/contexts/FormConfigCo
 import { Button, Card, CardContent, Container, Stack } from '@mui/material';
 import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import { FormConfig } from 'src/components/form/FormConfig';
-import { SUI_DONA_PATH } from 'src/routes/paths';
+import { APT_DONA_PATH } from 'src/routes/paths';
 import { styled } from '@mui/material/styles';
 import Page from 'src/components/Page';
 import Layout from 'src/layouts';
@@ -27,6 +27,7 @@ const ManagerFormDonationComponent: React.FC<ManagerFormDonationProps> = (props:
     {
         setTempConfig(initTempConfig);
         const { id } = router.query;
+        setTempConfig(initTempConfig);
         if (id)
         {
             _fetchConfig(id as string).then(result =>
@@ -46,7 +47,7 @@ const ManagerFormDonationComponent: React.FC<ManagerFormDonationProps> = (props:
                         <HeaderBreadcrumbs
                             heading='Manager Form Donation'
                             links={[
-                                { name: 'Manager', href: SUI_DONA_PATH.manager.root },
+                                { name: 'Manager', href: APT_DONA_PATH.manager.root },
                                 { name: 'Manager Form Donation' },
                             ]}
                         />

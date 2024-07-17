@@ -1,5 +1,5 @@
 // hooks
-import useSuiAuth from 'src/hooks/useSuiAuth';
+import useAptos from 'src/hooks/useAptos';
 // utils
 import createAvatar from '../utils/createAvatar';
 //
@@ -9,7 +9,7 @@ import Avatar, { Props as AvatarProps } from './Avatar';
 
 export default function MyAvatar({ ...other }: AvatarProps)
 {
-  const { user, wallet, info } = useSuiAuth();
+  const { user, wallet, info } = useAptos();
 
   return (
     <Avatar

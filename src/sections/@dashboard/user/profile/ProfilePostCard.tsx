@@ -19,7 +19,7 @@ import {
 // @types
 import { UserPost } from '../../../../@types/user';
 // hooks
-import useAuth from '../../../../hooks/useAuth';
+import useAptos from '../../../../hooks/useAptos';
 // utils
 import { fDate } from '../../../../utils/formatTime';
 import { fShortenNumber } from '../../../../utils/formatNumber';
@@ -36,7 +36,7 @@ interface Props {
 }
 
 export default function ProfilePostCard({ post }: Props) {
-  const { user } = useSuiAuth();
+  const { user } = useAptos();
   const commentInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLiked, setLiked] = useState(post.isLiked);

@@ -1,7 +1,7 @@
 // @mui
 import { Stack, Button, Typography } from '@mui/material';
 // hooks
-import useSuiAuth from 'src/hooks/useSuiAuth';
+import useAptos from 'src/hooks/useAptos';
 // routes
 import { PATH_DOCS } from '../../../routes/paths';
 // assets
@@ -10,7 +10,7 @@ import { DocIllustration } from '../../../assets';
 // ----------------------------------------------------------------------
 
 export default function NavbarDocs() {
-  const { user } = useSuiAuth();
+  const { info } = useAptos();
 
   return (
     <Stack
@@ -21,7 +21,7 @@ export default function NavbarDocs() {
 
       <div>
         <Typography gutterBottom variant="subtitle1">
-          Hi, {user?.displayName}
+          Hi, {info?.fullName}
         </Typography>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           Need help?

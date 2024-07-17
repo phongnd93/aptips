@@ -1,5 +1,5 @@
 // routes
-import { SUI_DONA_PATH } from '../../routes/paths';
+import { APT_DONA_PATH } from '../../routes/paths';
 // components
 // components
 import Iconify from '../../components/Iconify';
@@ -15,12 +15,12 @@ const menuConfig = [
   // {
   //   title: 'Donation Link',
   //   icon: <Iconify icon={'eva:home-fill'} {...ICON_SIZE} />,
-  //   path: SUI_DONA_PATH.root,
+  //   path: APT_DONA_PATH.root,
   // },
   // {
   //   title: 'Form Donation',
   //   icon: <Iconify icon={'eva:file-fill'} {...ICON_SIZE} />,
-  //   path: SUI_DONA_PATH.manager.form,
+  //   path: APT_DONA_PATH.manager.form,
   // },
   {
     title: 'Dashboard',
@@ -30,7 +30,7 @@ const menuConfig = [
   {
     title: 'Management',
     icon: <Iconify icon={'eva:file-fill'} {...ICON_SIZE} />,
-    path: SUI_DONA_PATH.manager.link,
+    path: APT_DONA_PATH.manager.link,
   },
   {
     title: 'Profile',

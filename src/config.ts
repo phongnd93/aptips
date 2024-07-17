@@ -1,6 +1,6 @@
 import { SettingsValueProps } from './components/settings/type';
 // routes
-import { PATH_DASHBOARD, SUI_DONA_PATH } from './routes/paths';
+import { PATH_DASHBOARD, APT_DONA_PATH } from './routes/paths';
 
 // API
 // ----------------------------------------------------------------------
@@ -79,7 +79,7 @@ export const cookiesKey = {
 };
 
 export const defaultSettings: SettingsValueProps = {
-  themeMode: 'light',
+  themeMode: 'dark',
   themeDirection: 'ltr',
   themeColorPresets: 'default',
   themeLayout: 'horizontal',

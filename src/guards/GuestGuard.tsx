@@ -2,7 +2,7 @@ import { ReactNode, useEffect } from 'react';
 // next
 import { useRouter } from 'next/router';
 // routes
-import useSuiAuth from 'src/hooks/useSuiAuth';
+import useAptos from 'src/hooks/useAptos';
 
 // ----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ export default function GuestGuard({ children }: Props)
 {
   const { push } = useRouter();
 
-  const { isAuthenticated } = useSuiAuth();
+  const { isAuthenticated } = useAptos();
 
   useEffect(() =>
   {

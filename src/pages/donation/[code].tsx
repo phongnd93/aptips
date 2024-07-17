@@ -1,23 +1,16 @@
-import { ConnectModal, createNetworkConfig, SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Button, CardHeader, Container, OutlinedInput, Stack, styled, TextField, ToggleButton, ToggleButtonGroup, Typography, Card, CardContent, Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Slide, Avatar, alpha } from '@mui/material';
 import Page from '../../components/Page';
-import { getFullnodeUrl } from '@mysten/sui.js/client';
 import { useRouter } from "next/router";
 import { useContext, useEffect, useRef, useState } from "react";
 import { FormConfigContext, FormConfigProvider, TempConfig } from '../../contexts/FormConfigContext';
 import Page404 from "../404";
-import '@mysten/dapp-kit/dist/index.css';
 import { LoadingButton } from "@mui/lab";
-import { requestSuiFromFaucet } from "@polymedia/suits";
 import React from "react";
 import Iconify from "../../components/Iconify";
 import LoadingScreen from "../../components/LoadingScreen";
-import SvgIconStyle from "../../components/SvgIconStyle";
 import useSettings from "../../hooks/useSettings";
 import Layout from "../../layouts";
-import { SuiAuthProvider } from "src/contexts/SuiAuthContext";
-import useSuiAuth from "src/hooks/useSuiAuth";
+import useAptos from "src/hooks/useAptos";
 import { UserInfoResponse } from "src/@types/dto/user-dto";
 import SourceServices from "src/services/SourceServices";
 import TransactionServices from "src/services/TransactionServices";
@@ -25,10 +18,12 @@ import { TransitionProps } from "@mui/material/transitions";
 import createAvatar from "src/utils/createAvatar";
 import { UserSocialInfo } from "src/@types/sui-user";
 import { _SOCIALS } from "src/constants/social";
-import { Transaction } from "src/@types/transaction";
-import { randomNumber, randomNumberRange } from "src/_mock/funcs";
 import { _appTransactions } from "src/_mock";
 import Label from "src/components/Label";
+import { AptosProvider } from "src/contexts/aptos/AptosContext";
+import AptosLoginForm from 'src/sections/auth/login/AptosLoginForm';
+import { address } from '../../_mock/wallet';
+import { useWallet } from '@aptos-labs/wallet-adapter-react';
 
 const RootStyle = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -67,11 +62,11 @@ const DonateComponent: React.FC = () =>
         user,
         wallet,
         fetchAccountBalance,
-        NETWORK,
         balances,
         fetchUserInfoById,
         loadingBalance
-    } = useSuiAuth();
+    } = useAptos();
+    const { account } = useWallet();
     const transSvc = new TransactionServices();
     const sourceSvc = new SourceServices();
     const { push } = useRouter();
@@ -135,13 +130,24 @@ const DonateComponent: React.FC = () =>
 
     const handleRequestSui = async () =>
     {
-        if (user || wallet)
+        if (account)
         {
             setLoadingBuySui(true);
-            const request = await requestSuiFromFaucet(NETWORK, user?.userAddr || wallet?.address);
-            const { task } = await request.json();
+            const res = await fetch('https://faucet.devnet.aptoslabs.com/fund', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    address: account.address,
+                    amount: 1000000000
+                })
+            });
+            const val = await res.json();
+            fetchAccountBalance(account.address);
+            setLoadingBuySui(false);
+            // const request = await requestSuiFromFaucet(NETWORK, user?.userAddr || wallet?.address);
+            // const { task } = await request.json();
             // console.log(task);
-            checkRequestStatus(task);
+            // checkRequestStatus(task);
         }
     };
 
@@ -150,7 +156,7 @@ const DonateComponent: React.FC = () =>
         setTimeout(async () =>
         {
             setLoadingBuySui(false);
-            await fetchAccountBalance(user?.userAddr || wallet?.address);
+            await fetchAccountBalance(user?.address);
         }, 3000);
     }
 
@@ -159,10 +165,10 @@ const DonateComponent: React.FC = () =>
         if (user && !wallet)
         {
 
-        } else { doSendSui() };
+        } else { doSendAPT() };
     };
 
-    const doSendSui = () =>
+    const doSendAPT = () =>
     {
         setOpenConfirmDialog(false);
         if (linkCreator?.id)
@@ -198,7 +204,7 @@ const DonateComponent: React.FC = () =>
 
                 } catch (error)
                 {
-                    console.log('doSendSui', error);
+                    console.log('doSendAPT', error);
                     setMessage({
                         type: 'error',
                         content: error
@@ -279,7 +285,7 @@ const DonateComponent: React.FC = () =>
                                                                 </Stack>
                                                                 <Label height={'auto'} color="success" sx={{ p: 2, minWidth: 40, width: 75, textAlign: 'right' }}>
                                                                     <Typography variant="h6">{r.amount}</Typography>
-                                                                    <Iconify icon={'token-branded:sui'} width={28} height={28} />
+                                                                    <Iconify icon={'token:aptos'} width={28} height={28} />
                                                                 </Label>
                                                             </Stack>
                                                         </CardContent>
@@ -323,16 +329,17 @@ const DonateComponent: React.FC = () =>
                                         direction={'row'}
                                         justifyContent={'center'}
                                         alignItems={'center'}
-                                        bgcolor={'#D0F2FF'}
+                                        bgcolor={(theme) => theme.palette.background.neutral}
                                         borderRadius={'0.25rem'}
                                         padding={3}
                                         gap={2}
                                         width={'100%'}
                                     >
-                                        <SvgIconStyle src={`/icons/ic_sui.svg`} width={40} height={40} />
+                                        <Iconify icon={'token:aptos'} width={40} height={40} />
                                         <Iconify icon={'eva:close-fill'} width={16} height={16} />
                                         {formConfig.amounts.map((a: any, index: number) => (
-                                            <ToggleButtonGroup color="primary"
+                                            <ToggleButtonGroup
+                                                color="primary"
                                                 exclusive
                                                 onChange={(e, val) => { setFormResult({ ...formResult, ...{ amount: val } }); }}
                                                 aria-label="Platform"
@@ -346,8 +353,7 @@ const DonateComponent: React.FC = () =>
                                                                     borderRadius: '50%',
                                                                     width: 40,
                                                                     height: 40,
-                                                                    backgroundColor: 'white',
-                                                                    color: 'deepskyblue',
+                                                                    border:0
                                                                 }
                                                             ]}
                                                             value={a}
@@ -359,8 +365,8 @@ const DonateComponent: React.FC = () =>
                                                         <OutlinedInput
                                                             type='number'
                                                             size='small'
-                                                            placeholder='Any Sui'
-                                                            sx={{ width: 120, bgcolor: 'white', borderRadius: 1 }}
+                                                            placeholder='Any APT'
+                                                            sx={{ width: 120, borderRadius: 1 }}
                                                             onChange={(e) => { setFormResult({ ...formResult, ...{ amount: e.target.value } }) }}
                                                         />
                                                     )
@@ -396,13 +402,13 @@ const DonateComponent: React.FC = () =>
                                             <Alert severity="success" color="primary" sx={{ display: 'flex', alignItems: 'center' }}>
                                                 <Stack justifyContent={'center'} justifyItems={'center'} alignItems={'center'} direction={'row'}>
                                                     {!loadingBalance ? <Typography variant="h6">Your balance : {balances}</Typography> : <Typography variant="h6">Refreshing balance ...</Typography>}
-                                                    <Iconify icon={'token-branded:sui'} width={28} height={28} />
+                                                    <Iconify icon={'token:aptos'} width={28} height={28} />
                                                 </Stack>
                                             </Alert>
                                             <Stack direction={'row'} gap={2} justifyItems={'center'}>
                                                 <LoadingButton variant="contained"
                                                     loading={loadingSendSui}
-                                                    disabled={!(formResult.amount && formResult.name && formResult.amount < balances)}
+                                                    disabled={!(formResult.amount && formResult.name && formResult.amount <= balances)}
                                                     sx={[{ flex: '1', bgcolor: '#F1F9FEFF', fontSize: '1rem', color: '#4ba2ff', borderRadius: '22px', boxShadow: '0 8px 16px 0 #60adff3d' }, {
                                                         '&:hover': {
                                                             color: '#0C476FFF',
@@ -422,7 +428,7 @@ const DonateComponent: React.FC = () =>
                                                 </LoadingButton>
                                                 <LoadingButton
                                                     loading={loadingBuySui}
-                                                    title='Request Sui From Faucet'
+                                                    title='Request APT From Faucet'
                                                     variant="contained"
                                                     sx={[{ bgcolor: '#ffc107FF', fontSize: '1rem', color: (theme) => theme.palette.warning.lighter, borderRadius: '22px', boxShadow: '0 8px 16px 0 #ffc10780' }, {
                                                         '&:hover': {
@@ -436,7 +442,7 @@ const DonateComponent: React.FC = () =>
                                                         }
                                                     }]}
                                                     onClick={handleRequestSui}>
-                                                    <span>Not enough SUI ? Buy SUI here</span>
+                                                    <span>Not enough APT ? Buy APT here</span>
                                                 </LoadingButton>
 
                                             </Stack>
@@ -451,28 +457,7 @@ const DonateComponent: React.FC = () =>
                                     }
                                     {
                                         !isAuthenticated &&
-                                        <Button
-                                            fullWidth
-                                            size="large"
-                                            variant="contained"
-                                            sx={[{ bgcolor: '#F1F9FEFF', fontSize: '1rem', color: '#4ba2ff', borderRadius: '22px', boxShadow: '0 8px 16px 0 #60adff3d' }, {
-                                                '&:hover': {
-                                                    color: '#0C476FFF',
-                                                    background: '#E9F5FDFF'
-                                                }
-                                            }, {
-                                                '&:hover:active': {
-                                                    color: "#0C476FFF",
-                                                    background: "#D1EAFAFF",
-                                                }
-                                            }]}
-                                            onClick={() => { setOpen(true); }}
-                                        >
-                                            <Stack direction={'row'} spacing={1} alignContent={"baseline"} alignItems={"center"}>
-                                                <Iconify icon={'token-branded:sui'} width={32} height={32} />
-                                                <span>Connect to wallet</span>
-                                            </Stack>
-                                        </Button>
+                                        <AptosLoginForm />
                                     }
                                 </Stack>
                             </CardContent>
@@ -480,13 +465,7 @@ const DonateComponent: React.FC = () =>
                     </Stack>
 
                 </Stack>
-                <ConnectModal
-                    trigger={
-                        <></>
-                    }
-                    open={open}
-                    onOpenChange={(isOpen) => setOpen(isOpen)}
-                />
+
                 <Dialog
                     open={openConfirmDialog}
                     TransitionComponent={Transition}
@@ -503,7 +482,7 @@ const DonateComponent: React.FC = () =>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => { setOpenConfirmDialog(false); }}>Disagree</Button>
-                        <Button onClick={() => { doSendSui(); }}>Agree</Button>
+                        <Button onClick={() => { doSendAPT(); }}>Agree</Button>
                     </DialogActions>
                 </Dialog>
             </>
@@ -514,35 +493,23 @@ const DonateComponent: React.FC = () =>
 export default function Donation()
 {
     // Config options for the networks you want to connect to
-    const { networkConfig } = createNetworkConfig({
-        localnet: { url: getFullnodeUrl('localnet') },
-        mainnet: { url: getFullnodeUrl('mainnet') },
-        devnet: { url: getFullnodeUrl('devnet') }
-    });
 
-    const queryClient = new QueryClient();
     const { themeStretch } = useSettings();
     return (
         <Page title="Donate">
-            <QueryClientProvider client={queryClient}>
-                <SuiClientProvider defaultNetwork='devnet' networks={networkConfig}>
-                    <WalletProvider autoConnect>
-                        <SuiAuthProvider createNewAccount={false}>
-                            <FormConfigProvider>
-                                <RootStyle>
-                                    <Container maxWidth={themeStretch ? false : 'lg'} sx={{
-                                        textAlign: 'center',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                    }} >
-                                        <DonateComponent />
-                                    </Container>
-                                </RootStyle>
-                            </FormConfigProvider>
-                        </SuiAuthProvider>
-                    </WalletProvider>
-                </SuiClientProvider>
-            </QueryClientProvider>
+            <AptosProvider createnewAccount={false}>
+                <FormConfigProvider>
+                    <RootStyle>
+                        <Container maxWidth={themeStretch ? false : 'lg'} sx={{
+                            textAlign: 'center',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                        }} >
+                            <DonateComponent />
+                        </Container>
+                    </RootStyle>
+                </FormConfigProvider>
+            </AptosProvider>
         </Page >
     )
 }

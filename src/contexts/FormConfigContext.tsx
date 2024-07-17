@@ -2,8 +2,8 @@ import { Router, useRouter } from "next/router";
 import React, { createContext, useEffect, useState } from "react";
 import { APIResponse } from "src/@types/dto/api-response";
 import { AddFormConfig, FormConfigResponse } from "src/@types/dto/form-config-dto";
-import useSuiAuth from "src/hooks/useSuiAuth";
-import { SUI_DONA_PATH } from "src/routes/paths";
+import useAptos from "src/hooks/useAptos";
+import { APT_DONA_PATH } from "src/routes/paths";
 import FormConfigServices from "src/services/FormConfigServices";
 import { makeid } from "src/utils/makeid";
 
@@ -44,7 +44,7 @@ const FormConfigProvider: React.FC = ({ children }) =>
     const [tempConfig, setTempConfig] = useState<TempConfig>(initTempConfig);
     const [linkCode, setLinkCode] = useState<string>('')
 
-    const { info } = useSuiAuth();
+    const { info } = useAptos();
 
     const handleGenerateLinkCode = () =>
     {
@@ -144,7 +144,7 @@ const FormConfigProvider: React.FC = ({ children }) =>
         const res = await formCogSvc.add(obj);
         if (res?.data && res?.status === 200)
         {
-            return router.push(`${SUI_DONA_PATH.manager.detail}/${res.data.data.id}`);
+            return router.push(`${APT_DONA_PATH.manager.detail}/${res.data.data.id}`);
         }
         return res;
     }
@@ -154,7 +154,7 @@ const FormConfigProvider: React.FC = ({ children }) =>
         const res = await formCogSvc.update(obj);
         if (res?.data && res?.status === 200)
         {
-            return router.push(`${SUI_DONA_PATH.manager.detail}/${res.data.data.id}`);
+            return router.push(`${APT_DONA_PATH.manager.detail}/${res.data.data.id}`);
         }
         return res;
     }

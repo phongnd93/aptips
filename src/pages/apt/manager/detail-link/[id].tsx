@@ -9,7 +9,7 @@ import AppWidgetSummary from './detail/AppWidgetSummary';
 import GroupingListUserDonate from './detail/GroupingListUserDonate';
 import Iconify from 'src/components/Iconify';
 import { ShareSocial } from 'src/components/share';
-import { SUI_DONA_PATH } from 'src/routes/paths';
+import { APT_DONA_PATH } from 'src/routes/paths';
 import Link from 'next/link';
 import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import { useRouter } from 'next/router';
@@ -70,7 +70,7 @@ export default function DetailLinkDonation(value?: string)
         {
             await loadDetail();
             await loadListUserDonate(id);
-            await loadRevenue(id)
+            await loadRevenue(id);
         }
     }
 
@@ -94,7 +94,7 @@ export default function DetailLinkDonation(value?: string)
                         <HeaderBreadcrumbs
                             heading='Detail Link Donate'
                             links={[
-                                { name: 'List Links', href: SUI_DONA_PATH.manager.link },
+                                { name: 'List Links', href: APT_DONA_PATH.manager.link },
                                 { name: 'Detail Links' },
                             ]}
                         />
@@ -141,7 +141,7 @@ export default function DetailLinkDonation(value?: string)
                                 <Grid item md={11} sx={{ mb: 2 }}>
                                     <AppWidgetSummary
                                         title="Total SUI"
-                                        itemIcon='token-branded:sui'
+                                        itemIcon='token:aptos'
                                         percent={detailLink?.totalDonations > 0 ? 100 : 0}
                                         total={detailLink?.totalDonations}
                                         chartColor={theme.palette.primary.main}
@@ -182,7 +182,7 @@ export default function DetailLinkDonation(value?: string)
                     <CardHeader title='Recent donations' />
                     <CardActionArea />
                     <CardContent>
-                        <GroupingListUserDonate />
+                        <GroupingListUserDonate sources={revenue.map(r => r.source)} />
                     </CardContent>
                 </Card>
             </Container>

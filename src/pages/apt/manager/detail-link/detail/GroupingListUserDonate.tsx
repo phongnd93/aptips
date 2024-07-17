@@ -27,7 +27,7 @@ import { useContext, useMemo, useState } from 'react';
 import createAvatar from 'src/utils/createAvatar';
 
 import { alpha } from '@mui/material';
-import { Transaction } from 'src/@types/transaction';
+import { RevenueSourceItem, Transaction } from 'src/@types/transaction';
 import { LinkDonateContext } from 'src/contexts/ManagerLinkContext';
 // ----------------------------------------------------------------------
 
@@ -86,7 +86,7 @@ const COLUMNS: Column[] = [
 
 // ----------------------------------------------------------------------
 
-export default function GroupingListUserDonate()
+export default function GroupingListUserDonate({ sources }: { sources: RevenueSourceItem[] })
 {
   const {
     listUserDonate,
@@ -135,7 +135,7 @@ export default function GroupingListUserDonate()
                 <Label color='primary'>
                   {row.amount}
                 </Label>
-                <Iconify icon={'token-branded:sui'} width={24} height={24} />
+                <Iconify icon={'token:aptos'} width={24} height={24} />
               </Stack>
             </TableCell>
             <TableCell>
@@ -160,7 +160,7 @@ export default function GroupingListUserDonate()
                     (row.sourceId === 1 && 'success') ||
                     'info'
                   }
-                >{row.sourceName}</Label>
+                >{sources.find(s => s.id === row.sourceId)?.utmSource}</Label>
               </Stack>
             </TableCell>
           </TableRow>
@@ -185,7 +185,7 @@ export default function GroupingListUserDonate()
 
       return temp;
     };
-  }, [listUserDonate, page, rowsPerPage]);
+  }, [listUserDonate, page, rowsPerPage, sources]);
 
   return (
     <>

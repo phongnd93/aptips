@@ -1,18 +1,74 @@
 @font-face {
-  font-family: 'CircularStd';
+  font-family: "CircularStd";
   font-weight: 400;
   font-style: normal;
-  src: local('CircularStd'), url('CircularStd-Book.otf') format('opentype');
+  src: local("CircularStd"), url("CircularStd-Book.otf") format("opentype");
 }
 @font-face {
-  font-family: 'CircularStd';
+  font-family: "CircularStd";
   font-weight: 500;
   font-style: normal;
-  src: local('CircularStd'), url('CircularStd-Medium.otf') format('opentype');
+  src: local("CircularStd"), url("CircularStd-Medium.otf") format("opentype");
 }
 @font-face {
-  font-family: 'CircularStd';
+  font-family: "CircularStd";
   font-weight: 700;
   font-style: normal;
-  src: local('CircularStd'), url('CircularStd-Bold.otf') format('opentype');
+  src: local("CircularStd"), url("CircularStd-Bold.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  font-weight: 300;
+  font-style: normal;
+  src: local("Ubuntu"), url("Ubuntu-Light.ttf") format("opentype");
+}
+
+@font-face {
+  src: local("Ubuntu"), url("Ubuntu-Regular.ttf") format("opentype");
+  font-family: "Ubuntu", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  src: local("Ubuntu"), url("Ubuntu-Medium.ttf") format("opentype");
+  font-family: "Ubuntu", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  src: local("Ubuntu"), url("Ubuntu-Bold.ttf") format("opentype");
+  font-family: "Ubuntu", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  src: local("Ubuntu"), url("Ubuntu-LightItalic.ttf") format("opentype");
+  font-family: "Ubuntu", sans-serif;
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  src: local("Ubuntu"), url("Ubuntu-Italic.ttf") format("opentype");
+  font-family: "Ubuntu", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  src: local("Ubuntu"), url("Ubuntu-MediumItalic.ttf") format("opentype");
+  font-family: "Ubuntu", sans-serif;
+  font-weight: 500;
+  font-style: italic;
+}
+
+@font-face {
+  src: local("Ubuntu"), url("Ubuntu-BoldItalic.ttf") format("opentype");
+  font-family: "Ubuntu", sans-serif;
+  font-weight: 700;
+  font-style: italic;
 }
