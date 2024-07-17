@@ -15,24 +15,26 @@ export const FormConfig: React.FC = () =>
     const [isOpenDialog, setOpenDialog] = useState(false);
     const [isOpen, setOpen] = useState<null | HTMLElement>(null);
 
-    const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) =>
+    {
         setOpen(event.currentTarget);
     };
 
-    const handleClose = () => {
+    const handleClose = () =>
+    {
         setOpen(null);
     };
 
     return (
         <>
-           <Stack spacing={5}>
+            <Stack spacing={5}>
                 <Stack spacing={1}>
                     <OutlinedInput
                         size='small'
                         placeholder='Title'
                         color='info'
                         value={tempConfig?.title || ''}
-                        onChange={(e) => setTempConfig(prevState => ({...prevState, title: e.target.value }))}
+                        onChange={(e) => setTempConfig(prevState => ({ ...prevState, title: e.target.value }))}
                         sx={{
                             typography: 'h3',
                             fontWeight: 'bold',
@@ -51,7 +53,7 @@ export const FormConfig: React.FC = () =>
                         placeholder='Subtitles'
                         color='info'
                         value={tempConfig?.subtitles || ''}
-                        onChange={(e) => setTempConfig(prevState => ({...prevState, subtitles: e.target.value }))}
+                        onChange={(e) => setTempConfig(prevState => ({ ...prevState, subtitles: e.target.value }))}
                         sx={{
                             fontSize: 'large',
                             color: 'text.secondary',
@@ -66,97 +68,93 @@ export const FormConfig: React.FC = () =>
                         fullWidth
                     />
                 </Stack>
-                <Grid container>
-                    <Grid item xs={12}>
-                        <Stack
-                            spacing={2}
-                            alignItems={'center'}
-                        >
-                            <Typography variant='h6'>Donation amount</Typography>
-                            <Stack
-                                direction={'row'}
-                                justifyContent={'center'}
-                                alignItems={'center'}
-                                bgcolor={(theme) => theme.palette.background.neutral}
-                                borderRadius={'0.25rem'}
-                                padding={3}
-                                gap={2}
-                                width={'100%'}
-                            >
-                                <Iconify icon={'token:aptos'} width={40} height={40}/>
-                                <Iconify icon={'eva:close-fill'} width={16} height={16}/>
-                                {tempConfig.amounts.map((a: any, index: number) => (
-                                    <>
-                                        {a 
-                                            ? (
-                                                <Badge
-                                                    color={'default'}
-                                                    overlap='circular'
-                                                    badgeContent={(
-                                                        <IconButton
-                                                            size='small'
-                                                            onClick={() =>
-                                                            {
-                                                                const temp = tempConfig.amounts;
-                                                                const newArr = temp.filter((_, i) => i !== index);
-                                                                console.log(temp)
-                                                                setTempConfig(prevState => ({...prevState, amounts: newArr }));
-                                                            }}
-                                                        >
-                                                            <Iconify icon='carbon:close-filled' width={16} height={16} />
-                                                        </IconButton>
-                                                    )}
-                                                >
-                                                    <ToggleButton
-                                                        className='form-donation-toggle-button'
-                                                        sx={{
-                                                            borderRadius: '50%',
-                                                            width: 40,
-                                                            height: 40,
-                                                        }}
-                                                        value={a}
-                                                    >
-                                                        {a}
-                                                    </ToggleButton>
-                                                </Badge>                                       
-                                            )
-                                            : (
-                                                <OutlinedInput
-                                                    type='number'
+                <Stack
+                    spacing={2}
+                    alignItems={'center'}
+                >
+                    <Typography variant='h6'>Donation amount</Typography>
+                    <Stack
+                        direction={'row'}
+                        justifyContent={'center'}
+                        alignItems={'center'}
+                        bgcolor={(theme) => theme.palette.background.neutral}
+                        borderRadius={'0.25rem'}
+                        padding={3}
+                        gap={2}
+                        width={'100%'}
+                    >
+                        <Iconify icon={'token:aptos'} width={40} height={40} />
+                        <Iconify icon={'eva:close-fill'} width={16} height={16} />
+                        {tempConfig.amounts.map((a: any, index: number) => (
+                            <>
+                                {a
+                                    ? (
+                                        <Badge
+                                            color={'default'}
+                                            overlap='circular'
+                                            badgeContent={(
+                                                <IconButton
                                                     size='small'
-                                                    placeholder='Any APT'
-                                                    sx={{ width: 120, borderRadius: 1 }}
-                                                    endAdornment={
-                                                        <InputAdornment position="end">
-                                                            <IconButton
-                                                                size='small'
-                                                                onClick={() =>
-                                                                {
-                                                                    const temp = tempConfig.amounts;
-                                                                    const newArr = temp.filter((_, i) => i !== index);
-                                                                    setTempConfig(prevState => ({...prevState, amounts: newArr }));
-                                                                }}
-                                                            >
-                                                                <Iconify icon='carbon:close-filled' width={16} height={16} />
-                                                            </IconButton>
-                                                        </InputAdornment>
-                                                    }
-                                                />
-                                            )
-                                        }
-                                    </>
-                                ))}
-                                <FabButtonAnimate
-                                    size='small'
-                                    color='info'
-                                    onClick={handleOpen}
-                                >
-                                    <Iconify icon={'ic:round-plus'} width={16} height={16}/>
-                                </FabButtonAnimate>
-                            </Stack>
-                        </Stack>
-                    </Grid>
-                </Grid>
+                                                    onClick={() =>
+                                                    {
+                                                        const temp = tempConfig.amounts;
+                                                        const newArr = temp.filter((_, i) => i !== index);
+                                                        console.log(temp)
+                                                        setTempConfig(prevState => ({ ...prevState, amounts: newArr }));
+                                                    }}
+                                                >
+                                                    <Iconify icon='carbon:close-filled' width={16} height={16} />
+                                                </IconButton>
+                                            )}
+                                        >
+                                            <ToggleButton
+                                                className='form-donation-toggle-button'
+                                                sx={{
+                                                    borderRadius: '50%',
+                                                    width: 40,
+                                                    height: 40,
+                                                }}
+                                                value={a}
+                                            >
+                                                {a}
+                                            </ToggleButton>
+                                        </Badge>
+                                    )
+                                    : (
+                                        <OutlinedInput
+                                            type='number'
+                                            size='small'
+                                            placeholder='Any APT'
+                                            sx={{ width: 120, borderRadius: 1 }}
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        size='small'
+                                                        onClick={() =>
+                                                        {
+                                                            const temp = tempConfig.amounts;
+                                                            const newArr = temp.filter((_, i) => i !== index);
+                                                            setTempConfig(prevState => ({ ...prevState, amounts: newArr }));
+                                                        }}
+                                                    >
+                                                        <Iconify icon='carbon:close-filled' width={16} height={16} />
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            }
+                                        />
+                                    )
+                                }
+                            </>
+                        ))}
+                        <FabButtonAnimate
+                            size='small'
+                            color='info'
+                            onClick={handleOpen}
+                        >
+                            <Iconify icon={'ic:round-plus'} width={16} height={16} />
+                        </FabButtonAnimate>
+                    </Stack>
+                </Stack>
             </Stack>
             <Popover
                 anchorEl={isOpen}
@@ -176,9 +174,10 @@ export const FormConfig: React.FC = () =>
                     <Button
                         color='info'
                         sx={{ width: 100 }}
-                        onClick={() => { 
+                        onClick={() =>
+                        {
                             handleClose();
-                            setOpenDialog(true); 
+                            setOpenDialog(true);
                         }}
                     >
                         Sui Number
@@ -186,9 +185,10 @@ export const FormConfig: React.FC = () =>
                     <Button
                         color='info'
                         sx={{ width: 100 }}
-                        onClick={() => { 
+                        onClick={() =>
+                        {
                             handleClose();
-                            setTempConfig(prevState => ({...prevState, amounts: [...prevState.amounts, false] }));
+                            setTempConfig(prevState => ({ ...prevState, amounts: [...prevState.amounts, false] }));
                         }}
                     >
                         Sui Input
@@ -197,7 +197,7 @@ export const FormConfig: React.FC = () =>
             </Popover>
             <Dialog
                 open={isOpenDialog}
-                sx={{ pb: 10}}
+                sx={{ pb: 10 }}
             >
                 <Stack spacing={3} sx={{ px: 5, py: 5 }}>
                     <TextField
@@ -216,10 +216,12 @@ export const FormConfig: React.FC = () =>
                     <Button
                         variant='contained'
                         color='info'
-                        onClick={() => { 
+                        onClick={() =>
+                        {
                             setOpenDialog(false);
-                            if (newAmountSui) {
-                                setTempConfig(prevState => ({...prevState, amounts: [...prevState.amounts, newAmountSui] }));
+                            if (newAmountSui)
+                            {
+                                setTempConfig(prevState => ({ ...prevState, amounts: [...prevState.amounts, newAmountSui] }));
                             }
                         }}
                     >

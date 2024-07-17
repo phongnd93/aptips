@@ -8,11 +8,14 @@ import Iconify from '../Iconify';
 import { QRCode } from 'react-qrcode-logo';
 
 const SOCIAL = [
-    { label: 'Twitter', value: 'twitter', icon: 'hugeicons:new-twitter-rectangle', color: '#657786' },
+    { label: 'Default', value: '', icon: 'hugeicons:share-02', color: '#657786' },
+    { label: 'Youtube', value: 'youtube', icon: 'logos:youtube-icon', color: '#657786' },
+    { label: 'Spotify', value: 'spotify', icon: 'logos:spotify-icon', color: '#657786' },
+    { label: 'Twitter', value: 'twitter', icon: 'hugeicons:new-twitter-rectangle', color: '#1d9bf0' },
     { label: 'Telegram', value: 'telegram', icon: 'mingcute:telegram-fill', color: '#0088cc' },
     { label: 'Discord', value: 'discord', icon: 'mingcute:whatsapp-fill', color: '#7289d9' },
     { label: 'Facebook', value: 'facebook', icon: 'mingcute:facebook-fill', color: '#4267B2' },
-    { label: 'WhatsApp', value: 'whatsapp', icon: 'mingcute:whatsapp-fill', color: '#25D366' },
+    // { label: 'WhatsApp', value: 'whatsapp', icon: 'mingcute:whatsapp-fill', color: '#25D366' },
     { label: 'Other', value: 'other', icon: 'fluent:share-16-regular', color: '#AAB8C2' }
 ]
 
@@ -46,7 +49,7 @@ export default function ShareSocial(props: { value?: string })
     {
         if (social !== 'other')
         {
-            setNewValue({ value: `${link}?utm_source=${social}`, copied: false });
+            setNewValue({ value: `${link}${social?.length ? `?utm_source=${social}` : ''}`, copied: false });
             setSocial(social);
         }
         else
@@ -109,7 +112,7 @@ export default function ShareSocial(props: { value?: string })
                     }
                 />
                 <CardContent>
-                    <Stack spacing={3} alignItems={'center'}>
+                    <Stack spacing={3} alignItems={'center'} sx={{overflow:'scroll'}}>
                         <Box
                             sx={{
                                 display: 'flex',

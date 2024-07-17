@@ -68,7 +68,7 @@ const COLUMNS: Column[] = [
   },
   {
     id: 'sui',
-    label: 'SUI',
+    label: 'APT',
     minWidth: 100,
     align: "left",
     format: (value) => value.toFixed(2),

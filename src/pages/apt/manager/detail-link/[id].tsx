@@ -140,7 +140,7 @@ export default function DetailLinkDonation(value?: string)
                             <Grid spacing={3} sx={{ width: '50%', mr: 3 }} >
                                 <Grid item md={11} sx={{ mb: 2 }}>
                                     <AppWidgetSummary
-                                        title="Total SUI"
+                                        title="Total APT"
                                         itemIcon='token:aptos'
                                         percent={detailLink?.totalDonations > 0 ? 100 : 0}
                                         total={detailLink?.totalDonations}
@@ -191,6 +191,7 @@ export default function DetailLinkDonation(value?: string)
                 maxWidth={'lg'}
                 open={isOpenShare}
                 closeAfterTransition
+                
                 onClose={() => { setIsOpenShare(false) }}
             >
                 <ShareSocial value={detailLink?.linkCode} />

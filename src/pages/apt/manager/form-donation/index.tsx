@@ -9,6 +9,8 @@ import Page from 'src/components/Page';
 import Layout from 'src/layouts';
 import React from 'react';
 import { useRouter } from 'next/router';
+import useResponsive from 'src/hooks/useResponsive';
+import useSettings from 'src/hooks/useSettings';
 
 const RootStyle = styled('div')(({ theme }) => ({
     paddingTop: theme.spacing(15),
@@ -23,6 +25,8 @@ const ManagerFormDonationComponent: React.FC<ManagerFormDonationProps> = (props:
 {
     const { handleSaveConfig, _fetchConfig, setTempConfig, initTempConfig } = useContext(FormConfigContext);
     const router = useRouter();
+    const { themeStretch } = useSettings();
+    const isDesktop = useResponsive('up','md');
     useEffect(() =>
     {
         setTempConfig(initTempConfig);
@@ -41,36 +45,36 @@ const ManagerFormDonationComponent: React.FC<ManagerFormDonationProps> = (props:
     }, [router.query.id]);
     return (
         <Page title="Manager: Form Donation">
-            <RootStyle>
-                <Container>
-                    <Stack spacing={1} direction={'row'}>
-                        <HeaderBreadcrumbs
-                            heading='Manager Form Donation'
-                            links={[
-                                { name: 'Manager', href: APT_DONA_PATH.manager.root },
-                                { name: 'Manager Form Donation' },
-                            ]}
-                        />
-                    </Stack>
-                </Container>
-            </RootStyle>
-            <Container sx={{ mt: 5, mb: 5 }}>
-                <Stack alignItems={'center'}>
-                    <Card sx={{ maxWidth: 600 }}>
-                        <CardContent>
-                            <Stack spacing={3}>
-                                <FormConfig />
-                                <Button
-                                    variant='contained'
-                                    type='button'
-                                    onClick={handleSaveConfig}
-                                >
-                                    Submit
-                                </Button>
-                            </Stack>
-                        </CardContent>
-                    </Card>
-                </Stack>
+            <Container maxWidth={themeStretch ? false : 'lg'} sx={{ mt: isDesktop ? 20 : 10 }}>
+                <RootStyle>
+                    <Container>
+                        <Stack spacing={1} direction={'row'}>
+                            <HeaderBreadcrumbs
+                                heading='Manager Form Donation'
+                                links={[
+                                    { name: 'Manager', href: APT_DONA_PATH.manager.root },
+                                    { name: 'Manager Form Donation' },
+                                ]}
+                            />
+                        </Stack>
+                        <Stack sx={{ my: 5 }} alignItems={'center'}>
+                            <Card>
+                                <CardContent>
+                                    <Stack spacing={3}>
+                                        <FormConfig />
+                                        <Button
+                                            variant='contained'
+                                            type='button'
+                                            onClick={handleSaveConfig}
+                                        >
+                                            Submit
+                                        </Button>
+                                    </Stack>
+                                </CardContent>
+                            </Card>
+                        </Stack>
+                    </Container>
+                </RootStyle>
             </Container>
         </Page>
     );

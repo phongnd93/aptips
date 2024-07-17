@@ -19,6 +19,8 @@ import useSettings from 'src/hooks/useSettings';
 import { _SOCIALS } from '../constants/social';
 import { UserInfoResponse } from 'src/@types/dto/user-dto';
 import { useWallet } from '@aptos-labs/wallet-adapter-react';
+import { useTheme } from '@mui/material/styles';
+import useResponsive from 'src/hooks/useResponsive';
 
 Profile.getLayout = function getLayout(page: React.ReactElement)
 {
@@ -28,9 +30,9 @@ Profile.getLayout = function getLayout(page: React.ReactElement)
 export default function Profile()
 {
     const { themeStretch } = useSettings();
+    const isDesktop = useResponsive('up','md');
     const { user, info, balances, wallet, updateProfile } = useAptos();
     const {account} = useWallet();
-    console.log(account);
     const userSvc = new UserServices();
 
     const [loading, setLoading] = useState<boolean>(false);
@@ -101,7 +103,7 @@ export default function Profile()
     }
     return (
         <Page title="Profile">
-            <Container maxWidth={themeStretch ? false : 'lg'} sx={{ mt: 20 }}>
+            <Container maxWidth={themeStretch ? false : 'lg'} sx={{ mt: isDesktop ? 20 : 10 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={5}>
                         <Card>
@@ -199,7 +201,7 @@ export default function Profile()
 
                     </Grid>
                     <Grid item xs={12} md={7}>
-                        <Card sx={{ minWidth: 500 }}>
+                        <Card>
                             <Stack spacing={3}>
                                 <Typography variant='h3' align='center' sx={{ pt: 2 }}>
                                     Profile
