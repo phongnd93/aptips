@@ -6,6 +6,7 @@ import Login from '../pages/auth/login';
 // components
 import LoadingScreen from '../components/LoadingScreen';
 import useSuiAuth from 'src/hooks/useSuiAuth';
+import Profile from 'src/pages/profile';
 
 // ----------------------------------------------------------------------
 
@@ -15,11 +16,11 @@ type Props = {
 
 export default function AuthGuard({ children }: Props)
 {
-  const { isAuthenticated, isInitialized } = useSuiAuth();
+  const { isAuthenticated, isInitialized, firstLogin } = useSuiAuth();
 
   const { pathname, push } = useRouter();
 
-  const [requestedLocation, setRequestedLocation] = useState<string | null>(null);
+  const [requestedLocation, setRequestedLocation] = useState<string | null>(firstLogin ? '/profile' : null);
 
   useEffect(() =>
   {
@@ -41,6 +42,10 @@ export default function AuthGuard({ children }: Props)
       setRequestedLocation(pathname);
     }
     return <Login />;
+  }
+  if (firstLogin)
+  {
+    return <Profile />
   }
 
   return <>{children}</>;

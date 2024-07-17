@@ -15,16 +15,17 @@ export default function GuestGuard({ children }: Props)
 {
   const { push } = useRouter();
 
-  const { isAuthenticated } = useSuiAuth();
+  const { isAuthenticated, firstLogin } = useSuiAuth();
 
   useEffect(() =>
   {
     if (isAuthenticated)
     {
-      push('/');
+      console.log('First login', firstLogin);
+      !firstLogin ? push('/') : push('/profile');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated]);
+  }, [isAuthenticated, firstLogin]);
 
   return <>{children}</>;
 }

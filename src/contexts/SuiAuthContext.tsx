@@ -13,6 +13,7 @@ import TransactionServices from "src/services/TransactionServices";
 type SuiAuthState = {
     isInitialized: boolean,
     isAuthenticated: boolean,
+    firstLogin: boolean,
     user: AccountData | null,
     wallet: WalletAccount | null,
     info: UserInfoResponse | null,
@@ -28,7 +29,8 @@ interface SuiAuthContextType extends SuiAuthState
     fetchAccountBalance: (walletAddress: string) => Promise<void>,
     logout: () => Promise<void>,
     sendTransaction: (toWallet: string, amout: number, onDonateSuccess: (trans: TransasctionHistory) => void) => Promise<void>,
-    fetchUserInfoById: (id: number) => Promise<UserInfoResponse | null>
+    fetchUserInfoById: (id: number) => Promise<UserInfoResponse | null>,
+    updateProfile: (info?: UserInfoResponse) => void
     // getRevenue: () => Promise<RevenueResponseDTO | null>,
     // getTransactions: () => Promise<Transaction[] | null>,
     // getTopDonators: () => Promise<Donator[] | null>,
@@ -39,6 +41,7 @@ enum Types
     Initial = 'INITIALIZE',
     Login = 'LOGIN',
     Logout = 'LOGOUT',
+    UpdateProfile = 'UPDATE_PROFILE',
     Register = 'REGISTER',
 }
 
@@ -46,13 +49,19 @@ enum Types
 type SuiAuthPayload = {
     [Types.Initial]: {
         isAuthenticated: boolean;
+        firstLogin: boolean;
         user: AccountData | null;
         wallet: WalletAccount | null;
         info: UserInfoResponse | null;
     };
     [Types.Login]: {
+        firstLogin: boolean;
         user: AccountData | null;
         wallet: WalletAccount | null;
+        info: UserInfoResponse | null;
+    };
+    [Types.UpdateProfile]: {
+        firstLogin: boolean;
         info: UserInfoResponse | null;
     };
     [Types.Logout]: undefined;
@@ -63,6 +72,7 @@ type SuiAuthActions = ActionMap<SuiAuthPayload>[keyof ActionMap<SuiAuthPayload>]
 const initialState: SuiAuthState = {
     isInitialized: false,
     isAuthenticated: false,
+    firstLogin: false,
     user: null,
     wallet: null,
     info: null
@@ -76,6 +86,7 @@ const SuiAuthReducer = (state: SuiAuthState, action: SuiAuthActions) =>
             return {
                 isAuthenticated: action.payload.isAuthenticated,
                 isInitialized: true,
+                firstLogin: action.payload.firstLogin,
                 user: action.payload.user,
                 wallet: action.payload.wallet,
                 info: action.payload.info
@@ -83,15 +94,23 @@ const SuiAuthReducer = (state: SuiAuthState, action: SuiAuthActions) =>
         case Types.Login:
             return {
                 ...state,
+                firstLogin: action.payload.firstLogin,
                 isAuthenticated: true,
                 user: action.payload.user,
                 wallet: action.payload.wallet,
+                info: action.payload.info
+            };
+        case Types.UpdateProfile:
+            return {
+                ...state,
+                firstLogin: action.payload.firstLogin,
                 info: action.payload.info
             };
         case Types.Logout:
             return {
                 ...state,
                 isAuthenticated: false,
+                firstLogin: false,
                 user: null,
                 wallet: null,
                 action: null
@@ -155,6 +174,7 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children, createNewAcc
     {
         if (createNewAccount)
         {
+            let firstLogin = false;
             try
             {
                 let userInfo: UserInfoResponse | null = null;
@@ -164,16 +184,21 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children, createNewAcc
                     if (info?.status === 'fulfilled')
                     {
                         if (info?.value) userInfo = info.value; else
+                        {
+                            firstLogin = true;
                             userInfo = await createUser({
                                 email: currentAccount.label || '',
                                 walletAddress: currentAccount.address,
-                                avatarUrl: ''
+                                avatarUrl: '', about: '', fullName: ''
                             });
+                        }
+
                     }
 
                     dispatch({
                         type: Types.Initial,
                         payload: {
+                            firstLogin,
                             isAuthenticated: currentAccount !== null && userInfo !== null,
                             user: null,
                             wallet: currentAccount,
@@ -192,15 +217,21 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children, createNewAcc
                     if (info?.status === 'fulfilled')
                     {
                         if (info?.value) userInfo = info.value; else
+                        {
+                            firstLogin = true;
                             userInfo = await createUser({
                                 email: '',
                                 walletAddress: account.userAddr,
-                                avatarUrl: ''
+                                avatarUrl: '',
+                                fullName: '',
+                                about: ''
                             });
+                        }
                     }
                     dispatch({
                         type: Types.Initial,
                         payload: {
+                            firstLogin,
                             isAuthenticated: account !== null && userInfo !== null,
                             user: account,
                             wallet: null,
@@ -216,6 +247,7 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children, createNewAcc
             dispatch({
                 type: Types.Initial,
                 payload: {
+                    firstLogin: false,
                     isAuthenticated: false,
                     user: null,
                     wallet: null,
@@ -320,6 +352,16 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children, createNewAcc
         dispatch({ type: Types.Logout });
     };
 
+    const updateProfile = (newInfo?: UserInfoResponse) =>
+    {
+        dispatch({
+            type: Types.UpdateProfile, payload: {
+                firstLogin: false,
+                info: newInfo ? newInfo : state.info
+            },
+        })
+    }
+
     /*
     Description : Transaction functions
     */
@@ -420,6 +462,7 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children, createNewAcc
 
         fetchUserInfoById,
         fetchAccountBalance,
+        updateProfile,
         login,
         logout,
 

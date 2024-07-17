@@ -3,11 +3,15 @@ export type UserInfoResponse = {
     walletAddress: string,
     email: string,
     avatarUrl: string,
-    totalDonations: number
+    totalDonations: number,
+    about: string,
+    fullName: string
 }
 
 export type AddUserInfoDto = {
     walletAddress: string,
     email: string,
-    avatarUrl: string
+    avatarUrl: string,
+    about: string,
+    fullName: string
 }

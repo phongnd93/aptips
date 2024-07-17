@@ -41,7 +41,7 @@ export default function AccountPopover()
 {
   const router = useRouter();
 
-  const { NETWORK, balances, user, wallet, logout, fetchAccountBalance } = useSuiAuth();
+  const { NETWORK, balances, user, wallet, logout, fetchAccountBalance, info } = useSuiAuth();
 
   const isMountedRef = useIsMountedRef();
 
@@ -129,9 +129,12 @@ export default function AccountPopover()
         }}
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
-          <Typography variant="subtitle2" noWrap>
-            {shortenSuiAddress(user?.userAddr || wallet?.address, 6, 15, '...', '_wallet_')}
-          </Typography>
+          {
+            info?.fullName && <Typography variant="subtitle2" noWrap>
+              {info.fullName}
+            </Typography>
+          }
+          <Typography variant='body2' noWrap>{shortenSuiAddress(user?.userAddr || wallet?.address, 6, 15, '...', '_wallet_')}</Typography>
           {
             wallet?.label && <Typography
               variant="body2"
