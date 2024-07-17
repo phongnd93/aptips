@@ -3,7 +3,7 @@ import { capitalCase } from 'change-case';
 import NextLink from 'next/link';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Box, Card, Stack, Link, Alert, Tooltip, Container, Typography } from '@mui/material';
+import { Box, Card, Stack, Link, Alert, Tooltip, Container, Typography, Grid } from '@mui/material';
 // routes
 import { PATH_AUTH } from '../../routes/paths';
 // hooks
@@ -63,7 +63,8 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function Login() {
+export default function Login()
+{
   const { method } = useAuth();
 
   const smUp = useResponsive('up', 'sm');
@@ -85,61 +86,75 @@ export default function Login() {
               </Typography>
             )}
           </HeaderStyle>
+          <Grid
+            container
+            justifyContent={{ xs: 'center', md: 'space-between' }}
+            sx={{ textAlign: { xs: 'center', md: 'left' } }}>
+            <Grid item xs={12} md={6}>
+              <Container maxWidth="sm">
+                <ContentStyle>
+                  <Stack direction="row" alignItems="center" sx={{ mb: 5 }}>
+                    <Box sx={{ flexGrow: 1 }}>
+                      <Typography variant="h4" gutterBottom>
+                        Sign in to Minimal
+                      </Typography>
+                      <Typography sx={{ color: 'text.secondary' }}>
+                        Enter your details below.
+                      </Typography>
+                    </Box>
 
-          {mdUp && (
-            <SectionStyle>
-              <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-                Hi, Welcome Back
-              </Typography>
-              <Image
-                visibleByDefault
-                disabledEffect
-                src="https://minimals.cc/assets/illustrations/illustration_dashboard.png"
-                alt="login"
-              />
-            </SectionStyle>
-          )}
+                    <Tooltip title={capitalCase(method)} placement="right">
+                      <>
+                        <Image
+                          disabledEffect
+                          alt={method}
+                          src={`https://minimal-assets-api.vercel.app/assets/icons/auth/ic_${method}.png`}
+                          sx={{ width: 32, height: 32 }}
+                        />
+                      </>
+                    </Tooltip>
+                  </Stack>
 
-          <Container maxWidth="sm">
-            <ContentStyle>
-              <Stack direction="row" alignItems="center" sx={{ mb: 5 }}>
-                <Box sx={{ flexGrow: 1 }}>
-                  <Typography variant="h4" gutterBottom>
-                    Sign in to Minimal
-                  </Typography>
-                  <Typography sx={{ color: 'text.secondary' }}>
-                    Enter your details below.
-                  </Typography>
-                </Box>
+                  <Alert severity="info" sx={{ mb: 3 }}>
+                    Use email : <strong>demo@minimals.cc</strong> / password :<strong> demo1234</strong>
+                  </Alert>
 
-                <Tooltip title={capitalCase(method)} placement="right">
-                  <>
+                  <LoginForm />
+
+                  {!smUp && (
+                    <Typography variant="body2" align="center" sx={{ mt: 3 }}>
+                      Don’t have an account?{' '}
+                      <NextLink href={PATH_AUTH.register} passHref>
+                        <Link variant="subtitle2">Get started</Link>
+                      </NextLink>
+                    </Typography>
+                  )}
+                </ContentStyle>
+              </Container>
+            </Grid>
+
+            {mdUp && (
+              <Grid item xs={12} md={6} bgcolor={'text.secondary'}>
+                <Container>
+                  <ContentStyle>
+                    <Typography variant="h3" sx={{ px: 5, mt: 10 }}>
+                      Welcome to Awesome!
+                    </Typography>
+                    <Typography variant="subtitle1" sx={{ px: 5, mb: 5 }}>
+                      First thing first, let set you up with create account
+                    </Typography>
                     <Image
+                      visibleByDefault
                       disabledEffect
-                      alt={method}
-                      src={`https://minimal-assets-api.vercel.app/assets/icons/auth/ic_${method}.png`}
-                      sx={{ width: 32, height: 32 }}
+                      src="/imgs/login_left.png"
+                      alt="login"
                     />
-                  </>
-                </Tooltip>
-              </Stack>
+                  </ContentStyle>
+                </Container>
+              </Grid>
+            )}
+          </Grid>
 
-              <Alert severity="info" sx={{ mb: 3 }}>
-                Use email : <strong>demo@minimals.cc</strong> / password :<strong> demo1234</strong>
-              </Alert>
-
-              <LoginForm />
-
-              {!smUp && (
-                <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-                  Don’t have an account?{' '}
-                  <NextLink href={PATH_AUTH.register} passHref>
-                    <Link variant="subtitle2">Get started</Link>
-                  </NextLink>
-                </Typography>
-              )}
-            </ContentStyle>
-          </Container>
         </RootStyle>
       </Page>
     </GuestGuard>
