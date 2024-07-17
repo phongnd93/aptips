@@ -106,7 +106,7 @@ export default function MainHeader()
 
           <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
             <CreateLinkButton />
-            <LanguagePopover />
+            {/* <LanguagePopover /> */}
             {/* <NotificationsPopover /> */}
             {/* <ContactsPopover /> */}
             <AccountPopover />
