@@ -123,7 +123,7 @@ export default function Profile()
                                         <TextField
                                             fullWidth
                                             variant="outlined"
-                                            value={info?.email || wallet.label}
+                                            value={info?.email || wallet?.label || ''}
                                         />
                                     </Stack>
                                     {socials?.length > 0 && socials.map((s, i) =>
@@ -131,7 +131,7 @@ export default function Profile()
                                         const sInfo = _SOCIALS.find(si => si.name === s.name);
                                         return <Stack direction={'row'} spacing={2} alignItems={'center'}>
                                             <Label color='info' sx={{ minWidth: 60, py: 3, textAlign: 'end' }}>
-                                                <Iconify icon={sInfo.icon} color={sInfo.color} width={24} height={24} />
+                                                <Iconify icon={sInfo!.icon} color={sInfo!.color} width={24} height={24} />
                                             </Label>
                                             <TextField
                                                 key={`${s.name}-${i}`}
