@@ -98,7 +98,12 @@ const FormConfigProvider: React.FC = ({ children }) =>
         {
             if (res.data.config && typeof res.data.config !== 'object')
             {
-                res.data.config = JSON.parse(res.data.config);
+                try {
+                    res.data.config = JSON.parse(res.data.config);
+                }
+                catch {
+                    res.data.config = res.data.config;
+                }
             }
             setData(res.data);
         }
