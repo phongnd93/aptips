@@ -74,8 +74,8 @@ const MainHeader: React.FC = () =>
                             disabledEffect
                         />
                         <Stack>
-                            <Typography variant="h4" color={(theme) => theme.palette.primary.main}>SUICUP</Typography>
-                            <Typography variant='h6' color={(theme) => theme.palette.secondary.main}>Sui Me a Coffee</Typography>
+                            <Typography variant="h4" color={(theme) => theme.palette.primary.main}>SuiCup</Typography>
+                            <Typography variant='h6' color={(theme) => theme.palette.primary.main}>Sui Me a Coffee</Typography>
                         </Stack>
                     </Stack>
                     <Link href={'/dashboard'}>

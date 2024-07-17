@@ -90,7 +90,7 @@ export default function SuiHomeDecentralizedTipping()
                             >
                                 <Stack alignItems={'center'}>
                                     <Typography variant="h4">Motivate contributions</Typography>
-                                    <Typography variant='body1'>Increase motivation for Web3 community with token of SUI ecosystem</Typography>
+                                    <Typography variant='body1'>Increase motivation for Web3 community with tokens of Sui ecosystem</Typography>
                                 </Stack>
                             </CardStyle>
                         </m.div>
@@ -108,7 +108,7 @@ export default function SuiHomeDecentralizedTipping()
                             <CardStyle>
                                 <Stack alignItems={'center'}>
                                     <Typography variant="h4" alignItems={'center'}>Wordpress plugin</Typography>
-                                    <Typography variant='body1'>Receive support from millions of users on wordpress</Typography>
+                                    <Typography variant='body1'>Receive support from millions of users on Wordpress</Typography>
                                 </Stack>
                             </CardStyle>
                         </m.div>

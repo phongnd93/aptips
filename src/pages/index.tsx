@@ -77,7 +77,7 @@ const LadingPageComponent = () =>
                             <Stack gap={1} alignItems={'center'}>
                                 <m.div variants={varFade().inDown}>
                                     <Typography variant="h5">Motivate contributions</Typography>
-                                    <Typography sx={{ px: 5 }} fontSize={18}>Increase motivation for Web3 community with token of SUI ecosystem</Typography>
+                                    <Typography sx={{ px: 5 }} fontSize={18}>Increase motivation for Web3 community with tokens of Sui ecosystem</Typography>
                                 </m.div>
                             </Stack>
                             <Stack gap={1} alignItems={'center'}>
@@ -89,7 +89,7 @@ const LadingPageComponent = () =>
                             <Stack gap={1} alignItems={'center'}>
                                 <m.div variants={varFade().inDown}>
                                     <Typography variant="h5" alignItems={'center'}>Wordpress plugin</Typography>
-                                    <Typography sx={{ px: 5 }} fontSize={18}>Receive support from millions of users on wordpress</Typography>
+                                    <Typography sx={{ px: 5 }} fontSize={18}>Receive support from millions of users on Wordpress</Typography>
                                 </m.div>
                             </Stack>
                         </Stack>
