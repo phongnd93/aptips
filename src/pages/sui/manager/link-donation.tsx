@@ -6,6 +6,7 @@ import useSettings from 'src/hooks/useSettings';
 import TableLinkDonate from './table-link-donation/TableLinkDonate';
 import EmptyData from 'src/components/EmptyData';
 import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
+import { LinkDonateProvider } from './ManagerLinkProvider';
 // import EmptyPage from 'src/components/empty-page/EmptyPage';
 // ----------------------------------------------------------------------
 
@@ -22,7 +23,6 @@ export default function ManagerLinkDonation()
 
     return (
         <Page title="Manager: Link Donation" sx={{ mt: 4 }}>
-
             <Container maxWidth={themeStretch ? false : 'lg'} sx={{ mt: 10, mb: 10 }}>
                 <Box sx={{ mb: 1, pl: 1 }} >
                     <Stack spacing={2} direction={'row'}>
@@ -37,7 +37,9 @@ export default function ManagerLinkDonation()
                 <Stack>
                     <Card>
                         <CardContent>
-                            <TableLinkDonate />
+                            <LinkDonateProvider NodeId=''>
+                                <TableLinkDonate />
+                            </LinkDonateProvider>
                         </CardContent>
                     </Card>
                 </Stack>

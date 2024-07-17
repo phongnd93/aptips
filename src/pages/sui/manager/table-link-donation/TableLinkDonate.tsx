@@ -22,28 +22,30 @@ import { SUI_DONA_PATH } from 'src/routes/paths';
 import EmptyData from 'src/components/EmptyData';
 import Link from "next/link";
 import { LinkDonationModel } from 'src/pages/model/LinkDonationModel';
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import LinksServices from 'src/services/LinksServices';
+import MyAvatar from 'src/components/MyAvatar';
+import { LinkDonateContext } from '../ManagerLinkProvider';
 
 // ----------------------------------------------------------------------
 
-function createData(no: string, name: string, orderdate: string, linkCode: string, donation: number, amount: number, id?: number ) {
+// function createData(no: string, name: string, orderdate: string, linkCode: string, donation: number, amount: number, id?: number ) {
 
-  return { no, name, orderdate, linkCode, donation, amount };
-}
+//   return { no, name, orderdate, linkCode, donation, amount };
+// }
 
-const TABLE_DATA = [
-  createData('0', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
-  createData('1', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
-  createData('2', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
-  createData('3', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
-  createData('4', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
-  createData('5', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
-  createData('6', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
-];
+// const TABLE_DATA = [
+//   createData('0', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
+//   createData('1', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
+//   createData('2', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
+//   createData('3', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
+//   createData('4', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
+//   createData('5', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
+//   createData('6', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
+// ];
 
 interface Column {
-  id: 'no' | 'name' | 'orderdate' | 'linkCode' | 'donation' | 'amount' | 'detail';
+  id: 'id' | 'name' | 'orderdate' | 'linkCode' | 'amount' | 'detail';
   label: string;
   minWidth?: number;
   maxWidth?: number;
@@ -53,7 +55,7 @@ interface Column {
 }
 
 const COLUMNS: Column[] = [
-  { id: 'no', label: 'NO.', minWidth: 10, },
+  { id: 'id', label: 'NO.', minWidth: 10, },
   { id: 'name', label: 'User Creator', minWidth: 150 },
   {
     id: 'orderdate',
@@ -69,13 +71,13 @@ const COLUMNS: Column[] = [
     align: "left",
     format: (value) => value.toLocaleString('en-US'),
   },
-  {
-    id: 'donation',
-    label: 'Donation',
-    minWidth: 190,
-    align: "left",
-    format: (value) => value.toFixed(2),
-  },
+  // {
+  //   id: 'donation',
+  //   label: 'Donation',
+  //   minWidth: 190,
+  //   align: "left",
+  //   format: (value) => value.toFixed(2),
+  // },
   {
     id: 'amount',
     label: 'Donatior',
@@ -96,32 +98,34 @@ export default function TableLinkDonate() {
     onChangeRowsPerPage,
   } = useTable({ defaultRowsPerPage: 10 });
 
+  const {
+    listLinks,
+    loadDataLink,
+
+    linkId,
+    setLinkId,
+  } = useContext(LinkDonateContext)
+
   var linkSvc = new LinksServices()
 
-  const [ listLinks, setListLinks ] = useState<LinkDonationModel[]>([]);
-
   const loadData = async(reques?: any) => {
-      const result = await linkSvc.get();
-      if (result?.status === 200)
-      {
-        setListLinks(result.data);
-      }
+       await loadDataLink();
   }
 
   const listLinkTable = useMemo(() =>{
 
-    if (TABLE_DATA.length > 0)
+    if (listLinks.length > 0)
     {
-      const teamp = TABLE_DATA.map((row: any) => {
+      const temp = listLinks.map((row: LinkDonationModel) => {
           return (
-            <TableRow hover role="checkbox" tabIndex={-1} key={row.no} sx={{ pl: 1, pr: 1 }}>
-              <TableCell>{row.no}</TableCell>
+            <TableRow hover role="checkbox" tabIndex={-1} key={row?.id} sx={{ pl: 1, pr: 1 }}>
+              <TableCell>{row.id}</TableCell>
               <TableCell>
                         <Stack direction="row" alignItems="center" spacing={2}>
-                          <Avatar /> <Label sx={{ ml: 1 }}>{row.name}</Label>
+                          <MyAvatar /> <Label sx={{ ml: 1 }}>{row.name}</Label>
                         </Stack>
               </TableCell>
-              <TableCell>{row.orderdate}</TableCell>
+              <TableCell>{row?.orderdate}</TableCell>
               <TableCell>
                         <Label
                           color='info'
@@ -130,11 +134,6 @@ export default function TableLinkDonate() {
                         >
                           {row.linkCode}
                         </Label>
-              </TableCell>
-              <TableCell>
-                        <Stack direction="row" alignItems="center" spacing={2}>
-                          <Avatar /> <Box sx={{ ml: 1 }}> {row.donation}</Box>
-                        </Stack>
               </TableCell>
               <TableCell>
                         <Stack direction="row" alignItems="center" spacing={2}>
@@ -148,6 +147,10 @@ export default function TableLinkDonate() {
                               sx={{ right: 15, top: 0, mt: 0 }}
                               variant='text'
                               color='info'
+                              onClick={() =>{
+                                console.log(row.id);
+                                setLinkId(row.id);
+                              }}
                             >
                               Detail
                             </Button>
@@ -157,10 +160,19 @@ export default function TableLinkDonate() {
           );
       });
 
-      return teamp;
+      return temp;
+    }
+    else
+    {
+      const temp= (
+         <Box sx={{ height: 300 }}>
+           <EmptyData />
+         </Box>
+      )
+      return temp;
     }
 
-  }, [])
+  }, [listLinks])
 
   useEffect(() =>
   {
@@ -191,12 +203,6 @@ export default function TableLinkDonate() {
 
             <TableBody>
               {listLinkTable}
-
-              {!listLinkTable && (
-                <Box sx={{ height: 300 }}>
-                  <EmptyData />
-                </Box>
-              )}
             </TableBody>
           </Table>
         </TableContainer>
@@ -205,7 +211,7 @@ export default function TableLinkDonate() {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={TABLE_DATA.length}
+        count={listLinks?.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={onChangePage}

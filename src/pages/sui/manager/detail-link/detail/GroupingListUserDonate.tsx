@@ -17,10 +17,13 @@ import useTable from '../../../../../hooks/useTable';
 import Scrollbar from '../../../../../components/Scrollbar';
 import Label from 'src/components/Label';
 import Iconify from 'src/components/Iconify';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import LinksServices from 'src/services/LinksServices';
 import { LinkDonationModel } from 'src/pages/model/LinkDonationModel';
 import EmptyData from 'src/components/EmptyData';
+import MyAvatar from 'src/components/MyAvatar';
+import createAvatar from 'src/utils/createAvatar';
+import { LinkDonateContext } from '../../ManagerLinkProvider';
 
 // ----------------------------------------------------------------------
 
@@ -29,22 +32,10 @@ interface UserLinkDonateModel {
   email: string,
   avatarUrl: string,
   totalDonations: number,
+
+  orderdate: string,
+  source: string,
 }
-
-function createData(no: string, avatarUrl: string, orderdate: string, source: string, totalDonations: number ) {
-
-  return { no, avatarUrl, orderdate, source, totalDonations};
-}
-
-const TABLE_DATA = [
-  createData('0', 'Admin', '20-5-2024', 'facebook', 10),
-  createData('1', 'Admin', '20-5-2024', 'facebook', 10),
-  createData('2', 'Admin', '20-5-2024', 'zalo', 10),
-  createData('3', 'Admin', '20-5-2024', 'facebook', 10),
-  createData('4', 'Admin', '20-5-2024', 'twitter', 10),
-  createData('5', 'Admin', '20-5-2024', 'facebook', 10),
-  createData('6', 'Admin', '20-5-2024', 'twitter', 10),
-];
 
 interface Column {
   id: 'no' | 'avatarUrl' | 'orderdate' | 'source' | 'totalDonations';
@@ -57,7 +48,7 @@ interface Column {
 
 const COLUMNS: Column[] = [
   { id: 'no', label: 'NO.', minWidth: 10, },
-  { id: 'avatarUrl', label: 'User Creator', minWidth: 170 },
+  { id: 'avatarUrl', label: 'Donator', minWidth: 170 },
   {
     id: 'orderdate',
     label: 'ORDER DATE',
@@ -74,7 +65,7 @@ const COLUMNS: Column[] = [
   },
   {
     id: 'totalDonations',
-    label: 'Money date',
+    label: 'SUI',
     minWidth: 170,
     align: "left",
     format: (value) => value.toLocaleString('en-US'),
@@ -83,7 +74,7 @@ const COLUMNS: Column[] = [
 
 // ----------------------------------------------------------------------
 
-export default function GroupingListUserDonate(prop: any) {
+export default function GroupingListUserDonate() {
   const {
     page,
     rowsPerPage,
@@ -92,32 +83,86 @@ export default function GroupingListUserDonate(prop: any) {
     onChangeRowsPerPage,
   } = useTable({ defaultRowsPerPage: 10 });
 
-  const linkSvc = new LinksServices();
+  const {
+    linkId,
+    loadListUserDonate,
+    listUserDonate,
+  } = useContext(LinkDonateContext);
 
-  const [listUserDonate, setListUserDonate] = useState<UserLinkDonateModel[]>([]);
-  const [listUserDonateLink, setListUserDonateLink] = useState<LinkDonationModel[]>([]);
+  console.log(linkId);
 
-  const loadData = async(id: string) => {
-    const result = await linkSvc.getUserDonateLink(id);
-    if (result?.status === 200)
-    {
-      setListUserDonate(result.data);
-    }
+  const loadData = async() => {
+     await loadListUserDonate(linkId);
   }
 
-  // const loadUserDonateLink = async() => 
-  // {
-  //   const result = await linkSvc.getMostUserDonate();
-  //   if (result?.status === 200)
-  //     {
-  //       setListUserDonateLink(result.data);
-  //     }
-  // }
+  const avataURl = (user: any) =>
+  {
+    const template = (
+      <Avatar
+        src={user?.photoURL || ''}
+        alt={user?.userAddr}
+        color={user?.photoURL ? 'default' : createAvatar(user?.ephemeralPrivateKey || user?.userAddr || '').color}
+      >
+        {createAvatar(user?.ephemeralPrivateKey || user?.userAddr || '').name}
+      </Avatar>
+    )
+    return template;
+  }
+
+  const listUserTable = useMemo(() =>
+  {
+      if (listUserDonate?.length > 0)
+      {
+          const temp = listUserDonate.map((row: UserLinkDonateModel)=>
+          {
+            const avata = avataURl(row.avatarUrl);
+            return (
+              <TableRow hover role="checkbox" tabIndex={-1} key={row.walletAddress}>
+                    <TableCell></TableCell>
+                    <TableCell>
+                      <Stack direction="row" alignItems="center" spacing={2}>
+                        {avata} <Label sx={{ ml: 1 }}>{row.walletAddress}</Label>
+                      </Stack>
+                    </TableCell>
+                    <TableCell>{row.orderdate}</TableCell>
+                    <TableCell>
+                      <Stack direction="row" alignItems="center" spacing={2}>
+                        <Label 
+                          sx={{ ml: 1, minWidth: 70 }}
+                          color={
+                            (row.source === 'zalo' && 'warning') ||
+                            (row.source === 'facebook' && 'success') ||
+                            'info'
+                          }
+                        >{row.source}</Label>
+                      </Stack>
+                    </TableCell>
+                    <TableCell align="justify">
+                        <Label color='info'>
+                          {row.totalDonations} $
+                        </Label>
+                    </TableCell>
+                </TableRow>
+            );
+          })
+
+          return temp;
+      }
+      else
+      {
+        const temp = (
+          <Box sx={{ height: 300 }}>
+            <EmptyData />
+          </Box>
+        )
+
+        return temp;
+      }
+  }, [listUserDonate]);
 
   useEffect(() =>
   {
-    // loadUserDonateLink();
-    loadData(prop);
+    loadData();
   }, []);
 
   return (
@@ -140,40 +185,8 @@ export default function GroupingListUserDonate(prop: any) {
             </TableHead>
 
             <TableBody>
-              {TABLE_DATA.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.no}>
-                    <TableCell>{row.no}</TableCell>
-                    <TableCell>
-                      <Stack direction="row" alignItems="center" spacing={2}>
-                        <Avatar /> <Label sx={{ ml: 1 }}>{row.avatarUrl}</Label>
-                      </Stack>
-                    </TableCell>
-                    <TableCell>{row.orderdate}</TableCell>
-                    <TableCell>
-                      <Stack direction="row" alignItems="center" spacing={2}>
-                        <Label 
-                          sx={{ ml: 1, minWidth: 70 }}
-                          color={
-                            (row.source === 'zalo' && 'warning') ||
-                            (row.source === 'facebook' && 'success') ||
-                            'info'
-                          }
-                        >{row.source}</Label>
-                      </Stack>
-                    </TableCell>
-                    <TableCell align="justify">
-                        <Label color='info'>
-                          {row.totalDonations} $
-                        </Label>
-                    </TableCell>
-                </TableRow>
-              ))}
+                {listUserTable}
             </TableBody>
-            {!listUserDonate && (
-                <Box sx={{ height: 300 }}>
-                  <EmptyData />
-                </Box>
-            )}
           </Table>
         </TableContainer>
       </Scrollbar>
@@ -181,7 +194,7 @@ export default function GroupingListUserDonate(prop: any) {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={TABLE_DATA.length}
+        count={listUserDonate?.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={onChangePage}
