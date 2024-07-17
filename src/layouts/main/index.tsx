@@ -7,7 +7,7 @@ import { Box, Link, Container, Typography, Stack } from '@mui/material';
 import Logo from '../../components/Logo';
 //
 import MainHeader from './MainHeader';
-import { LinkDonateProvider } from '../../../src/contexts/ManagerLinkProvider';
+import { LinkDonateProvider } from '../../contexts/ManagerLinkContext';
 
 // ----------------------------------------------------------------------
 

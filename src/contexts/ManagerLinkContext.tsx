@@ -1,6 +1,6 @@
 import { createContext, useState } from "react";
-import { LinkDonationModel, UserLinkDonateModel } from "src/@types/link-donation";
-import { RevenueResponseDTO } from "src/@types/transaction";
+import { LinkDonationModel } from "src/@types/link-donation";
+import { RevenueResponseDTO, Transaction } from "src/@types/transaction";
 
 
 import LinksServices from "src/services/LinksServices";
@@ -8,17 +8,15 @@ import LinksServices from "src/services/LinksServices";
 
 type LinkDonateProviderProps = {
     listLinks: LinkDonationModel[],
-    listUserDonate: UserLinkDonateModel[],
+    listUserDonate: Transaction[],
     listMostDoante: LinkDonationModel[],
-    linkId: number,
     revenue: RevenueResponseDTO,
 
     setRevenue: (config: RevenueResponseDTO) => void,
-    setListUserDonates: (config: UserLinkDonateModel[]) => void,
+    setListUserDonates: (config: Transaction[]) => void,
     setListMostDonate: (config: LinkDonationModel[]) => void,
-    setLinkId: (value: number) => void,
     setListLinks: (config: LinkDonationModel[]) => void,
-    loadDataLink: (reques?: string) => Promise<any>,
+    loadDataLink: (id?: number) => Promise<any>,
     loadDetailLink: (id: string) => Promise<any>,
     loadListUserDonate: (id: string) => Promise<any>,
     loadRevenue: (id: number) => Promise<any>,
@@ -31,15 +29,13 @@ const LinkDonateProvider: React.FC<{NodeId: string}> = ({ NodeId, children }) =>
     var linkSvc = new LinksServices()
     
     const [ listLinks, setListLinks ] = useState<LinkDonationModel[]>([])
-    const [ listUserDonate, setListUserDonates ] = useState<UserLinkDonateModel[]>([])
+    const [ listUserDonate, setListUserDonates ] = useState<Transaction[]>([])
     const [ listMostDoante, setListMostDonate ] = useState<LinkDonationModel[]>([])
 
     const [revenue, setRevenue] = useState<RevenueResponseDTO>([]);
 
-    const [ linkId, setLinkId ] = useState<number>(0);
-
-    const loadDataLink = async(reques?: any) => {
-        const result: any = await linkSvc.get();
+    const loadDataLink = async(id?: number) => {
+        const result: any = await linkSvc.getLinkByUser(id);
   
         if (result.status === 200 )
         {
@@ -75,7 +71,6 @@ const LinkDonateProvider: React.FC<{NodeId: string}> = ({ NodeId, children }) =>
     return (
         <LinkDonateContext.Provider value={{
             listLinks,
-            linkId,
             listUserDonate,
             listMostDoante,
             revenue,
@@ -83,7 +78,6 @@ const LinkDonateProvider: React.FC<{NodeId: string}> = ({ NodeId, children }) =>
             setRevenue,
             setListUserDonates,
             setListMostDonate,
-            setLinkId,
             setListLinks,
             loadDetailLink,
             loadDataLink,

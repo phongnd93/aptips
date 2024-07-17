@@ -6,12 +6,12 @@ import { RevenueResponseDTO } from "src/@types/transaction"
 
 export default class LinksServices
 {
-    get = async (): Promise<APIResponse> =>
+    getLinkByUser = async (id?: number): Promise<APIResponse> =>
     {
         try
         {
             // ${API}/link/users-donate/${user}/${id
-            return APIResponseObject(200, await axios.get(`${API}/link`));
+            return APIResponseObject(200, await axios.get(`${API}/link/link-by-user/${id}`));
         } catch (error)
         {
             return APIResponseObject(500, null, error.message);

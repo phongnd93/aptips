@@ -205,14 +205,12 @@ export default function AppAreaInstalled({ title, data }: AppAreaInstalledProps)
         </Box>
       ))}
       {!chartData?.length && (
-        <Box sx={{ height: 300 }}>
-            <EmptyDataContainerStyle justifyContent={'center'} alignContent={'center'} alignItems={"center"}>
-                <Box className={'background'} sx={{ opacity: 0.7, background: (theme) => theme.palette.background.default }} width={'100%'} height={'100%'}></Box>
-                <Stack sx={{ position: 'absolute' }} justifyContent={'center'} alignContent={'center'} alignItems={"center"} spacing={2}>
-                    <Typography variant="h5">No data revenue</Typography>
-                </Stack>
-            </EmptyDataContainerStyle>
-        </Box>
+          <EmptyDataContainerStyle justifyContent={'center'} alignContent={'center'} alignItems={"center"}>
+              <Box className={'background'} sx={{ opacity: 0.7, background: (theme) => theme.palette.background.default }} width={'100%'} height={'100%'}></Box>
+              <Stack sx={{ position: 'absolute' }} justifyContent={'center'} alignContent={'center'} alignItems={"center"} spacing={2}>
+                  <Typography variant="h5">No data revenue</Typography>
+              </Stack>
+          </EmptyDataContainerStyle>
       )}
     </Card>
   );

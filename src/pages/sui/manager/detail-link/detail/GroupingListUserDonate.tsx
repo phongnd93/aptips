@@ -15,21 +15,17 @@ import
   styled,
 } from '@mui/material';
 // hooks
-import useTable from '../../../../../hooks/useTable';
 // components
 import Scrollbar from '../../../../../components/Scrollbar';
 import Label from 'src/components/Label';
 import Iconify from 'src/components/Iconify';
-import { useContext, useEffect, useMemo, useState } from 'react';
-import LinksServices from 'src/services/LinksServices';
+import { useContext, useMemo, useState } from 'react';
 
-import EmptyData from 'src/components/EmptyData';
-import MyAvatar from 'src/components/MyAvatar';
 import createAvatar from 'src/utils/createAvatar';
-import { LinkDonateContext } from 'src/contexts/ManagerLinkProvider';
-import { UserLinkDonateModel } from 'src/@types/link-donation';
 
-
+import { alpha } from '@mui/material';
+import { Transaction } from 'src/@types/transaction';
+import { LinkDonateContext } from 'src/contexts/ManagerLinkContext';
 // ----------------------------------------------------------------------
 
 const EmptyDataContainerStyle = styled(Stack)(({ theme }) => ({
@@ -89,10 +85,8 @@ const COLUMNS: Column[] = [
 
 export default function GroupingListUserDonate()
 {
-
   const {
     listUserDonate,
-    setListUserDonates,
   } = useContext(LinkDonateContext);
 
   const [page, setPage] = useState(0);
@@ -109,58 +103,57 @@ export default function GroupingListUserDonate()
     setPage(0);
   };
 
-
-  const avataURl = (user?: any) =>
-  {
-    const template = (
-      <Avatar
-        src={user?.photoURL || ''}
-        alt={user?.userAddr}
-        color={user?.photoURL ? 'default' : createAvatar(user?.ephemeralPrivateKey || user?.userAddr || '').color}
-      >
-        {createAvatar(user?.ephemeralPrivateKey || user?.userAddr || '').name}
-      </Avatar>
-    )
-    return template;
-  }
-
   const listUserTable = useMemo(() =>
   {
     if (listUserDonate?.length > 0)
     {
-      const temp = (rowsPerPage > 0 ? listUserDonate.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : listUserDonate).map((row: UserLinkDonateModel) =>
+      const temp = (rowsPerPage > 0 ? listUserDonate.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : listUserDonate).map((row: Transaction, i: number) =>
       {
+        const ava = createAvatar(row.name);
         return (
           <TableRow hover role="checkbox" tabIndex={-1} key={row.sourceId}>
-            <TableCell>{row.id}</TableCell>
-            <TableCell>
-              <Stack direction="row" alignItems="center" spacing={2}>
-                {avataURl} <Label sx={{ ml: 1 }}>{row.name} </Label>
-              </Stack>
-            </TableCell>
-            <TableCell align="justify">
-              <Label color='info'>
-                {row.amount} $
+          <TableCell>{i + page * rowsPerPage + 1}</TableCell>
+          <TableCell>
+            <Stack direction="row" alignItems="center" spacing={2}>
+              <Avatar
+                src={''}
+                alt={row.name}
+                sx={{ bgcolor: (theme) => alpha(theme.palette[ava.color].main, 0.08) }}
+              >
+                {ava.name}
+              </Avatar>
+              <Label sx={{ ml: 1 }} color='default'>
+                {row.name}
               </Label>
-            </TableCell>
-            <TableCell><Label color='default'>
+            </Stack>
+          </TableCell>
+          <TableCell align="justify">
+            <Stack direction={'row'} spacing={1} justifyContent={'left'} alignContent={'center'} alignItems={'center'} alignSelf={'center'}>
+              <Label color='primary' sx={{ minWidth: 60 }}>
+                {row.amount}
+              </Label>
+              <Iconify icon={'token-branded:sui'} width={24} height={24} />
+            </Stack>
+          </TableCell>
+          <TableCell>
+            <Label color='default'>
               {row.note}
             </Label>
-            </TableCell>
-            <TableCell>{row.timeStamp}</TableCell>
-            <TableCell>
-              <Stack direction="row" alignItems="center" spacing={2}>
-                <Label
-                  sx={{ ml: 1, minWidth: 70 }}
-                  color={
-                    (row.sourceId === 0 && 'warning') ||
-                    (row.sourceId === 1 && 'success') ||
-                    'info'
-                  }
-                >{row.sourceId}</Label>
-              </Stack>
-            </TableCell>
-          </TableRow>
+          </TableCell>
+          <TableCell>{row.timeStamp}</TableCell>
+          <TableCell>
+            <Stack direction="row" alignItems="center" spacing={2}>
+              <Label
+                sx={{ ml: 1, minWidth: 70 }}
+                color={
+                  (row.sourceId === 0 && 'warning') ||
+                  (row.sourceId === 1 && 'success') ||
+                  'info'
+                }
+              >{row.sourceId}</Label>
+            </Stack>
+          </TableCell>
+        </TableRow>
         );
       })
 
@@ -182,11 +175,7 @@ export default function GroupingListUserDonate()
 
       return temp;
     };
-  }, [listUserDonate]);
-
-  useEffect(() =>
-  {
-  }, []);
+  }, [listUserDonate, page, rowsPerPage]);
 
   return (
     <>

@@ -13,22 +13,21 @@ import {
   Box,
 } from '@mui/material';
 // hooks
-import useTable from '../../../../hooks/useTable';
+
 // components
 import Scrollbar from '../../../../components/Scrollbar';
 import Label from 'src/components/Label';
 import Iconify from 'src/components/Iconify';
 import { SUI_DONA_PATH } from 'src/routes/paths';
 import EmptyData from 'src/components/EmptyData';
-import Link from "next/link";
+
 
 import { useContext, useEffect, useMemo, useState } from 'react';
-import LinksServices from 'src/services/LinksServices';
-import MyAvatar from 'src/components/MyAvatar';
-import { LinkDonateContext } from 'src/contexts/ManagerLinkProvider';
+
 import useSuiAuth from 'src/hooks/useSuiAuth';
 import { LinkDonationModel } from 'src/@types/link-donation';
 import { useRouter } from 'next/router';
+import { LinkDonateContext } from 'src/contexts/ManagerLinkContext';
 
 
 // ----------------------------------------------------------------------
@@ -89,8 +88,6 @@ export default function TableLinkDonate() {
     listLinks,
     loadDataLink,
 
-    linkId,
-    setLinkId,
   } = useContext(LinkDonateContext)
 
   const { info } = useSuiAuth();
@@ -108,7 +105,7 @@ export default function TableLinkDonate() {
     setPage(0);
   };
 
-  const loadData = async(reques?: any) => {
+  const loadData = async() => {
        await loadDataLink(info?.id);
   }
 
@@ -123,7 +120,7 @@ export default function TableLinkDonate() {
     {
       const temp = (rowsPerPage > 0  ? listLinks.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage): listLinks).map((row: LinkDonationModel) => {
           return (
-            <TableRow hover role="checkbox" tabIndex={-1} key={row?.id} sx={{ pl: 1, pr: 1 }} onClick={() =>{handleClickDetail(row.id)}}>
+            <TableRow hover role="checkbox" tabIndex={-1} key={row?.id} sx={{ mb: 2 }} onClick={() =>{handleClickDetail(row.id)}}>
               <TableCell>{row.id}</TableCell>
               <TableCell>
                         <Label
@@ -147,7 +144,6 @@ export default function TableLinkDonate() {
               </TableCell>
               <TableCell>
                   <Stack direction="row" alignItems="center" spacing={1}>
-                    {/* <Iconify icon={'ph:user'} sx={{ width: 16, height: 16, mr: 1 }} /> */}
                     {row.sui &&(
                       <Label
                         color='info'
@@ -161,10 +157,6 @@ export default function TableLinkDonate() {
                       sx={{ right: 15, top: 0, mt: 0 }}
                       variant='text'
                       color='info'
-                      onClick={() =>{
-                        console.log(row.id);
-                        setLinkId(row.id);
-                      }}
                     >
                        <Iconify icon={'bi:arrow-right'} sx={{ width: 16, height: 16, mr: 1 }} />
                     </Button>
@@ -185,7 +177,7 @@ export default function TableLinkDonate() {
       return temp;
     }
 
-  }, [listLinks])
+  }, [listLinks, page, rowsPerPage])
 
   useEffect(() =>
   {
@@ -211,7 +203,7 @@ export default function TableLinkDonate() {
               </TableRow>
             </TableHead>
 
-            <TableBody>
+            <TableBody sx={{ padding: 10 }}>
               {listLinkTable}
             </TableBody>
           </Table>
