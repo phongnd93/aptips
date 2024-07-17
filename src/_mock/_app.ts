@@ -33,6 +33,12 @@ export const _appAuthors = [...Array(6)].map((_, index) => ({
   favourite: randomNumberRange(9999, 19999),
 }));
 
+export const _appDonators = [...Array(6)].map((_, index) => ({
+  id: _mock.id(index),
+  walletAddress: _mock.name.fullName(index),
+  totalDonations: randomNumberRange(9999, 19999),
+}));
+
 export const _appInvoices = [...Array(5)].map((_, index) => ({
   id: `${Date.now() + index}`,
   price: _mock.number.price(index),
