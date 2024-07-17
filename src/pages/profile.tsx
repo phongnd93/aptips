@@ -5,7 +5,7 @@ import Page from '../components/Page';
 import { Button, Card, CardContent, Container, Grid, IconButton, InputAdornment, Menu, MenuItem, Stack, TextField, Typography } from '@mui/material';
 
 import useSuiAuth from 'src/hooks/useSuiAuth';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import UserServices from 'src/services/UserServices';
 
 import { LoadingButton } from '@mui/lab';
@@ -17,6 +17,7 @@ import { shortenSuiAddress } from '@polymedia/suits';
 import { useSnackbar } from 'notistack';
 import useSettings from 'src/hooks/useSettings';
 import { _SOCIALS } from '../constants/social';
+import { UserInfoResponse } from 'src/@types/dto/user-dto';
 
 Profile.getLayout = function getLayout(page: React.ReactElement)
 {
@@ -28,46 +29,52 @@ export default function Profile()
     const { themeStretch } = useSettings();
     const { user, info, balances, wallet, updateProfile } = useSuiAuth();
     const userSvc = new UserServices();
-    const [fullName, setFullName] = useState<string>(info?.fullName!);
-    const [about, setAbout] = useState<string>(info?.about!);
 
     const [loading, setLoading] = useState<boolean>(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
+    const open = Boolean(anchorEl); const isInit = useRef(false);
+
+    const [formData, setFormData] = useState<UserInfoResponse | null>();
+
+    useEffect(() =>
+    {
+        if (info && !isInit.current)
+        {
+            setFormData(info);
+        }
+    }, [info]);
 
     const handleClose = () =>
     {
         setAnchorEl(null);
     };
-    const [socials, setSocials] = useState<{ name: string, link: string }[]>([]);
+    // const [socials, setSocials] = useState<{ name: string, link: string }[]>([]);
 
     const { enqueueSnackbar } = useSnackbar();
 
     const onChangeInfo = async (e: any) =>
     {
-        setLoading(true)
-        await userSvc.update({
-            id: info?.id!,
-            walletAddress: info?.walletAddress!,
-            email: info?.email!,
-            avatarUrl: info?.avatarUrl!,
-            fullName: fullName,
-            about: about,
-        }).then((res) =>
+        if (formData)
         {
-            setTimeout(() =>
+            setLoading(true)
+            await userSvc.update({
+                ...formData,
+                ...{ about: JSON.stringify(formData?.detailAbout) }
+            }).then((res) =>
             {
-                if (res?.data)
+                setTimeout(() =>
                 {
-                    updateProfile(res.data);
-                }
-                setLoading(false);
-                enqueueSnackbar('Saved successfully', {
-                    variant: 'success'
-                });
-            }, 800)
-        });
-
+                    if (res?.data)
+                    {
+                        updateProfile(res.data);
+                    }
+                    setLoading(false);
+                    enqueueSnackbar('Saved successfully', {
+                        variant: 'success'
+                    });
+                }, 800)
+            });
+        }
     }
 
     const handleAddMoreSocialMenuClick = (event: React.MouseEvent<HTMLButtonElement>) =>
@@ -78,15 +85,17 @@ export default function Profile()
     const handleAddSocial = (s: string) =>
     {
         setAnchorEl(null);
-        setSocials([...socials, ...[{ name: s, link: '' }]]);
+        const detailAbout = { ...formData?.detailAbout };
+        if (!detailAbout?.socials) detailAbout.socials = [];
+        detailAbout.socials.push({ name: s, link: '' });
+        setFormData({ ...formData, ...{ detailAbout: detailAbout } });
     }
     const handleRemoveSocialLink = (s: any, i: number) =>
     {
-        const newSocials = [...socials];
-        newSocials.splice(i, 1);
-        setSocials(newSocials);
+        const detailAbout = { ...formData?.detailAbout };
+        detailAbout.socials.splice(i, 1);
+        setFormData({ ...formData, ...{ detailAbout: detailAbout } });
     }
-
     return (
         <Page title="Profile">
             <Container maxWidth={themeStretch ? false : 'lg'} sx={{ mt: 20 }}>
@@ -123,10 +132,14 @@ export default function Profile()
                                         <TextField
                                             fullWidth
                                             variant="outlined"
-                                            value={info?.email || wallet?.label || ''}
+                                            value={formData?.email || wallet?.label || ''}
+                                            onChange={(e) =>
+                                            {
+                                                setFormData({ ...formData, ...{ email: e.target.value } });
+                                            }}
                                         />
                                     </Stack>
-                                    {socials?.length > 0 && socials.map((s, i) =>
+                                    {formData?.detailAbout?.socials?.length > 0 && formData?.detailAbout?.socials.map((s: any, i: number) =>
                                     {
                                         const sInfo = _SOCIALS.find(si => si.name === s.name);
                                         return <Stack direction={'row'} spacing={2} alignItems={'center'}>
@@ -137,6 +150,7 @@ export default function Profile()
                                                 key={`${s.name}-${i}`}
                                                 fullWidth
                                                 variant="outlined"
+                                                value={s.link}
                                                 InputProps={{
                                                     endAdornment: (
                                                         <InputAdornment position="end">
@@ -145,6 +159,13 @@ export default function Profile()
                                                             </IconButton>
                                                         </InputAdornment>
                                                     )
+                                                }}
+                                                onChange={(e) =>
+                                                {
+                                                    const detailAbout = { ...formData?.detailAbout };
+                                                    detailAbout.socials[i].link = e.target.value;
+                                                    setFormData({ ...formData, ...{ detailAbout: detailAbout } });
+                                                    // setFormData({ ...formData, ...{ fullName: e.tartget.value } });
                                                 }}
                                             />
                                         </Stack>;
@@ -190,8 +211,11 @@ export default function Profile()
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
-                                        value={fullName}
-                                        onChange={(e) => { console.log("d:", e); setFullName(e.target.value) }}
+                                        value={formData?.fullName}
+                                        onChange={(e) =>
+                                        {
+                                            setFormData({ ...formData, ...{ fullName: e.target.value } });
+                                        }}
                                     />
                                     <TextField
                                         id="outlined-number"
@@ -200,11 +224,15 @@ export default function Profile()
                                         placeholder='Say something nice...(optional)'
                                         fullWidth
                                         multiline
-                                        value={about}
+                                        value={formData?.detailAbout?.content || ''}
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
-                                        onChange={(e) => { setAbout(e.target.value) }}
+                                        onChange={(e) =>
+                                        {
+                                            const newDetailAbout = { ...formData?.detailAbout, ...{ content: e.target.value } };
+                                            setFormData({ ...formData, ...{ detailAbout: newDetailAbout } });
+                                        }}
                                     />
                                     <LoadingButton
                                         variant='contained'

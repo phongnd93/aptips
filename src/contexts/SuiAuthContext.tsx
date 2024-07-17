@@ -1,13 +1,13 @@
-import { useAccounts, useAutoConnectWallet, useConnectWallet, useCurrentAccount, useDisconnectWallet, useSignAndExecuteTransactionBlock, useSuiClient, useWallets } from "@mysten/dapp-kit";
+import { useAutoConnectWallet, useCurrentAccount, useDisconnectWallet, useSignAndExecuteTransactionBlock, useSuiClient } from "@mysten/dapp-kit";
 import type { WalletAccount } from '@mysten/wallet-standard';
 import { NetworkName } from "@polymedia/suits";
-import { ReactNode, createContext, useEffect, useReducer, useRef, useState } from "react";
+import { ReactNode, createContext, useEffect, useReducer, useState } from "react";
 import { ActionMap } from "src/@types/auth";
 import { AddUserInfoDto, UserInfoResponse } from "src/@types/dto/user-dto";
 import UserServices from "src/services/UserServices";
 import SuiSDK, { AccountData } from "src/suiSDK/sdk";
 import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { Donator, RevenueResponseDTO, Transaction, TransasctionHistory } from "src/@types/transaction";
+import { TransasctionHistory } from "src/@types/transaction";
 import TransactionServices from "src/services/TransactionServices";
 
 type SuiAuthState = {
@@ -269,6 +269,7 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children, createNewAcc
                 dispatch({
                     type: Types.Initial,
                     payload: {
+                        firstLogin: false,
                         isAuthenticated: currentAccount !== null,
                         user: null,
                         wallet: currentAccount,
@@ -287,6 +288,7 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children, createNewAcc
                 dispatch({
                     type: Types.Initial,
                     payload: {
+                        firstLogin: false,
                         isAuthenticated: account !== null,
                         user: account,
                         wallet: null,
@@ -302,6 +304,7 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children, createNewAcc
         dispatch({
             type: Types.Initial,
             payload: {
+                firstLogin: false,
                 isAuthenticated: false,
                 user: null,
                 wallet: null,
@@ -326,8 +329,20 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children, createNewAcc
     const fetchUserInfo = async (walletAddress: string): Promise<UserInfoResponse | null> =>
     {
         const res = await userSvc.info(walletAddress);
-        console.log(res);
-        if (res?.status === 200) return res.data;
+
+        if (res?.status === 200)
+        {
+            const uInfo = { ...res.data as UserInfoResponse };
+            const { about } = uInfo;
+            try
+            {
+                uInfo.detailAbout = JSON.parse(about);
+            } catch (error)
+            {
+                uInfo.detailAbout = { content: about };
+            }
+            return uInfo;
+        }
         return null;
     };
 
@@ -354,10 +369,19 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children, createNewAcc
 
     const updateProfile = (newInfo?: UserInfoResponse) =>
     {
+        const uInfo = { ...newInfo };
+        const { about } = uInfo;
+        try
+        {
+            uInfo.detailAbout = JSON.parse(about);
+        } catch (error)
+        {
+            uInfo.detailAbout = { content: about };
+        }
         dispatch({
             type: Types.UpdateProfile, payload: {
                 firstLogin: false,
-                info: newInfo ? newInfo : state.info
+                info: uInfo ? uInfo : state.info
             },
         })
     }

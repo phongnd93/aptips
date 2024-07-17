@@ -114,7 +114,6 @@ export default function ShareSocial(props: { value?: string })
                             sx={{
                                 display: 'flex',
                                 overflowY: 'auto',
-                                width: 500,
                                 paddingBottom: 1.5,
                                 gap: 1,
                             }}
@@ -151,25 +150,18 @@ export default function ShareSocial(props: { value?: string })
                             <TextField
                                 value={newValue.value}
                                 InputProps={{
-                                    endAdornment: (
-                                        <>
-                                            {newValue.value.includes('utm_source') &&
-                                                (
-                                                    <InputAdornment position="end">
-                                                        <CopyToClipboard
-                                                            text={newValue.value}
-                                                            onCopy={onCopy}
-                                                        >
-                                                            <Tooltip title="Copy">
-                                                                <IconButton>
-                                                                    <Iconify icon={'eva:copy-fill'} width={24} height={24} />
-                                                                </IconButton>
-                                                            </Tooltip>
-                                                        </CopyToClipboard>
-                                                    </InputAdornment>
-                                                )}
-                                        </>
-                                    ),
+                                    endAdornment: <InputAdornment position="end">
+                                        <CopyToClipboard
+                                            text={newValue.value}
+                                            onCopy={onCopy}
+                                        >
+                                            <Tooltip title="Copy">
+                                                <IconButton>
+                                                    <Iconify icon={'eva:copy-fill'} width={24} height={24} />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </CopyToClipboard>
+                                    </InputAdornment>,
                                 }}
                                 onChange={(event) =>
                                 {

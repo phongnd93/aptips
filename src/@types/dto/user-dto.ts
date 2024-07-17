@@ -5,7 +5,8 @@ export type UserInfoResponse = {
     avatarUrl: string,
     totalDonations: number,
     about: string,
-    fullName: string
+    fullName: string,
+    detailAbout: any
 }
 
 export type AddUserInfoDto = {

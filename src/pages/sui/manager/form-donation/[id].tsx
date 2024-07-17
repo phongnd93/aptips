@@ -7,8 +7,8 @@ import { SUI_DONA_PATH } from 'src/routes/paths';
 import { styled } from '@mui/material/styles';
 import Page from 'src/components/Page';
 import Layout from 'src/layouts';
-import { useRouter } from 'next/router';
 import React from 'react';
+import { useRouter } from 'next/router';
 
 const RootStyle = styled('div')(({ theme }) => ({
     paddingTop: theme.spacing(15),
@@ -21,27 +21,22 @@ interface ManagerFormDonationProps
 
 const ManagerFormDonationComponent: React.FC<ManagerFormDonationProps> = (props: ManagerFormDonationProps) =>
 {
-    const { handleSaveConfig, _fetchConfig, data, setTempConfig } = useContext(FormConfigContext);
-
+    const { handleSaveConfig, _fetchConfig, setTempConfig } = useContext(FormConfigContext);
     const router = useRouter();
-
     useEffect(() =>
     {
         const { id } = router.query;
         if (id)
         {
-            _fetchConfig(id as string);
+            _fetchConfig(id as string).then(result =>
+            {
+                if (result?.data?.config)
+                {
+                    setTempConfig(result.data.config);
+                }
+            });
         }
     }, [router.query.id]);
-
-    useEffect(() =>
-    {
-        if (data)
-        {
-            setTempConfig(data.config)
-        }
-    }, [data])
-
     return (
         <Page title="Manager: Form Donation">
             <RootStyle>
@@ -79,14 +74,15 @@ const ManagerFormDonationComponent: React.FC<ManagerFormDonationProps> = (props:
     );
 };
 
-const ManagerFormDonation: React.FC<ManagerFormDonationProps> = (props: ManagerFormDonationProps) =>
+export default function ManagerFormDonation(props: ManagerFormDonationProps)
 {
+
+
     return (
         <Layout>
             <FormConfigProvider>
                 <ManagerFormDonationComponent {...props} />
             </FormConfigProvider>
-        </Layout>
+        </Layout >
     )
 }
-export default ManagerFormDonation;

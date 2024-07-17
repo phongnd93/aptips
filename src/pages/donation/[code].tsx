@@ -249,37 +249,46 @@ const DonateComponent: React.FC = () =>
                                         value={linkCreator?.about}
                                         disabled
                                     />
-                                    <Stack spacing={2} width={'100%'}>
-                                        {recentDonations.map((r) =>
-                                        {
-                                            const dAva = createAvatar(r.name);
-                                            return <Card sx={{ width: '100%' }}>
-                                                <CardContent>
-                                                    <Stack direction={'row'} justifyContent={'space-between'} alignContent={'baseline'} spacing={4}>
-                                                        <Stack spacing={2} direction={'row'}>
-                                                            <Avatar
-                                                                sx={{
-                                                                    width: 42, height: 42,
-                                                                    color: (theme) => theme.palette.text.primary,
-                                                                    bgcolor: (theme) => alpha(theme.palette[dAva.color].main, 1)
-                                                                }}>
-                                                                <Typography variant="h6">{dAva.name}</Typography>
-                                                            </Avatar>
-                                                            <Stack direction={'column'} justifyContent={'start'} alignContent={'start'} textAlign={'left'}>
-                                                                <Typography variant="body1">{r.name}</Typography>
-                                                                <Typography variant="caption">{r.note}</Typography>
+                                    <Card>
+                                        <CardHeader title={
+                                            <Stack justifyContent={'start'} alignContent={'start'}>
+                                                <Typography variant="h6" textAlign={'left'}>Recent donations</Typography>
+                                            </Stack>
+                                        } />
+                                        <CardContent>
+                                            <Stack spacing={2} width={'100%'}>
+                                                {recentDonations.map((r) =>
+                                                {
+                                                    const dAva = createAvatar(r.name);
+                                                    return <Card variant="outlined" sx={{ bgcolor: (theme) => theme.palette.background.neutral }}>
+                                                        <CardContent>
+                                                            <Stack direction={'row'} justifyContent={'space-between'} alignContent={'baseline'} spacing={4}>
+                                                                <Stack spacing={2} direction={'row'}>
+                                                                    <Avatar
+                                                                        sx={{
+                                                                            width: 42, height: 42,
+                                                                            color: (theme) => theme.palette.text.primary,
+                                                                            bgcolor: (theme) => alpha(theme.palette[dAva.color].main, 1)
+                                                                        }}>
+                                                                        <Typography variant="h6">{dAva.name}</Typography>
+                                                                    </Avatar>
+                                                                    <Stack direction={'column'} justifyContent={'start'} alignContent={'start'} textAlign={'left'}>
+                                                                        <Typography variant="body1">{r.name}</Typography>
+                                                                        <Typography variant="caption">{r.note}</Typography>
+                                                                    </Stack>
+                                                                </Stack>
+                                                                <Label height={'auto'} color="success" sx={{ p: 2, minWidth: 40, width: 75, textAlign: 'right' }}>
+                                                                    <Typography variant="h6">{r.amount}</Typography>
+                                                                    <Iconify icon={'token-branded:sui'} width={28} height={28} />
+                                                                </Label>
                                                             </Stack>
-                                                        </Stack>
-                                                        <Label height={'auto'} color="success" sx={{ p: 2, minWidth: 40, width: 75, textAlign: 'right' }}>
-                                                            <Typography variant="h6">{r.amount}</Typography>
-                                                            <Iconify icon={'token-branded:sui'} width={28} height={28} />
-                                                        </Label>
-                                                    </Stack>
-                                                </CardContent>
-                                            </Card>
-                                        }
-                                        )}
-                                    </Stack>
+                                                        </CardContent>
+                                                    </Card>
+                                                }
+                                                )}
+                                            </Stack>
+                                        </CardContent>
+                                    </Card>
                                 </Stack>
                             </CardContent>
                         </Card>
