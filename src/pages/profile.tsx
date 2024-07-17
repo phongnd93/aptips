@@ -1,12 +1,11 @@
 // @mui
-import { styled } from '@mui/material/styles';
 // layouts
 import Layout from '../layouts';
 import Page from '../components/Page';
-import { Box, Card, CardContent, Container, Grid, Stack, StackProps, TextField, Typography, useTheme } from '@mui/material';
+import { Button, Card, CardContent, Container, Grid, IconButton, InputAdornment, Menu, MenuItem, Stack, TextField, Typography } from '@mui/material';
 
 import useSuiAuth from 'src/hooks/useSuiAuth';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import UserServices from 'src/services/UserServices';
 
 import { LoadingButton } from '@mui/lab';
@@ -18,28 +17,6 @@ import { shortenSuiAddress } from '@polymedia/suits';
 import { useSnackbar } from 'notistack';
 import useSettings from 'src/hooks/useSettings';
 
-
-const ContentStyle = styled((props: StackProps) => <Stack spacing={5} {...props} />)(
-    ({ theme }) => ({
-        margin: 'auto',
-        textAlign: 'center',
-        paddingTop: theme.spacing(15),
-        paddingBottom: theme.spacing(1),
-        alignContent: 'center',
-        alignItems: 'center',
-        [theme.breakpoints.up('md')]: {
-            margin: 'unset',
-            textAlign: 'left',
-        },
-    })
-);
-// ----------------------------------------------------------------------
-const LabelStyle = styled(Typography)(({ theme }) => ({
-    ...theme.typography.subtitle2,
-    color: theme.palette.text.secondary,
-    marginBottom: theme.spacing(1),
-}));
-
 Profile.getLayout = function getLayout(page: React.ReactElement)
 {
     return <Layout>{page}</Layout>;
@@ -47,6 +24,22 @@ Profile.getLayout = function getLayout(page: React.ReactElement)
 
 export default function Profile()
 {
+    const _SOCIALS = [{
+        name: 'twitter',
+        icon: 'foundation:social-twitter',
+        color: '#1DA1F2'
+    }, {
+        name: 'telegram',
+        icon: 'fa-brands:telegram-plane',
+        color: '#26a4e3'
+    }, {
+        name: 'discord',
+        icon: 'logos:discord-icon',
+    }, {
+        name: 'facebook',
+        icon: 'foundation:social-facebook',
+        color: '#1877F2'
+    }];
     const { themeStretch } = useSettings();
     const { user, info, balances, wallet, updateProfile } = useSuiAuth();
     const userSvc = new UserServices();
@@ -54,6 +47,14 @@ export default function Profile()
     const [about, setAbout] = useState<string>(info?.about!);
 
     const [loading, setLoading] = useState<boolean>(false);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+
+    const handleClose = () =>
+    {
+        setAnchorEl(null);
+    };
+    const [socials, setSocials] = useState<{ name: string, link: string }[]>([]);
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -76,19 +77,36 @@ export default function Profile()
                     updateProfile(res.data);
                 }
                 setLoading(false);
-                enqueueSnackbar('Saved successfully',{
-                    variant:'success'
+                enqueueSnackbar('Saved successfully', {
+                    variant: 'success'
                 });
             }, 800)
         });
 
     }
 
+    const handleAddMoreSocialMenuClick = (event: React.MouseEvent<HTMLButtonElement>) =>
+    {
+        setAnchorEl(event.currentTarget);
+    }
+
+    const handleAddSocial = (s: string) =>
+    {
+        setAnchorEl(null);
+        setSocials([...socials, ...[{ name: s, link: '' }]]);
+    }
+    const handleRemoveSocialLink = (s: any, i: number) =>
+    {
+        const newSocials = [...socials];
+        newSocials.splice(i, 1);
+        setSocials(newSocials);
+    }
+
     return (
         <Page title="Profile">
             <Container maxWidth={themeStretch ? false : 'lg'} sx={{ mt: 20 }}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} md={4} >
+                    <Grid item xs={12} md={5}>
                         <Card>
                             <Stack spacing={3} alignItems={'center'}>
                                 <Typography align='center' sx={{ pt: 2, display: 'flex' }}>
@@ -114,21 +132,66 @@ export default function Profile()
                                         </Label>
                                     </Stack>
                                     <Stack direction={'row'} spacing={2}>
-                                        <Label color='info' sx={{ minWidth: 60, py: 3, textAlign: 'end' }}>
-                                            Email:
-                                        </Label>
-                                        {
-                                            wallet?.label && <Label
-                                                sx={{ flex: 1, py: 3 }} color='default'>
-                                                {wallet.label}
-                                            </Label>
-                                        }
+                                        <TextField
+                                            fullWidth
+                                            variant="outlined"
+                                            value={info?.email || wallet.label}
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <Iconify icon="material-symbols:attach-email-outline-rounded" width={24} height={24} />
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
                                     </Stack>
+                                    {socials?.length > 0 && socials.map((s, i) =>
+                                    {
+                                        const sInfo = _SOCIALS.find(si => si.name === s.name);
+                                        return <TextField
+                                            key={`${s.name}-${i}`}
+                                            fullWidth
+                                            variant="outlined"
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <Iconify icon={sInfo.icon} color={sInfo.color} width={24} height={24} />
+                                                    </InputAdornment>
+                                                ),
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <IconButton onClick={() => { handleRemoveSocialLink(s, i) }}>
+                                                            <Iconify icon='lets-icons:close-ring-duotone' color='text.danger' width={24} height={24} />
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                )
+                                            }}
+                                        />;
+                                    })}
                                 </Stack>
                             </CardContent>
                         </Card>
+                        <Button
+                            variant='contained'
+                            title='Add Social Link'
+                            onClick={handleAddMoreSocialMenuClick}>
+                            <Iconify icon={'fluent:link-add-24-filled'} width={24} height={24} />
+                        </Button>
+                        <Menu
+                            id="basic-menu"
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                            MenuListProps={{
+                                'aria-labelledby': 'basic-button',
+                            }}
+                        >
+                            {_SOCIALS.map(s => (
+                                <MenuItem onClick={() => { handleAddSocial(s.name); }}><Iconify icon={s.icon} width={24} height={24} color={s.color} /></MenuItem>
+                            ))}
+                        </Menu>
                     </Grid>
-                    <Grid item xs={12} md={8}>
+                    <Grid item xs={12} md={7}>
                         <Card sx={{ minWidth: 500 }}>
                             <Stack spacing={3}>
                                 <Typography variant='h3' align='center' sx={{ pt: 2 }}>
