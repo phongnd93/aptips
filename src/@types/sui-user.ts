@@ -3,4 +3,6 @@ export type SuiUser = {
     walletAddress?: string,
     email?: string,
     avatarUrl?: string
+    fullName?: string,
+    about?: string,
 }

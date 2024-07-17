@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Button, IconButton } from '@mui/material';
 // routes
-import { PATH_DASHBOARD, PATH_AUTH } from '../../../routes/paths';
+import { PATH_DASHBOARD, PATH_AUTH, SUI_DONA_PATH } from '../../../routes/paths';
 // hooks
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
 // components
@@ -172,7 +172,14 @@ export default function AccountPopover()
         </Stack> */}
 
         <Divider sx={{ borderStyle: 'dashed' }} />
-
+        <MenuItem href={`${PATH_DASHBOARD.user.profile}`} sx={{ m: 1 }} 
+          onClick={() =>
+          {
+            router.push('/profile');
+          }}
+        >
+          Profile
+        </MenuItem>
         <MenuItem onClick={handleLogout} sx={{ m: 1 }}>
           Logout
         </MenuItem>
