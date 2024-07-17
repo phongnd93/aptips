@@ -68,14 +68,14 @@ const MainHeader: React.FC = () =>
                     <Stack direction={'row'} alignItems={'center'} gap={2}>
                         <Image
                             sx={{ zIndex: 2, height: 60, width: 60 }}
-                            src="/imgs/SuiCup_Logo_2.png"
-                            alt="suicuplogo2"
+                            src="/imgs/logo.png"
+                            alt="aptipslogo"
                             visibleByDefault
                             disabledEffect
                         />
                         <Stack>
                             <Typography variant="h4" color={(theme) => theme.palette.primary.main}>APTips</Typography>
-                            <Typography variant='h6' color={(theme) => theme.palette.primary.main}>Decentralized Donation Platform for Creators on Aptos</Typography>
+                            <Typography variant='h6' color={(theme) => theme.palette.primary.main}>Tips me an Aptos</Typography>
                         </Stack>
                     </Stack>
                     <Link href={'/dashboard'}>

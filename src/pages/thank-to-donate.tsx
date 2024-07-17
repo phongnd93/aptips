@@ -71,7 +71,7 @@ export default function ThankToDonate()
                         </Stack>
                         <Link href={PATH_DASHBOARD.root}>
                             <Stack direction={'row'} justifyContent={'center'} alignItems={'center'}>
-                                <Typography variant='h6'>Start your SuiCup</Typography>
+                                <Typography variant='h6'>Start your APTips</Typography>
                                 <Iconify icon={'grommet-icons:form-next-link'} width={24} height={24} />
                             </Stack>
                         </Link>
