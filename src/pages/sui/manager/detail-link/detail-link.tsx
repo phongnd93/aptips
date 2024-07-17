@@ -1,6 +1,6 @@
 import Layout from '../../../../layouts';
 import Page from '../../../../components/Page';
-import { Box, Button, Card, CardActionArea, CardContent, CardHeader, Container, Dialog, Grid, Icon, ListItemIcon, Popover, Typography, useTheme } from '@mui/material';
+import { Box, Button, Card, CardActionArea, CardContent, CardHeader, Container, Dialog, Grid, Icon, ListItemIcon, Popover, Stack, Tooltip, Typography, useTheme } from '@mui/material';
 import useSettings from 'src/hooks/useSettings';
 import { useState } from 'react';
 
@@ -14,12 +14,20 @@ import { ShareSocial } from 'src/components/share';
 import { Popup } from 'react-map-gl';
 import { MapControlPopup } from 'src/components/map';
 import { SUI_DONA_PATH } from 'src/routes/paths';
+import Link from 'next/link';
+import { styled } from '@mui/material/styles';
+import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 
 // ----------------------------------------------------------------------
 
 DetailLinkDonation.getLayout = function getLayout(page: React.ReactElement) {
     return <Layout>{page}</Layout>;
-  };
+};
+
+const RootStyle = styled('div')(({ theme }) => ({
+    paddingTop: theme.spacing(15),
+    paddingBottom: theme.spacing(5),
+}));
 
 // ----------------------------------------------------------------------
 
@@ -33,41 +41,48 @@ export default function DetailLinkDonation(props: { value?: string }) {
     return (
         <Page title="Manager: Link Donation" sx={{ mt: 10 }}>
             <Container maxWidth={themeStretch ? false : 'lg'} >
-                <Box sx={{ display: 'flex', mt: 3, mb: 3, ml: 0 }}>
-                    <Typography variant="h4" sx={{ display: 'flex'}}>
-                        {/* <Iconify icon="ic:edit" fontSize={30} /> */}
-                            Detail Link Donate 
-                        <Typography 
-                            variant='h4' 
-                            sx={{ ml: 1, color: 'Highlight' }}
-                            onClick={() => 
-                            {
-                                setIsOpenShare(true);
-                            }}
-                        >
-                            {idLinkSui}
-                        </Typography>
-                    </Typography>
-                    <Box sx={{ ml: 4, display: 'flex' }}>
-                        <Button
-                            variant="outlined"
-                            color="info"
-                            size='small'
-                            startIcon={<Iconify icon="ic:edit" />}
-                            href={SUI_DONA_PATH.manager.form}
-                        >Edit</Button>
-                        <Button
-                            sx={{ ml: 1, textAlign: 'center' }}
-                            variant="outlined"
-                            color="error"
-                            size='small'
-                            startIcon={<Iconify icon="ic:share" />}
-                            onClick={() =>
-                            {
-                                setIsOpenShare(true);
-                            }}
-                        >Share</Button>  
-                    </Box>
+                <Box sx={{ pt: 4, mb: 1, pl: 1 }} >
+                        <Stack spacing={2} direction={'row'}>
+                            <HeaderBreadcrumbs
+                                heading='Detail Link Donate'
+                                links={[
+                                    { name: 'List Links', href: SUI_DONA_PATH.manager.link,  },
+                                    { name: 'Detail Links' },
+                                ]}
+                            />
+                            <Typography 
+                                variant='h4' 
+                                sx={{ ml: 1, color: 'Highlight' }}
+                                onClick={() => 
+                                {
+                                    setIsOpenShare(true);
+                                }}
+                            >
+                                {idLinkSui}
+                            </Typography>
+                            <Box sx={{ ml: 4, display: 'flex', height: 35, mt: 4 }}>
+                                <Link href={SUI_DONA_PATH.manager.form}>
+                                    <Button
+                                        variant="outlined"
+                                        color="info"
+                                        size='small'
+                                        startIcon={<Iconify icon="ic:edit" />}
+                                        href={SUI_DONA_PATH.manager.form}
+                                    >Edit</Button>
+                                </Link>
+                                <Button
+                                    sx={{ ml: 1, textAlign: 'center' }}
+                                    variant="outlined"
+                                    color="error"
+                                    size='small'
+                                    startIcon={<Iconify icon="ic:share" />}
+                                    onClick={() =>
+                                    {
+                                        setIsOpenShare(true);
+                                    }}
+                                >Share</Button>  
+                            </Box>
+                        </Stack>
                 </Box>
                 <Card sx={{ mb: 2 }}>
                     <CardHeader  title="Overview" />

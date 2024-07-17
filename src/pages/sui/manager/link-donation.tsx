@@ -1,10 +1,11 @@
 import Layout from '../../../layouts';
 import Page from '../../../components/Page';
-import { Card, CardContent, CardHeader, Container, Stack, Typography } from '@mui/material';
+import { Box, Card, CardContent, CardHeader, Container, Stack, Typography } from '@mui/material';
 import useSettings from 'src/hooks/useSettings';
 
 import TableLinkDonate from './table-link-donation/TableLinkDonate';
 import EmptyData from 'src/components/EmptyData';
+import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 // import EmptyPage from 'src/components/empty-page/EmptyPage';
 // ----------------------------------------------------------------------
 
@@ -23,14 +24,20 @@ export default function ManagerLinkDonation()
         <Page title="Manager: Link Donation" sx={{ mt: 4 }}>
 
             <Container maxWidth={themeStretch ? false : 'lg'} sx={{ mt: 10, mb: 10 }}>
-                <Typography variant="h4" sx={{ display: 'flex', mb: 3 }}>
-                    Detail Link Donate
-                </Typography>
+                <Box sx={{ mb: 1, pl: 1 }} >
+                    <Stack spacing={2} direction={'row'}>
+                        <HeaderBreadcrumbs
+                            heading='List Link Donate'
+                            links={[
+                                { name: 'List Links' },
+                            ]}
+                        />
+                    </Stack>
+                </Box>
                 <Stack>
                     <Card>
                         <CardContent>
                             <TableLinkDonate />
-                            <EmptyData />
                         </CardContent>
                     </Card>
                 </Stack>

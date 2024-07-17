@@ -17,12 +17,23 @@ import useTable from '../../../../../hooks/useTable';
 import Scrollbar from '../../../../../components/Scrollbar';
 import Label from 'src/components/Label';
 import Iconify from 'src/components/Iconify';
+import { useEffect, useState } from 'react';
+import LinksServices from 'src/services/LinksServices';
+import { LinkDonationModel } from 'src/pages/model/LinkDonationModel';
+import EmptyData from 'src/components/EmptyData';
 
 // ----------------------------------------------------------------------
 
-function createData(no: string, userdonate: string, orderdate: string, source: string, moneydonate: number ) {
+interface UserLinkDonateModel {
+  walletAddress: string,
+  email: string,
+  avatarUrl: string,
+  totalDonations: number,
+}
 
-  return { no, userdonate, orderdate, source, moneydonate};
+function createData(no: string, avatarUrl: string, orderdate: string, source: string, totalDonations: number ) {
+
+  return { no, avatarUrl, orderdate, source, totalDonations};
 }
 
 const TABLE_DATA = [
@@ -36,7 +47,7 @@ const TABLE_DATA = [
 ];
 
 interface Column {
-  id: 'no' | 'userdonate' | 'orderdate' | 'source' | 'moneydonate';
+  id: 'no' | 'avatarUrl' | 'orderdate' | 'source' | 'totalDonations';
   label: string;
   minWidth?: number;
   maxWidth?: number;
@@ -46,7 +57,7 @@ interface Column {
 
 const COLUMNS: Column[] = [
   { id: 'no', label: 'NO.', minWidth: 10, },
-  { id: 'userdonate', label: 'User Creator', minWidth: 170 },
+  { id: 'avatarUrl', label: 'User Creator', minWidth: 170 },
   {
     id: 'orderdate',
     label: 'ORDER DATE',
@@ -62,7 +73,7 @@ const COLUMNS: Column[] = [
     format: (value) => value.toLocaleString('en-US'),
   },
   {
-    id: 'moneydonate',
+    id: 'totalDonations',
     label: 'Money date',
     minWidth: 170,
     align: "left",
@@ -72,7 +83,7 @@ const COLUMNS: Column[] = [
 
 // ----------------------------------------------------------------------
 
-export default function GroupingListUserDonate() {
+export default function GroupingListUserDonate(prop: any) {
   const {
     page,
     rowsPerPage,
@@ -80,6 +91,34 @@ export default function GroupingListUserDonate() {
     onChangePage,
     onChangeRowsPerPage,
   } = useTable({ defaultRowsPerPage: 10 });
+
+  const linkSvc = new LinksServices();
+
+  const [listUserDonate, setListUserDonate] = useState<UserLinkDonateModel[]>([]);
+  const [listUserDonateLink, setListUserDonateLink] = useState<LinkDonationModel[]>([]);
+
+  const loadData = async(id: string) => {
+    const result = await linkSvc.getUserDonateLink(id);
+    if (result?.status === 200)
+    {
+      setListUserDonate(result.data);
+    }
+  }
+
+  // const loadUserDonateLink = async() => 
+  // {
+  //   const result = await linkSvc.getMostUserDonate();
+  //   if (result?.status === 200)
+  //     {
+  //       setListUserDonateLink(result.data);
+  //     }
+  // }
+
+  useEffect(() =>
+  {
+    // loadUserDonateLink();
+    loadData(prop);
+  }, []);
 
   return (
     <>
@@ -106,7 +145,7 @@ export default function GroupingListUserDonate() {
                     <TableCell>{row.no}</TableCell>
                     <TableCell>
                       <Stack direction="row" alignItems="center" spacing={2}>
-                        <Avatar /> <Label sx={{ ml: 1 }}>{row.userdonate}</Label>
+                        <Avatar /> <Label sx={{ ml: 1 }}>{row.avatarUrl}</Label>
                       </Stack>
                     </TableCell>
                     <TableCell>{row.orderdate}</TableCell>
@@ -124,12 +163,17 @@ export default function GroupingListUserDonate() {
                     </TableCell>
                     <TableCell align="justify">
                         <Label color='info'>
-                          {row.moneydonate} $
+                          {row.totalDonations} $
                         </Label>
                     </TableCell>
                 </TableRow>
               ))}
             </TableBody>
+            {!listUserDonate && (
+                <Box sx={{ height: 300 }}>
+                  <EmptyData />
+                </Box>
+            )}
           </Table>
         </TableContainer>
       </Scrollbar>
