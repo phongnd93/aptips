@@ -15,7 +15,8 @@ type Props = {
   children: ReactNode;
 };
 
-export default function MainLayout({ children }: Props) {
+export default function MainLayout({ children }: Props)
+{
   const { pathname } = useRouter();
   const isHome = pathname === '/';
 
