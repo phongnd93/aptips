@@ -11,6 +11,8 @@ import useSuiAuth from 'src/hooks/useSuiAuth';
 import { useEffect, useRef, useState } from 'react';
 import UserServices from 'src/services/UserServices';
 import EmptyData from 'src/components/EmptyData';
+import TransactionServices from 'src/services/TransactionServices';
+import { Donator, RevenueResponseDTO, Transaction } from './model/TransactionModel';
 
 HomePage.getLayout = function getLayout(page: React.ReactElement)
 {
@@ -36,17 +38,20 @@ const ContentStyle = styled((props: StackProps) => <Stack spacing={5} {...props}
 export default function HomePage()
 {
   const theme = useTheme();
-  const { info, sendTransaction } = useSuiAuth();
+  const { info } = useSuiAuth();
   const { themeStretch } = useSettings();
   const isInit = useRef(false);
+
+  //Service
   const userSvc = new UserServices();
+  const transSvc = new TransactionServices();
 
   const [total, setTotal] = useState<number>(0);
   const [donations, setDonations] = useState<number>(0);
   const [newDonators, setNewDonators] = useState<number>(0);
-  const [transactions, setTransactions] = useState<any[]>([]);
-  const [topDonators, setTopDonators] = useState<any[]>([]);
-  const [revenue, setRevenue] = useState<any[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [topDonators, setTopDonators] = useState<Donator[]>([]);
+  const [revenue, setRevenue] = useState<RevenueResponseDTO>([]);
 
   useEffect(() =>
   {
@@ -64,15 +69,22 @@ export default function HomePage()
   {
     if (info?.id)
     {
-      const donation = await userSvc.donation(info.id);
-      const transtactions = await userSvc.transactions(info.id);
-      if (donation?.data)
+      const donationResult = await userSvc.donation(info.id);
+      const transactionResult = await transSvc.transactions(info.id);
+      const topDotatorResult = await transSvc.topDonators(info.id, 10);
+      const revenueResult = await transSvc.revenue(info.id);
+
+      if (donationResult?.data)
       {
-        const { value, num } = donation.data;
+        const { value, num } = donationResult.data;
         setTotal(value);
         setDonations(num);
         setNewDonators(num);
       }
+
+      setTransactions(transactionResult);
+      setTopDonators(topDotatorResult);
+      setRevenue(revenueResult);
     }
   }
 
@@ -80,10 +92,6 @@ export default function HomePage()
     <Page title="Home">
       <ContentStyle>
         <Container maxWidth={themeStretch ? false : 'lg'}>
-          <Button onClick={() =>
-          {
-            sendTransaction('0xa7ba69b76239e5920e27d7275e3da73fb00cfdc5023572ce0e29dfa4cca3e84a', '', 100);
-          }}>Test send</Button>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={4}>
               <Grid container direction={'column'} spacing={1}>

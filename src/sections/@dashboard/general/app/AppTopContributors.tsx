@@ -9,6 +9,7 @@ import { _appAuthors } from '../../../../_mock';
 // components
 import Iconify from '../../../../components/Iconify';
 import EmptyData from 'src/components/EmptyData';
+import { Donator } from 'src/pages/model/TransactionModel';
 
 // ----------------------------------------------------------------------
 
@@ -25,7 +26,7 @@ const IconWrapperStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 type AppTopContributorsProps = {
-    data: any[]
+    data: Donator[]
 }
 
 export default function AppTopContributors({ data }: AppTopContributorsProps)

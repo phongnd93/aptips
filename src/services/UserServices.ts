@@ -44,21 +44,6 @@ export default class UserServices
         }
     }
 
-    transactions = async (userId: number) =>
-    {
-        try
-        {
-            const res = await axios.get(`${API}/transaction-history/transactions-by-user/${userId}`);
-            if (res?.data)
-                return APIResponseObject(200, res.data);
-        } catch (error)
-        {
-            console.log('UserSvc.transactions', error);
-            // APIResponseObject(500, null, error.message);
-        }
-        return [];
-    }
-
     donation = async (userId: number): Promise<APIResponse> =>
     {
         const donationInfos = ['value', 'num'];
@@ -78,5 +63,7 @@ export default class UserServices
         }
         return APIResponseObject(200, res);
     }
+
+
 
 }

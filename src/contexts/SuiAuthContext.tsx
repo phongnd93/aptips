@@ -7,7 +7,8 @@ import { AddUserInfoDto, UserInfoResponse } from "src/@types/dto/user-dto";
 import UserServices from "src/services/UserServices";
 import SuiSDK, { AccountData } from "src/suiSDK/sdk";
 import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { MIST_PER_SUI } from "@mysten/sui.js/utils";
+import { Donator, RevenueResponseDTO, Transaction, TransasctionHistory } from "src/pages/model/TransactionModel";
+import TransactionServices from "src/services/TransactionServices";
 
 type SuiAuthState = {
     isInitialized: boolean,
@@ -25,7 +26,10 @@ interface SuiAuthContextType extends SuiAuthState
     login: (provider: 'Google' | 'Facebook' | 'Twitch') => Promise<void>,
     fetchAccountBalance: (walletAddress: string) => Promise<void>,
     logout: () => Promise<void>,
-    sendTransaction: (toWallet: string, fromWallet: string, amout: number) => Promise<void>
+    sendTransaction: (sourceId: number, receiver: number, toWallet: string, amout: number) => Promise<void>,
+    // getRevenue: () => Promise<RevenueResponseDTO | null>,
+    // getTransactions: () => Promise<Transaction[] | null>,
+    // getTopDonators: () => Promise<Donator[] | null>,
 }
 
 enum Types
@@ -105,12 +109,14 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
 {
     const [state, dispatch] = useReducer(SuiAuthReducer, initialState);
     const suiClient = useSuiClient();
+    const sdk = new SuiSDK(suiClient);
     const [balances, setBalances] = useState<number>(0); // Map<Sui address, SUI balance>
-    const userSvc = new UserServices();
     const currentAccount = useCurrentAccount();
     const { mutate: disconnect } = useDisconnectWallet();
     const autoConnect = useAutoConnectWallet();
-    const [sdk, setSdk] = useState<SuiSDK>();
+
+    const userSvc = new UserServices();
+    const transSvc = new TransactionServices();
 
     const { mutate: signAndExecuteTransactionBlock } = useSignAndExecuteTransactionBlock();
 
@@ -118,7 +124,6 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
     {
         if (autoConnect === 'attempted')
         {
-            setSdk(new SuiSDK(suiClient));
             initialize();
         }
     }, [autoConnect, currentAccount]);
@@ -215,14 +220,12 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
     const fetchAccountBalance = async (walletAddress: string) =>
     {
         const res = await sdk.fetchBalances(walletAddress);
-
         setBalances(res?.get(walletAddress) || 0);
-    }
+    };
 
     const login = async (provider: 'Google' | 'Facebook' | 'Twitch') =>
     {
         sdk.beginZkLogin(provider);
-
     };
 
     const fetchUserInfo = async (walletAddress: string): Promise<UserInfoResponse | null> =>
@@ -231,14 +234,14 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
         console.log(res);
         if (res?.status === 200) return res.data;
         return null;
-    }
+    };
 
     const createUser = async (obj: AddUserInfoDto): Promise<UserInfoResponse | null> =>
     {
         const res = await userSvc.add(obj);
         if (res?.status === 200) return res.data;
         return null;
-    }
+    };
 
     const logout = async () =>
     {
@@ -247,13 +250,23 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
         dispatch({ type: Types.Logout });
     };
 
-    const sendTransaction = async (toWallet: string, fromWallet: string, amount: number) =>
+    /*
+    Description : Transaction functions
+    */
+
+    const sendTransaction = async (sourceId: number, receiver: number, toWallet: string, amount: number) =>
     {
         const txb = new TransactionBlock();
-        const bigAmount = BigInt(5 * 10 ** 9); // 5 SUI (SUI sử dụng đơn vị 10^9, vì vậy nhân với 10^9 để chuyển đổi)
+        const bigAmount = BigInt(amount * 10 ** 9); // 5 SUI (SUI sử dụng đơn vị 10^9, vì vậy nhân với 10^9 để chuyển đổi)
         const res = txb.splitCoins(txb.gas, [bigAmount]);
         txb.transferObjects([res[0]], txb.pure.address(toWallet));
         // debugger       
+        const transHistory: TransasctionHistory = {
+            sourceId,
+            senderWallet: "",
+            receiver,
+            amount
+        }
         try
         {
             if (state?.wallet)
@@ -266,9 +279,12 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
                     onSuccess: (result) =>
                     {
                         console.log('executed transaction block', result);
-                        if (result?.balanceChanges && state.wallet?.address)
+                        if (result?.digest && state.wallet?.address)
                         {
                             fetchAccountBalance(state.wallet?.address);
+                            transHistory.senderWallet = state.wallet.address;
+
+                            //TODO: Add transaction history to database
                         }
                     },
                     onError: (err) =>
@@ -281,9 +297,13 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
             {
                 sdk.sendTransaction(toWallet, state.user, txb, (result) =>
                 {
-                    if (result?.balanceChanges && state.user?.userAddr)
+                    console.log('send complete', result)
+                    if (result?.digest && result?.effects?.status?.status && state.user?.userAddr)
                     {
                         fetchAccountBalance(state.user.userAddr);
+                        transHistory.senderWallet = state.user.userAddr;
+
+                        //TODO: Add transaction history to database
                     }
                 });
             }
@@ -291,6 +311,33 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
         {
             console.log('sendTransaction', error);
         }
+    };
+
+    const getRevenue = async () =>
+    {
+        if (state?.info?.id)
+        {
+            return transSvc.revenue(state.info?.id);
+        }
+        return null;
+    }
+
+    const getTransactions = async () =>
+    {
+        if (state?.info?.id)
+        {
+            return transSvc.transactions(state.info?.id);
+        }
+        return null;
+    }
+
+    const getTopDonators = async () =>
+    {
+        if (state?.info?.id)
+        {
+            return transSvc.topDonators(state.info?.id, 6);
+        }
+        return null;
     }
 
     return <SuiAuthContext.Provider value={{
@@ -301,7 +348,11 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
         fetchAccountBalance,
         login,
         logout,
-        sendTransaction
+
+        sendTransaction,
+        // getRevenue,
+        // getTransactions,
+        // getTopDonators
     }}>
         {children}
     </SuiAuthContext.Provider>

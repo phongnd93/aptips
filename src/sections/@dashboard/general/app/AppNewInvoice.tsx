@@ -28,10 +28,11 @@ import Iconify from '../../../../components/Iconify';
 import Scrollbar from '../../../../components/Scrollbar';
 import MenuPopover from '../../../../components/MenuPopover';
 import EmptyData from 'src/components/EmptyData';
+import { Transaction } from 'src/pages/model/TransactionModel';
 
 // ----------------------------------------------------------------------
 type AppNewInvoiceProps = {
-  data: any[]
+  data: Transaction[]
 }
 
 export default function AppNewInvoice({ data }: AppNewInvoiceProps)

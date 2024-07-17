@@ -272,24 +272,23 @@ export default class SuiSDK
         });
 
         // Generate an address seed by combining userSalt, sub (subject ID), and aud (audience)
-        // const addressSeed = genAddressSeed(
-        //     BigInt(account.userSalt),
-        //     'sub',
-        //     account.sub,
-        //     account.aud,
-        // ).toString();
+        const addressSeed = genAddressSeed(
+            BigInt(account.userSalt),
+            'sub',
+            account.sub,
+            account.aud,
+        ).toString();
 
         // Serialize the zkLogin signature by combining the ZK proof (inputs), the maxEpoch,
         // and the ephemeral signature (userSignature)
         const zkLoginSignature: SerializedSignature = getZkLoginSignature({
             inputs: {
                 ...account.zkProofs,
-                toWallet,
+                addressSeed,
             },
             maxEpoch: account.maxEpoch,
             userSignature,
         });
-
         // Execute the transaction
         await this.suiClient.executeTransactionBlock({
             transactionBlock: bytes,
