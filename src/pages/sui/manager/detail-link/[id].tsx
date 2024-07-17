@@ -137,6 +137,7 @@ export default function DetailLinkDonation(value?: string)
                                     <Grid item md={11} sx={{ mb: 2}}>
                                         <AppWidgetSummary
                                             title="Total"
+                                            itemIcon='token-branded:sui'
                                             percent={detailLink?.totalDonations > 0 ? 100 : 0}
                                             total={detailLink?.totalDonations}
                                             chartColor={theme.palette.primary.main}
@@ -147,6 +148,7 @@ export default function DetailLinkDonation(value?: string)
                                     <Grid item md={11} sx={{ mb: 2 }}>
                                         <AppWidgetSummary
                                             title="Donations"
+                                            itemIcon='ph:user'
                                             percent={detailLink?.totalNumberDonations > 0 ? 100 : 0}
                                             total={detailLink?.totalNumberDonations}
                                             chartColor={theme.palette.chart.blue[0]}
@@ -155,8 +157,9 @@ export default function DetailLinkDonation(value?: string)
                                     </Grid>
 
                                     <Grid item md={11} sx={{ mb: 2 }}>
-                                        <AppWidgetSummary
+                                        <AppWidgetSummary 
                                             title="New donators"
+                                            itemIcon='ph:user'
                                             percent={detailLink?.totalNumberDonations > 0 ? 100 : 0}
                                             total={detailLink?.totalNumberDonations}
                                             chartColor={theme.palette.chart.red[0]}

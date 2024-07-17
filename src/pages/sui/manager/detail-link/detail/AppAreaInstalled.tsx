@@ -6,6 +6,7 @@ import { Card, CardHeader, Box, TextField, Typography, Stack, styled } from '@mu
 import ReactApexChart, { BaseOptionChart } from '../../../../../components/chart';
 import EmptyData from 'src/components/EmptyData';
 import { RevenueItem, RevenueResponseDTO } from 'src/@types/transaction';
+import { CardContent } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -141,6 +142,7 @@ export default function AppAreaInstalled({ title, data }: AppAreaInstalledProps)
     return yearArr;
   }, [data]);
 
+ 
   if (chartData?.length && !seriesData) { setSeriesData(chartData[0].year); }
 
   const handleChangeSeriesData = (event: React.ChangeEvent<HTMLInputElement>) =>
@@ -155,7 +157,7 @@ export default function AppAreaInstalled({ title, data }: AppAreaInstalledProps)
   });
 
   return (
-    <Card sx={{ height: '100%' }}>
+    <Card sx={{ height: '95%' }}>
       <CardHeader
         title={title || 'Area Installed'}
         // subheader="(+43%) than last year"
@@ -197,21 +199,21 @@ export default function AppAreaInstalled({ title, data }: AppAreaInstalledProps)
         }
       />
 
-      {chartData.map((item) => (
-        <Box key={item.year} sx={{ mt: 3, mx: 3 }} dir="ltr">
-          {item.year === seriesData && (
-            <ReactApexChart type="line" series={item.data} options={chartOptions} height={364} />
-          )}
-        </Box>
-      ))}
-      {!chartData?.length && (
-          <EmptyDataContainerStyle justifyContent={'center'} alignContent={'center'} alignItems={"center"}>
-              <Box className={'background'} sx={{ opacity: 0.7, background: (theme) => theme.palette.background.default }} width={'100%'} height={'100%'}></Box>
-              <Stack sx={{ position: 'absolute' }} justifyContent={'center'} alignContent={'center'} alignItems={"center"} spacing={2}>
-                  <Typography variant="h5">No data revenue</Typography>
-              </Stack>
-          </EmptyDataContainerStyle>
-      )}
+        {chartData.map((item) => (
+          <Box key={item.year} sx={{ mx: 3 }} dir="ltr">
+            {item.year === seriesData && (
+              <ReactApexChart type="line" series={item.data} options={chartOptions} height={250} />
+            )}
+          </Box>
+        ))}
+        {!chartData?.length && (
+            <EmptyDataContainerStyle justifyContent={'center'} alignContent={'center'} alignItems={"center"}>
+                <Box className={'background'} sx={{ opacity: 0.7, background: (theme) => theme.palette.background.default }} width={'100%'} height={'100%'}></Box>
+                <Stack sx={{ position: 'absolute' }} justifyContent={'center'} alignContent={'center'} alignItems={"center"} spacing={2}>
+                    <Typography variant="h5">No data revenue</Typography>
+                </Stack>
+            </EmptyDataContainerStyle>
+        )}
     </Card>
   );
 }

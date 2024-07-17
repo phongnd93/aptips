@@ -125,35 +125,46 @@ export default function TableLinkDonate()
 
     if (listLinks.length > 0)
     {
-      const temp = (rowsPerPage > 0 ? listLinks.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : listLinks).map((row: LinkDonationModel, i: number) =>
-      {
-        row.createdAt = '2024-05-30T16:03:31.000Z';
-        return (
-          <TableRow hover role="checkbox" tabIndex={-1} key={row?.id} sx={{ mb: 2 }} onClick={() => { handleClickDetail(row.id) }}>
-            <TableCell>{i + page * rowsPerPage + 1}</TableCell>
-            <TableCell>
-              <Label
-                color='info'
-                onClick={() =>
-                {
-                }}
-              >
-                {row.linkCode || <Label color='default'>No Data</Label>}
-              </Label>
-            </TableCell>
-            <TableCell >{row?.createdAt ? <Label color='secondary'>{new Date().toDateString(row.createdAt)}</Label> : <Label color='default'>No Data</Label>}</TableCell>
-            <TableCell>
-              <Stack direction="row" alignItems="center">
-                <Iconify icon={'ph:user'} sx={{ width: 16, height: 16, mr: 1 }} />
-                <Label color={row?.totalNumberDonations > 0 ? 'primary' : 'secondary'}>{row.totalNumberDonations || 0}</Label>
-              </Stack>
-            </TableCell>
-            <TableCell>
-              <Stack direction="row" alignItems="center">
-                <Label color={row?.totalDonations > 0 ? 'info' : 'secondary'}>{row.totalDonations || 0}</Label>
-                <Iconify icon={'token-branded:sui'} width={24} height={24} />
-              </Stack>
-            </TableCell>
+      const temp = (rowsPerPage > 0  ? listLinks.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage): listLinks).map((row: LinkDonationModel) => {
+          return (
+            <TableRow hover role="checkbox" tabIndex={-1} key={row?.id} sx={{ mb: 2 }} onClick={() =>{handleClickDetail(row.id)}}>
+              <TableCell>{row.id}</TableCell>
+              <TableCell>
+                        <Label
+                          color='info'
+                          onClick={() => {
+                          } }
+                        >
+                          {row.linkCode || <Label color='default'>no data</Label>}
+                        </Label>
+              </TableCell>
+              <TableCell>{row?.orderdate || <Label color='default'>no data</Label>}</TableCell>
+              <TableCell>
+                  <Stack direction="row" alignItems="center" spacing={2}>
+                    {row.amount !== 0 && (
+                      <>
+                        <Iconify icon={'ph:user'} sx={{ width: 16, height: 16, mr: 1 }} />
+                        <Box sx={{ ml: 1 }}>{row.amount}</Box>
+                      </>
+                    )}
+                    {!row.amount && (
+                      <Label color='default'>no data</Label>
+                    )}
+                  </Stack>
+              </TableCell>
+              <TableCell>
+                  <Stack direction="row" alignItems="center" spacing={1}>
+                    {row.sui &&(
+                      <Label
+                        color='info'
+                      ><Box>{row.sui}</Box></Label>
+                    )}
+                    {!row.sui &&(
+                      <Label color='default'>no data</Label>
+                    )}
+                    <Iconify icon={'token-branded:sui'} width={24} height={24} />
+                  </Stack>
+              </TableCell>
 
             <TableCell align="justify">
               <Button
@@ -216,7 +227,7 @@ export default function TableLinkDonate()
       <TablePagination
         rowsPerPageOptions={[10, 25, 50]}
         component="div"
-        count={listLinks.length}
+        count={listLinks.length || 0}
         page={page}
         onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}

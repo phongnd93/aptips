@@ -57,8 +57,7 @@ const LinkDonateProvider: React.FC<{NodeId: string}> = ({ NodeId, children }) =>
 
         if (result?.status === 200)
         {
-            setListUserDonates(result.data);
-            setRevenue(result.data?.length);
+            setListUserDonates(result.data.data);
         }
     }
 

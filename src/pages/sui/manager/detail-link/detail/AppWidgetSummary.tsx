@@ -28,9 +28,10 @@ type Props = {
   percent: number;
   chartColor: string;
   chartData: number[];
+  itemIcon?: string;
 };
 
-export default function AppWidgetSummary({ title, percent, total, chartColor, chartData }: Props) {
+export default function AppWidgetSummary({ title, percent, total, chartColor, chartData, itemIcon }: Props) {
   const theme = useTheme();
 
   const chartOptions = {
@@ -53,8 +54,9 @@ export default function AppWidgetSummary({ title, percent, total, chartColor, ch
     <Card sx={{ display: 'flex', alignItems: 'center', p: 2 }}>
       <Box sx={{ flexGrow: 1 }}>
         <Box sx={{ display: 'flex' }}>
-          <Typography variant="subtitle2" sx={{ width: '30%' }}>{title}</Typography>
-
+          <Typography variant="subtitle2" sx={{ width: '30%' }}>
+            {title} 
+          </Typography>
           <Stack direction="row" alignItems="center" spacing={1} sx={{ ml: 2, mb: 1 }}>
               <IconWrapperStyle
                 sx={{
@@ -73,11 +75,12 @@ export default function AppWidgetSummary({ title, percent, total, chartColor, ch
             <Typography component="span" variant="subtitle2">
               {percent > 0 && '+'}
               {fPercent(percent)}
+              
             </Typography>
           </Stack>
         </Box>
 
-        <Typography variant="h5">{fNumber(total)}</Typography>
+        <Typography variant="h5" sx={{ pl: 1 }}>{fNumber(total)} {itemIcon && (<Iconify icon={itemIcon} width={20} height={20} />)}</Typography>
       </Box>
 
       <ReactApexChart

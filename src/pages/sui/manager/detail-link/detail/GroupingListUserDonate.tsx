@@ -13,6 +13,9 @@ import
   Box,
   Typography,
   styled,
+  Dialog,
+  TextField,
+  Tooltip,
 } from '@mui/material';
 // hooks
 // components
@@ -136,9 +139,17 @@ export default function GroupingListUserDonate()
             </Stack>
           </TableCell>
           <TableCell>
-            <Label color='default'>
-              {row.note}
-            </Label>
+            {row.note && (
+                <Tooltip title={row.note} placement="top-start">
+                <Typography  
+                  width={'80px'}
+                  sx={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }} 
+                >
+                    <Label color='info' sx={{ width: 80, pr: 1, pl: 1 }}> {row.note}</Label>
+                </Typography >
+              </Tooltip>
+            )}
+            {!row.note && (<Label sx={{ width: 80, fontWeight: 100 }}>no data</Label>)}
           </TableCell>
           <TableCell>{row.timeStamp}</TableCell>
           <TableCell>
@@ -206,7 +217,7 @@ export default function GroupingListUserDonate()
       <TablePagination
         rowsPerPageOptions={[10, 25, 50]}
         component="div"
-        count={listUserDonate.length}
+        count={listUserDonate.length || 0}
         page={page}
         onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}
