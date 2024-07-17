@@ -58,7 +58,7 @@ const LadingPageComponent = () =>
                                 Easy way to say thanks from your fans
                             </Typography>
                             <Typography fontSize={24} fontWeight={'500'}>
-                                <span style={{ color: '#00BDD6' }}>Sui me a coffee</span> makes a easy and funny way,<br /> like receiving a cup of coffee from people loving you.
+                                <span style={{ color: '#00BDD6' }}>Sui Me a Coffee</span> makes a easy and funny way,<br /> like receiving a cup of coffee from people loving you.
                             </Typography>
                         </m.div>
 

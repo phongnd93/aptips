@@ -35,7 +35,7 @@ export default function SuiHomeFund()
           </m.div>
           <m.div variants={varFade().inDown}>
             <Typography fontSize={32} fontWeight={'400'}>
-              Transparently, securely receive support from your fan
+              Transparently, securely receive support from your fans
             </Typography>
           </m.div>
           <m.div variants={varFade().inLeft}>

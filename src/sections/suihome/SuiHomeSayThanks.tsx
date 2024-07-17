@@ -30,7 +30,7 @@ export default function SuiHomeSayThanks()
                     </m.div>
                     <m.div variants={varFade().inDown}>
                         <Typography fontSize={24} fontWeight={'500'}>
-                            <span style={{ color: '#00BDD6' }}>Sui me a coffee</span> makes a easy and funny way,<br /> like receiving a cup of coffee from people loving you.
+                            <span style={{ color: '#00BDD6' }}>Sui Me a Coffee</span> makes it simple and fun,<br /> like receiving a cup of coffee from people who love you.
                         </Typography>
                     </m.div>
                 </Stack>
