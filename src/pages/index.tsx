@@ -2,20 +2,10 @@
 import { styled } from '@mui/material/styles';
 // layouts
 import Layout from '../layouts';
+import { Page } from '@react-pdf/renderer';
+import { HomeHero, HomeMinimal, HomeHugePackElements, HomeDarkMode, HomeColorPresets, HomeCleanInterfaces, HomePricingPlans, HomeLookingFor, HomeAdvertisement } from 'src/sections/home';
 // components
-import Page from '../components/Page';
 // sections
-import {
-  HomeHero,
-  HomeMinimal,
-  HomeDarkMode,
-  HomeLookingFor,
-  HomeColorPresets,
-  HomePricingPlans,
-  HomeAdvertisement,
-  HomeCleanInterfaces,
-  HomeHugePackElements,
-} from '../sections/home';
 
 // ----------------------------------------------------------------------
 
@@ -31,17 +21,19 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-HomePage.getLayout = function getLayout(page: React.ReactElement) {
+HomePage.getLayout = function getLayout(page: React.ReactElement)
+{
   return <Layout variant="main">{page}</Layout>;
 };
 
 // ----------------------------------------------------------------------
 
-export default function HomePage() {
+export default function HomePage()
+{
   return (
     <Page title="The starting point for your next project">
       <RootStyle>
-        <HomeHero />
+        {/* <HomeHero /> */}
         <ContentStyle>
           <HomeMinimal />
 
@@ -63,3 +55,4 @@ export default function HomePage() {
     </Page>
   );
 }
+
