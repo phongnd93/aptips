@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Badge, Box, Button, Dialog, Grid, InputAdornment, OutlinedInput, Stack, TextField, Typography } from '@mui/material';
 import SvgIconStyle from '../SvgIconStyle';
 import Iconify from '../Iconify';
@@ -6,17 +6,12 @@ import { FabButtonAnimate } from '../animate';
 import { IconButton } from '@mui/material';
 import { ToggleButton } from '@mui/material';
 import { Popover } from '@mui/material';
+import { FormConfigContext } from 'src/contexts/FormConfigContext';
 
-interface FormDonationConfigProps {
-    tempConfig: Record<string, any>,
-    setTempConfig: Dispatch<SetStateAction<Record<string, any>>>
-}
-
-export const FormDonationConfig: React.FC<FormDonationConfigProps> = (props: FormDonationConfigProps) =>
+export const FormConfig: React.FC = () =>
 {
-    const { tempConfig, setTempConfig } = props;
-
-    const [newAmountSui, setNewAmountSui] = useState('');
+    const { setTempConfig, tempConfig } = useContext(FormConfigContext);
+    const [newAmountSui, setNewAmountSui] = useState<(number | boolean)>();
     const [isOpenDialog, setOpenDialog] = useState(false);
     const [isOpen, setOpen] = useState<null | HTMLElement>(null);
 
@@ -36,7 +31,7 @@ export const FormDonationConfig: React.FC<FormDonationConfigProps> = (props: For
                         size='small'
                         placeholder='Title'
                         color='info'
-                        defaultValue={tempConfig?.title || ''}
+                        value={tempConfig?.title || ''}
                         onChange={(e) => setTempConfig(prevState => ({...prevState, title: e.target.value }))}
                         sx={{
                             typography: 'h3',
@@ -53,10 +48,10 @@ export const FormDonationConfig: React.FC<FormDonationConfigProps> = (props: For
                     />
                     <OutlinedInput
                         size='small'
-                        placeholder='Sub Title'
+                        placeholder='Subtitles'
                         color='info'
-                        defaultValue={tempConfig?.subtitle || ''}
-                        onChange={(e) => setTempConfig(prevState => ({...prevState, subtitle: e.target.value }))}
+                        value={tempConfig?.subtitles || ''}
+                        onChange={(e) => setTempConfig(prevState => ({...prevState, subtitles: e.target.value }))}
                         sx={{
                             fontSize: 'large',
                             color: 'text.secondary',
@@ -90,7 +85,7 @@ export const FormDonationConfig: React.FC<FormDonationConfigProps> = (props: For
                             >
                                 <SvgIconStyle src={`/icons/ic_sui.svg`} width={40} height={40} />
                                 <Iconify icon={'eva:close-fill'} width={16} height={16}/>
-                                {tempConfig.amount.map((a: any, index: number) => (
+                                {tempConfig.amounts.map((a: any, index: number) => (
                                     <>
                                         {a 
                                             ? (
@@ -102,9 +97,10 @@ export const FormDonationConfig: React.FC<FormDonationConfigProps> = (props: For
                                                             size='small'
                                                             onClick={() =>
                                                             {
-                                                                const temp = tempConfig.amount;
+                                                                const temp = tempConfig.amounts;
                                                                 const newArr = temp.filter((_, i) => i !== index);
-                                                                setTempConfig(prevState => ({...prevState, amount: newArr }));
+                                                                console.log(temp)
+                                                                setTempConfig(prevState => ({...prevState, amounts: newArr }));
                                                             }}
                                                         >
                                                             <Iconify icon='carbon:close-filled' width={16} height={16} />
@@ -124,8 +120,7 @@ export const FormDonationConfig: React.FC<FormDonationConfigProps> = (props: For
                                                     >
                                                         {a}
                                                     </ToggleButton>
-                                                </Badge>
-                                                
+                                                </Badge>                                       
                                             )
                                             : (
                                                 <OutlinedInput
@@ -139,9 +134,9 @@ export const FormDonationConfig: React.FC<FormDonationConfigProps> = (props: For
                                                                 size='small'
                                                                 onClick={() =>
                                                                 {
-                                                                    const temp = tempConfig.amount;
+                                                                    const temp = tempConfig.amounts;
                                                                     const newArr = temp.filter((_, i) => i !== index);
-                                                                    setTempConfig(prevState => ({...prevState, amount: newArr }));
+                                                                    setTempConfig(prevState => ({...prevState, amounts: newArr }));
                                                                 }}
                                                             >
                                                                 <Iconify icon='carbon:close-filled' width={16} height={16} />
@@ -165,6 +160,7 @@ export const FormDonationConfig: React.FC<FormDonationConfigProps> = (props: For
                                 color='info'
                                 label='Name'
                                 fullWidth
+                                disabled
                             />
                             <TextField
                                 color='info'
@@ -172,6 +168,7 @@ export const FormDonationConfig: React.FC<FormDonationConfigProps> = (props: For
                                 placeholder='Say something nice...(optional)'
                                 fullWidth
                                 multiline
+                                disabled
                             />
                         </Stack>
                     </Grid>
@@ -207,7 +204,7 @@ export const FormDonationConfig: React.FC<FormDonationConfigProps> = (props: For
                         sx={{ width: 100 }}
                         onClick={() => { 
                             handleClose();
-                            setTempConfig(prevState => ({...prevState, amount: [...prevState.amount, false] }));
+                            setTempConfig(prevState => ({...prevState, amounts: [...prevState.amounts, false] }));
                         }}
                     >
                         Sui Input
@@ -229,7 +226,7 @@ export const FormDonationConfig: React.FC<FormDonationConfigProps> = (props: For
                         onChange={(event) =>
                         {
                             const value = event.target.value;
-                            if (value) { setNewAmountSui(value); }
+                            if (value) { setNewAmountSui(+value); }
                         }}
                     />
                     <Button
@@ -238,7 +235,7 @@ export const FormDonationConfig: React.FC<FormDonationConfigProps> = (props: For
                         onClick={() => { 
                             setOpenDialog(false);
                             if (newAmountSui) {
-                                setTempConfig(prevState => ({...prevState, amount: [...prevState.amount, newAmountSui] }));
+                                setTempConfig(prevState => ({...prevState, amounts: [...prevState.amounts, newAmountSui] }));
                             }
                         }}
                     >
