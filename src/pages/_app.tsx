@@ -101,7 +101,7 @@ export default function MyApp(props: MyAppProps)
       <QueryClientProvider client={queryClient}>
         <SuiClientProvider defaultNetwork='devnet' networks={networkConfig}>
           <WalletProvider autoConnect>
-            <SuiAuthProvider>
+            <SuiAuthProvider createNewAccount={true}>
               <ReduxProvider store={store}>
                 <PersistGate loading={null} persistor={persistor}>
                   <CollapseDrawerProvider>

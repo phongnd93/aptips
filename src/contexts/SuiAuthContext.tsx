@@ -15,19 +15,20 @@ type SuiAuthState = {
     isAuthenticated: boolean,
     user: AccountData | null,
     wallet: WalletAccount | null,
-    info: UserInfoResponse | null
+    info: UserInfoResponse | null,
 }
 
 interface SuiAuthContextType extends SuiAuthState
 {
     NETWORK: NetworkName,
     balances: number,
+    loadingBalance: boolean,
 
     login: (provider: 'Google' | 'Facebook' | 'Twitch') => Promise<void>,
     fetchAccountBalance: (walletAddress: string) => Promise<void>,
     logout: () => Promise<void>,
-    sendTransaction: (sourceId: number, receiver: number, toWallet: string, amout: number) => Promise<void>,
-    fetchUserInfoById: () => Promise<UserInfoResponse | null>
+    sendTransaction: (toWallet: string, amout: number, onDonateSuccess: (trans: TransasctionHistory) => void) => Promise<void>,
+    fetchUserInfoById: (id: number) => Promise<UserInfoResponse | null>
     // getRevenue: () => Promise<RevenueResponseDTO | null>,
     // getTransactions: () => Promise<Transaction[] | null>,
     // getTopDonators: () => Promise<Donator[] | null>,
@@ -104,9 +105,10 @@ const SuiAuthContext = createContext<SuiAuthContextType | null>(null);
 
 type SuiAuthContextProps = {
     children: ReactNode;
+    createNewAccount: boolean;
 }
 
-const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthContextProps) =>
+const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children, createNewAccount }: SuiAuthContextProps) =>
 {
     const [state, dispatch] = useReducer(SuiAuthReducer, initialState);
     const suiClient = useSuiClient();
@@ -115,6 +117,7 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
     const currentAccount = useCurrentAccount();
     const { mutate: disconnect } = useDisconnectWallet();
     const autoConnect = useAutoConnectWallet();
+    const [loadingBalance, setLoadingBalance] = useState(false);
 
     const userSvc = new UserServices();
     const transSvc = new TransactionServices();
@@ -125,7 +128,8 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
     {
         if (autoConnect === 'attempted')
         {
-            initialize();
+            if (createNewAccount) initialize();
+            else initializeWithoutCreateAccount();
         }
     }, [autoConnect, currentAccount]);
 
@@ -149,26 +153,91 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
 
     const initialize = async () =>
     {
+        if (createNewAccount)
+        {
+            try
+            {
+                let userInfo: UserInfoResponse | null = null;
+                if (currentAccount)
+                {
+                    const [bal, info] = await Promise.allSettled([fetchAccountBalance(currentAccount.address), fetchUserInfo(currentAccount.address)]);
+                    if (info?.status === 'fulfilled')
+                    {
+                        if (info?.value) userInfo = info.value; else
+                            userInfo = await createUser({
+                                email: currentAccount.label || '',
+                                walletAddress: currentAccount.address,
+                                avatarUrl: ''
+                            });
+                    }
+
+                    dispatch({
+                        type: Types.Initial,
+                        payload: {
+                            isAuthenticated: currentAccount !== null && userInfo !== null,
+                            user: null,
+                            wallet: currentAccount,
+                            info: userInfo
+                        },
+                    });
+                    return;
+                }
+
+                let account = await sdk.completeZkLogin();
+                if (!account) account = await sdk.loadAccount();
+
+                if (account)
+                {
+                    const [bal, info] = await Promise.allSettled([fetchAccountBalance(account.userAddr), fetchUserInfo(account.userAddr)]);
+                    if (info?.status === 'fulfilled')
+                    {
+                        if (info?.value) userInfo = info.value; else
+                            userInfo = await createUser({
+                                email: '',
+                                walletAddress: account.userAddr,
+                                avatarUrl: ''
+                            });
+                    }
+                    dispatch({
+                        type: Types.Initial,
+                        payload: {
+                            isAuthenticated: account !== null && userInfo !== null,
+                            user: account,
+                            wallet: null,
+                            info: userInfo
+                        },
+                    });
+                    return;
+                }
+            } catch (error)
+            {
+                console.log('initialize', error.message);
+            }
+            dispatch({
+                type: Types.Initial,
+                payload: {
+                    isAuthenticated: false,
+                    user: null,
+                    wallet: null,
+                    info: null
+                },
+            });
+        }
+    };
+
+    const initializeWithoutCreateAccount = async () =>
+    {
         try
         {
             let userInfo: UserInfoResponse | null = null;
             if (currentAccount)
             {
-                const [bal, info] = await Promise.allSettled([fetchAccountBalance(currentAccount.address), fetchUserInfo(currentAccount.address)]);
-                if (info?.status === 'fulfilled')
-                {
-                    if (info?.value) userInfo = info.value; else
-                        userInfo = await createUser({
-                            email: currentAccount.label || '',
-                            walletAddress: currentAccount.address,
-                            avatarUrl: ''
-                        });
-                }
+                fetchAccountBalance(currentAccount.address);
 
                 dispatch({
                     type: Types.Initial,
                     payload: {
-                        isAuthenticated: currentAccount !== null && userInfo !== null,
+                        isAuthenticated: currentAccount !== null,
                         user: null,
                         wallet: currentAccount,
                         info: userInfo
@@ -182,20 +251,11 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
 
             if (account)
             {
-                const [bal, info] = await Promise.allSettled([fetchAccountBalance(account.userAddr), fetchUserInfo(account.userAddr)]);
-                if (info?.status === 'fulfilled')
-                {
-                    if (info?.value) userInfo = info.value; else
-                        userInfo = await createUser({
-                            email: '',
-                            walletAddress: account.userAddr,
-                            avatarUrl: ''
-                        });
-                }
+                fetchAccountBalance(account.userAddr);
                 dispatch({
                     type: Types.Initial,
                     payload: {
-                        isAuthenticated: account !== null && userInfo !== null,
+                        isAuthenticated: account !== null,
                         user: account,
                         wallet: null,
                         info: userInfo
@@ -220,8 +280,10 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
 
     const fetchAccountBalance = async (walletAddress: string) =>
     {
+        setLoadingBalance(true);
         const res = await sdk.fetchBalances(walletAddress);
         setBalances(res?.get(walletAddress) || 0);
+        setLoadingBalance(false);
     };
 
     const login = async (provider: 'Google' | 'Facebook' | 'Twitch') =>
@@ -262,7 +324,7 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
     Description : Transaction functions
     */
 
-    const sendTransaction = async (sourceId: number, receiver: number, toWallet: string, amount: number) =>
+    const sendTransaction = async (toWallet: string, amount: number, onDonateSuccess: (trans: TransasctionHistory) => void) =>
     {
         const txb = new TransactionBlock();
         const bigAmount = BigInt(amount * 10 ** 9); // 5 SUI (SUI sử dụng đơn vị 10^9, vì vậy nhân với 10^9 để chuyển đổi)
@@ -270,10 +332,10 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
         txb.transferObjects([res[0]], txb.pure.address(toWallet));
         // debugger       
         const transHistory: TransasctionHistory = {
-            sourceId,
+            amount,
+            sourceId: 0,
             senderWallet: "",
-            receiver,
-            amount
+            receiver: 0
         }
         try
         {
@@ -293,6 +355,7 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
                             transHistory.senderWallet = state.wallet.address;
 
                             //TODO: Add transaction history to database
+                            onDonateSuccess(transHistory);
                         }
                     },
                     onError: (err) =>
@@ -312,6 +375,7 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
                         transHistory.senderWallet = state.user.userAddr;
 
                         //TODO: Add transaction history to database
+                        onDonateSuccess(transHistory);
                     }
                 });
             }
@@ -351,6 +415,7 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children }: SuiAuthCon
     return <SuiAuthContext.Provider value={{
         balances,
         NETWORK: sdk.NETWORK,
+        loadingBalance,
         ...state,
 
         fetchUserInfoById,

@@ -27,6 +27,8 @@ export default function ThankToDonate()
 {
     const { themeStretch } = useSettings();
     const theme = useTheme();
+    const amount = localStorage.getItem('donate_amount');
+    // localStorage.removeItem('donate_amount');
     return (
         <Page title="Thank to Donation">
             <RootStyle>
@@ -60,7 +62,10 @@ export default function ThankToDonate()
                                 </Typography>
                             </Stack>
                             <Typography variant="h3">
-                                $100
+                                <Stack spacing={'1'} direction={'row'} justifyContent={'center'} justifyItems={'center'} alignItems={'center'}>
+                                    <span>{amount}</span>
+                                    <Iconify icon={'token-branded:sui'} width={32} height={32} />
+                                </Stack>
                             </Typography>
                         </Stack>
                         <Button variant='outlined' href='/'>

@@ -1,23 +1,28 @@
 import { ConnectModal, createNetworkConfig, SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { SuiAuthProvider } from "src/contexts/SuiAuthContext";
-import Layout from "src/layouts";
-import { Button, CardHeader, Container, OutlinedInput, Stack, styled, TextField, ToggleButton, ToggleButtonGroup, Typography, Card, CardContent, Alert } from "@mui/material";
+import { Button, CardHeader, Container, OutlinedInput, Stack, styled, TextField, ToggleButton, ToggleButtonGroup, Typography, Card, CardContent, Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Slide, Avatar, alpha } from '@mui/material';
 import Page from '../../components/Page';
 import { getFullnodeUrl } from '@mysten/sui.js/client';
-import { FormConfigContext, FormConfigProvider } from "src/contexts/FormConfigContext";
-import useSettings from "src/hooks/useSettings";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useRef, useState } from "react";
-import { TempConfig } from '../../contexts/FormConfigContext';
-import LoadingScreen from "src/components/LoadingScreen";
+import { FormConfigContext, FormConfigProvider, TempConfig } from '../../contexts/FormConfigContext';
 import Page404 from "../404";
-import Iconify from "src/components/Iconify";
-import SvgIconStyle from "src/components/SvgIconStyle";
-import useSuiAuth from "src/hooks/useSuiAuth";
 import '@mysten/dapp-kit/dist/index.css';
 import { LoadingButton } from "@mui/lab";
 import { requestSuiFromFaucet } from "@polymedia/suits";
+import React from "react";
+import Iconify from "../../components/Iconify";
+import LoadingScreen from "../../components/LoadingScreen";
+import SvgIconStyle from "../../components/SvgIconStyle";
+import useSettings from "../../hooks/useSettings";
+import Layout from "../../layouts";
+import { SuiAuthProvider } from "src/contexts/SuiAuthContext";
+import useSuiAuth from "src/hooks/useSuiAuth";
+import { UserInfoResponse } from "src/@types/dto/user-dto";
+import SourceServices from "src/services/SourceServices";
+import TransactionServices from "src/services/TransactionServices";
+import { TransitionProps } from "@mui/material/transitions";
+import createAvatar from "src/utils/createAvatar";
 
 const RootStyle = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -38,19 +43,35 @@ Donation.getLayout = function getLayout(page: React.ReactElement)
     return <Layout variant="logoOnly">{page}</Layout>;
 };
 
+const Transition = React.forwardRef(function Transition(
+    props: TransitionProps & {
+        children: React.ReactElement<any, any>;
+    },
+    ref: React.Ref<unknown>,
+)
+{
+    return <Slide direction="up" ref={ref} {...props} />;
+});
+
 const DonateComponent: React.FC = () =>
 {
-    const { isAuthenticated,
+    const {
+        isAuthenticated,
         sendTransaction,
-        info,
         user,
         wallet,
         fetchAccountBalance,
         NETWORK,
         balances,
-        fetchUserInfoById } = useSuiAuth();
+        fetchUserInfoById,
+        loadingBalance
+    } = useSuiAuth();
+    const transSvc = new TransactionServices();
+    const sourceSvc = new SourceServices();
+    const { push } = useRouter();
+
     const { _fetchConfigByCode } = useContext(FormConfigContext);
-    const { query: { code } } = useRouter();
+    const { query: { code, utm_source } } = useRouter();
     const isInit = useRef(false);
     const [loading, setLoading] = useState(true);
     const [formConfig, setFormConfig] = useState<TempConfig>();
@@ -58,7 +79,21 @@ const DonateComponent: React.FC = () =>
     const [formResult, setFormResult] = useState({});
     const [open, setOpen] = useState(false);
     const [loadingBuySui, setLoadingBuySui] = useState(false);
-    const [linkCreator, setLinkCreator] = useState();
+    const [linkCreator, setLinkCreator] = useState<UserInfoResponse>();
+    const [source, setSource] = useState<{
+        linkId: number,
+        utmSource: string,
+    }>({
+        linkId: -2,
+        utmSource: (utm_source as string) || ''
+    });
+
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const [loadingSendSui, setLoadingSendSui] = useState(false);
+    const [message, setMessage] = useState<{
+        type?: 'success' | 'error',
+        content?: string
+    } | null>();
 
     useEffect(() =>
     {
@@ -78,14 +113,16 @@ const DonateComponent: React.FC = () =>
         {
             const res = await _fetchConfigByCode(code);
 
-            if (res?.data?.config)
+            if (res?.data?.config && utm_source && typeof utm_source === 'string')
             {
+                setSource({
+                    linkId: res.data.id,
+                    utmSource: utm_source
+                })
                 setFormConfig(res.data.config);
                 const infoRes = await fetchUserInfoById(res.data.userId);
-                console.log(infoRes);
                 if (infoRes) setLinkCreator(infoRes);
             }
-
             setLoading(false);
         }
     }
@@ -95,34 +132,117 @@ const DonateComponent: React.FC = () =>
         if (user || wallet)
         {
             setLoadingBuySui(true);
-            await requestSuiFromFaucet(NETWORK, user?.userAddr || wallet?.address);
-            setTimeout(async () =>
-            {
-                await fetchAccountBalance(user?.userAddr || wallet?.address);
-                setLoadingBuySui(false);
-            }, 3000);
+            const request = await requestSuiFromFaucet(NETWORK, user?.userAddr || wallet?.address);
+            const { task } = await request.json();
+            // console.log(task);
+            checkRequestStatus(task);
         }
     };
 
-    const handleSendSui = async () =>
+    const checkRequestStatus = async (task: string) =>
     {
+        setTimeout(async () =>
+        {
+            setLoadingBuySui(false);
+            await fetchAccountBalance(user?.userAddr || wallet?.address);
+        }, 3000);
+    }
 
+    const handleSendSui = () =>
+    {
+        if (user && !wallet)
+        {
+
+        } else { doSendSui() };
     };
 
+    const doSendSui = () =>
+    {
+        setOpenConfirmDialog(false);
+        if (linkCreator?.id)
+        {
+            setLoadingSendSui(true);
+            sendTransaction(linkCreator.walletAddress, formResult.amount, async (trans) =>
+            {
+                try
+                {
+                    const srcInfo = await sourceSvc.add(source);
+                    console.log('Add source', srcInfo);
+                    const transaction = {
+                        ...trans, ...{
+                            sourceId: srcInfo?.id,
+                            receiver: linkCreator.id,
+                            amount: formResult.amount,
+                            name: formResult.name,
+                            note: formResult.note
+                        }
+                    };
+                    const addTranRes = await transSvc.add(transaction);
+                    console.log('Add trans', addTranRes);
+                    setMessage({
+                        type: 'success',
+                        content: 'Donated successful !'
+                    });
+                    setTimeout(() =>
+                    {
+                        setMessage(null);
+                        push('/thank-to-donate');
+                        localStorage.setItem('donate_amount', formResult.amount);
+                    }, 1000);
+
+                } catch (error)
+                {
+                    console.log('doSendSui', error);
+                    setMessage({
+                        type: 'error',
+                        content: error
+                    });
+                }
+                setTimeout(() => { setMessage(null); }, 3000);
+                setLoadingSendSui(false);
+            });
+        }
+    }
+    const aava = createAvatar(linkCreator?.avatarUrl || linkCreator?.fullName || linkCreator?.walletAddress);
     return <>
         {
             loading && < LoadingScreen />
         }
 
-        {(!loading && !formConfig) && <Page404 />}
+        {(!loading && (!formConfig || !utm_source)) && <Page404 />}
         {(!loading && formConfig) &&
             <>
                 <Stack direction={'row'} spacing={4}>
                     <Stack flex={1}>
                         <Card sx={{ height: '100%' }}>
-                            <CardHeader title={`About ${linkCreator?.fullName}`} />
                             <CardContent sx={{ height: '100%' }}>
-                                {linkCreator?.about}
+                                <Stack spacing={4} alignItems={'center'}>
+                                    <Avatar color={aava.color} sx={{ width: 80, height: 80, bgcolor: (theme) => alpha(theme.palette[aava.color].main, 1) }}>
+                                        <Typography variant="h2">{aava.name}</Typography>
+                                    </Avatar>
+                                    <TextField
+                                        color='info'
+                                        label='Name'
+                                        fullWidth
+                                        value={linkCreator?.fullName}
+                                        disabled
+                                    />
+                                    <TextField
+                                        color='info'
+                                        label='Wallet'
+                                        fullWidth
+                                        value={linkCreator?.walletAddress}
+                                        disabled
+                                    />
+                                    <TextField
+                                        color='info'
+                                        multiline
+                                        label='About'
+                                        fullWidth
+                                        value={linkCreator?.about}
+                                        disabled
+                                    />
+                                </Stack>
                             </CardContent>
                         </Card>
                     </Stack>
@@ -148,7 +268,7 @@ const DonateComponent: React.FC = () =>
                                         {formConfig.amounts.map((a: any, index: number) => (
                                             <ToggleButtonGroup color="primary"
                                                 exclusive
-                                                onChange={(e, val) => { setFormResult({ ...formResult, ...{ amount: val } }) }}
+                                                onChange={(e, val) => { setFormResult({ ...formResult, ...{ amount: val } }); }}
                                                 aria-label="Platform"
                                                 value={formResult.amount}>
                                                 {(a && typeof a === 'number')
@@ -186,23 +306,38 @@ const DonateComponent: React.FC = () =>
                                         color='info'
                                         label='Name'
                                         fullWidth
+                                        value={formResult.name}
+                                        onChange={(e) =>
+                                        {
+                                            setFormResult({ ...formResult, ...{ name: e.target.value } });
+                                        }}
                                     />
                                     <TextField
                                         color='info'
                                         rows={3}
                                         placeholder='Say something nice...(optional)'
+                                        value={formResult.note}
                                         fullWidth
                                         multiline
+                                        onChange={(e) =>
+                                        {
+                                            setFormResult({ ...formResult, ...{ note: e.target.value } });
+                                        }}
                                     />
                                     {
                                         isAuthenticated &&
                                         <Stack spacing={2}>
-                                            <Alert icon={<Iconify icon={'token-branded:sui'} width={24} height={24} />} severity="success">
-                                                <Typography variant="h6">Your balance : {balances}</Typography>
+                                            <Alert severity="success" color="primary" sx={{ display: 'flex', alignItems: 'center' }}>
+                                                <Stack justifyContent={'center'} justifyItems={'center'} alignItems={'center'} direction={'row'}>
+                                                    {!loadingBalance ? <Typography variant="h6">Your balance : {balances}</Typography> : <Typography variant="h6">Refreshing balance ...</Typography>}
+                                                    <Iconify icon={'token-branded:sui'} width={28} height={28} />
+                                                </Stack>
                                             </Alert>
-                                            <Stack direction={'row'} gap={2}>
+                                            <Stack direction={'row'} gap={2} justifyItems={'center'}>
                                                 <LoadingButton variant="contained"
-                                                    sx={[{ bgcolor: '#F1F9FEFF', fontSize: '1rem', color: '#4ba2ff', borderRadius: '22px', boxShadow: '0 8px 16px 0 #60adff3d' }, {
+                                                    loading={loadingSendSui}
+                                                    disabled={!(formResult.amount && formResult.name && formResult.amount < balances)}
+                                                    sx={[{ flex: '1', bgcolor: '#F1F9FEFF', fontSize: '1rem', color: '#4ba2ff', borderRadius: '22px', boxShadow: '0 8px 16px 0 #60adff3d' }, {
                                                         '&:hover': {
                                                             color: '#0C476FFF',
                                                             background: '#E9F5FDFF'
@@ -213,34 +348,41 @@ const DonateComponent: React.FC = () =>
                                                             background: "#D1EAFAFF",
                                                         }
                                                     }]}
-                                                    onClick={() =>
-                                                    {
-                                                        // sendTransaction()
-                                                    }}>
-                                                    <Stack direction={'row'} justifyContent={'center'} alignItems={'center'} gap={2}>
-                                                        <Iconify icon={'tabler:heart-filled'} color={'#4ba2ff'} />
+                                                    onClick={handleSendSui}>
+                                                    <Stack direction={'row'} justifyContent={'center'} alignItems={'center'} gap={1}>
+                                                        <Iconify icon={'tabler:heart-filled'} color={'inherit'} />
                                                         <span>Donate</span>
                                                     </Stack>
                                                 </LoadingButton>
-                                                <LoadingButton
-                                                    loading={loadingBuySui}
-                                                    title='Request Sui From Faucet'
-                                                    variant="contained"
-                                                    sx={[{ bgcolor: '#ffc107FF', fontSize: '1rem', color: (theme) => theme.palette.warning.lighter, borderRadius: '22px', boxShadow: '0 8px 16px 0 #ffc10780' }, {
-                                                        '&:hover': {
-                                                            color: '#ffc107FF',
-                                                            background: '#ffc10780'
-                                                        }
-                                                    }, {
-                                                        '&:hover:active': {
-                                                            color: "#ffc107FF",
-                                                            background: "#ffc10780",
-                                                        }
-                                                    }]}
-                                                    onClick={handleRequestSui}>
-                                                    <span>Not enough SUI ? Buy SUI here</span>
-                                                </LoadingButton>
+                                                {
+                                                    formResult.amount > balances && <LoadingButton
+                                                        loading={loadingBuySui}
+                                                        title='Request Sui From Faucet'
+                                                        variant="contained"
+                                                        sx={[{ bgcolor: '#ffc107FF', fontSize: '1rem', color: (theme) => theme.palette.warning.lighter, borderRadius: '22px', boxShadow: '0 8px 16px 0 #ffc10780' }, {
+                                                            '&:hover': {
+                                                                color: '#ffc107FF',
+                                                                background: '#ffc10780'
+                                                            }
+                                                        }, {
+                                                            '&:hover:active': {
+                                                                color: "#ffc107FF",
+                                                                background: "#ffc10780",
+                                                            }
+                                                        }]}
+                                                        onClick={handleRequestSui}>
+                                                        <span>Not enough SUI ? Buy SUI here</span>
+                                                    </LoadingButton>
+                                                }
+
                                             </Stack>
+                                            {
+                                                message && <Alert severity={message.type} color={message.type} sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    <Stack justifyContent={'center'} justifyItems={'center'} alignItems={'center'} direction={'row'}>
+                                                        <Typography variant="h6">{message.content}</Typography>
+                                                    </Stack>
+                                                </Alert>
+                                            }
                                         </Stack>
                                     }
                                     {
@@ -281,6 +423,25 @@ const DonateComponent: React.FC = () =>
                     open={open}
                     onOpenChange={(isOpen) => setOpen(isOpen)}
                 />
+                <Dialog
+                    open={openConfirmDialog}
+                    TransitionComponent={Transition}
+                    keepMounted
+                    onClose={() => { setOpenConfirmDialog(false); }}
+                    aria-describedby="alert-dialog-slide-description"
+                >
+                    <DialogTitle>{"Use Google's location service?"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-slide-description">
+                            Let Google help apps determine location. This means sending anonymous
+                            location data to Google, even when no apps are running.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => { setOpenConfirmDialog(false); }}>Disagree</Button>
+                        <Button onClick={() => { doSendSui(); }}>Agree</Button>
+                    </DialogActions>
+                </Dialog>
             </>
         }
     </>
@@ -302,7 +463,7 @@ export default function Donation()
             <QueryClientProvider client={queryClient}>
                 <SuiClientProvider defaultNetwork='devnet' networks={networkConfig}>
                     <WalletProvider autoConnect>
-                        <SuiAuthProvider>
+                        <SuiAuthProvider createNewAccount={false}>
                             <FormConfigProvider>
                                 <RootStyle>
                                     <Container maxWidth={themeStretch ? false : 'lg'} sx={{
