@@ -37,9 +37,7 @@ export default function ManagerLinkDonation()
                 <Stack>
                     <Card>
                         <CardContent>
-                            <LinkDonateProvider NodeId=''>
-                                <TableLinkDonate />
-                            </LinkDonateProvider>
+                            <TableLinkDonate />
                         </CardContent>
                     </Card>
                 </Stack>

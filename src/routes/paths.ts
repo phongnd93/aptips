@@ -100,7 +100,7 @@ export const SUI_DONA_PATH = {
   manager: {
     root: path(ROOTS_SUI, '/manager'),
     link: path(ROOTS_SUI, '/manager/link-donation'),
-    detail: path(ROOTS_SUI, '/manager/detail-link/detail-link'),
+    detail: path(ROOTS_SUI, '/manager/detail-link'),
     form: path(ROOTS_SUI, '/manager/form-donation'),
   }
 }

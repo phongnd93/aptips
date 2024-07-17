@@ -10,17 +10,18 @@ export type LinkDonationModel = {
     name: string,
     config: string
 
-    sui: number,
+    totalSUI: number,
+    totalDonate: number,
     orderdate?: string,
 }
 
 export type UserLinkDonateModel = {
     id: number,
-    name: string,
-    amount: number,
-    note: string,
-    timeStamp: string,
+    senderWallet: string,
+    totalDonations: number,
     sourceId: number,
+    timeStamp: string,
+    receiver: string,
 }
 
 // "id": 0,

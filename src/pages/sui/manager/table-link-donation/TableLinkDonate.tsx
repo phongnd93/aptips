@@ -21,31 +21,20 @@ import Iconify from 'src/components/Iconify';
 import { SUI_DONA_PATH } from 'src/routes/paths';
 import EmptyData from 'src/components/EmptyData';
 import Link from "next/link";
-import { LinkDonationModel } from 'src/@types/link-donation';
+
 import { useContext, useEffect, useMemo, useState } from 'react';
 import LinksServices from 'src/services/LinksServices';
 import MyAvatar from 'src/components/MyAvatar';
-import { LinkDonateContext } from '../../../../contexts/ManagerLinkProvider';
+import { LinkDonateContext } from 'src/contexts/ManagerLinkProvider';
+import useSuiAuth from 'src/hooks/useSuiAuth';
+import { LinkDonationModel } from 'src/@types/link-donation';
+import { useRouter } from 'next/router';
+
 
 // ----------------------------------------------------------------------
 
-// function createData(no: string, name: string, orderdate: string, linkCode: string, donation: number, amount: number, id?: number ) {
-
-//   return { no, name, orderdate, linkCode, donation, amount };
-// }
-
-// const TABLE_DATA = [
-//   createData('0', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
-//   createData('1', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
-//   createData('2', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
-//   createData('3', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
-//   createData('4', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
-//   createData('5', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
-//   createData('6', 'Admin', '20-5-2024', 'sui/123-123-123', 30, 30),
-// ];
-
 interface Column {
-  id: 'id' | 'name' | 'orderdate' | 'linkCode' | 'amount' | 'detail';
+  id: 'id' | 'orderdate' | 'linkCode' | 'amount' | 'sui' | '';
   label: string;
   minWidth?: number;
   maxWidth?: number;
@@ -55,48 +44,47 @@ interface Column {
 }
 
 const COLUMNS: Column[] = [
-  { id: 'id', label: 'NO.', minWidth: 10, },
-  { id: 'name', label: 'User Creator', minWidth: 150 },
-  {
-    id: 'orderdate',
-    label: 'ORDER DATE',
-    minWidth: 150,
-    align: "left",
-    format: (value) => value.toLocaleString('en-US'),
-  },
+  { id: 'id', label: 'NO.', minWidth: 30, },
   {
     id: 'linkCode',
     label: 'Link',
-    minWidth: 190,
+    minWidth: 200,
     align: "left",
     format: (value) => value.toLocaleString('en-US'),
   },
-  // {
-  //   id: 'donation',
-  //   label: 'Donation',
-  //   minWidth: 190,
-  //   align: "left",
-  //   format: (value) => value.toFixed(2),
-  // },
+  {
+    id: 'orderdate',
+    label: 'Date',
+    minWidth: 180,
+    align: "left",
+    format: (value) => value.toLocaleString('en-US'),
+  },
   {
     id: 'amount',
-    label: 'Donatior',
-    minWidth: 170,
+    label: 'Donates',
+    minWidth: 180,
     align: "left",
     format: (value) => value.toFixed(2),
-  },                            
+  },
+  {
+    id: 'sui',
+    label: 'SUI',
+    minWidth: 100,
+    align: "left",
+    format: (value) => value.toFixed(2),
+  },  
+  {
+    id: '',
+    label: '',
+    minWidth: 20,
+    align: "right",
+    format: (value) => value.toFixed(2),
+  },                          
 ];
 
 // ----------------------------------------------------------------------
 
 export default function TableLinkDonate() {
-  const {
-    page,
-    rowsPerPage,
-    
-    onChangePage,
-    onChangeRowsPerPage,
-  } = useTable({ defaultRowsPerPage: 10 });
 
   const {
     listLinks,
@@ -106,55 +94,77 @@ export default function TableLinkDonate() {
     setLinkId,
   } = useContext(LinkDonateContext)
 
-  var linkSvc = new LinksServices()
+  const { info } = useSuiAuth();
+  const router = useRouter();
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handleChangePage = (event: any, newPage: any) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: any) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const loadData = async(reques?: any) => {
-       await loadDataLink();
+       await loadDataLink(info?.id);
+  }
+
+  const handleClickDetail = (id: number) => 
+  {
+      router.push(`${SUI_DONA_PATH.manager.detail}/${id}`);
   }
 
   const listLinkTable = useMemo(() =>{
-
+  
     if (listLinks.length > 0)
     {
-      const temp = listLinks.map((row: LinkDonationModel) => {
+      const temp = (rowsPerPage > 0  ? listLinks.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage): listLinks).map((row: LinkDonationModel) => {
           return (
-            <TableRow hover role="checkbox" tabIndex={-1} key={row?.id} sx={{ pl: 1, pr: 1 }}>
+            <TableRow hover role="checkbox" tabIndex={-1} key={row?.id} sx={{ pl: 1, pr: 1 }} onClick={() =>{handleClickDetail(row.id)}}>
               <TableCell>{row.id}</TableCell>
-              <TableCell>
-                        <Stack direction="row" alignItems="center" spacing={2}>
-                          <MyAvatar /> <Label sx={{ ml: 1 }}>{row.name}</Label>
-                        </Stack>
-              </TableCell>
-              <TableCell>{row?.orderdate}</TableCell>
               <TableCell>
                         <Label
                           color='info'
                           onClick={() => {
                           } }
                         >
-                          {row.linkCode}
+                          {row.linkCode || ''}
                         </Label>
               </TableCell>
+              <TableCell>{row?.orderdate || ''}</TableCell>
               <TableCell>
-                        <Stack direction="row" alignItems="center" spacing={2}>
-                          <Iconify icon={'ph:user'} sx={{ width: 16, height: 16, mr: 1 }} />
-                          <Box sx={{ ml: 1 }}>{row.amount}</Box>
-                        </Stack>
+                  <Stack direction="row" alignItems="center" spacing={2}>
+                    {row.amount &&(<Iconify icon={'ph:user'} sx={{ width: 16, height: 16, mr: 1 }} />)}
+                    <Box sx={{ ml: 1 }}>{row.amount}</Box>
+                  </Stack>
               </TableCell>
+              <TableCell>
+                  <Stack direction="row" alignItems="center" spacing={1}>
+                    {/* <Iconify icon={'ph:user'} sx={{ width: 16, height: 16, mr: 1 }} /> */}
+                    {row.sui &&(
+                      <Label
+                        color='info'
+                      ><Box sx={{}}>{row.sui}</Box></Label>
+                    )}
+                  </Stack>
+              </TableCell>
+
               <TableCell align="justify">
-                        <Link href={SUI_DONA_PATH.manager.detail} key={row?.id}>
-                            <Button
-                              sx={{ right: 15, top: 0, mt: 0 }}
-                              variant='text'
-                              color='info'
-                              onClick={() =>{
-                                console.log(row.id);
-                                setLinkId(row.id);
-                              }}
-                            >
-                              Detail
-                            </Button>
-                        </Link>
+                    <Button
+                      sx={{ right: 15, top: 0, mt: 0 }}
+                      variant='text'
+                      color='info'
+                      onClick={() =>{
+                        console.log(row.id);
+                        setLinkId(row.id);
+                      }}
+                    >
+                       <Iconify icon={'bi:arrow-right'} sx={{ width: 16, height: 16, mr: 1 }} />
+                    </Button>
               </TableCell>
             </TableRow>
           );
@@ -195,9 +205,6 @@ export default function TableLinkDonate() {
                       {column.label}
                   </TableCell>
                 ))}
-                <TableCell>
-                    Detail
-                </TableCell>
               </TableRow>
             </TableHead>
 
@@ -209,13 +216,13 @@ export default function TableLinkDonate() {
       </Scrollbar>
 
       <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
+        rowsPerPageOptions={[10, 25, 50]}
         component="div"
-        count={listLinks?.length}
-        rowsPerPage={rowsPerPage}
+        count={listLinks.length}
         page={page}
-        onPageChange={onChangePage}
-        onRowsPerPageChange={onChangeRowsPerPage}
+        onPageChange={handleChangePage}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
       />
     </>
   );

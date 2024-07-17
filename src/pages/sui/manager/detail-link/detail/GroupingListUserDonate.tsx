@@ -10,6 +10,8 @@ import {
   Stack,
   Avatar,
   Box,
+  Typography,
+  styled,
 } from '@mui/material';
 // hooks
 import useTable from '../../../../../hooks/useTable';
@@ -19,26 +21,28 @@ import Label from 'src/components/Label';
 import Iconify from 'src/components/Iconify';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import LinksServices from 'src/services/LinksServices';
-import { LinkDonationModel } from 'src/@types/link-donation';
+
 import EmptyData from 'src/components/EmptyData';
 import MyAvatar from 'src/components/MyAvatar';
 import createAvatar from 'src/utils/createAvatar';
-import { LinkDonateContext } from '../../../../../contexts/ManagerLinkProvider';
+import { LinkDonateContext } from 'src/contexts/ManagerLinkProvider';
+import { UserLinkDonateModel } from 'src/@types/link-donation';
+
 
 // ----------------------------------------------------------------------
 
-interface UserLinkDonateModel {
-  walletAddress: string,
-  email: string,
-  avatarUrl: string,
-  totalDonations: number,
-
-  orderdate: string,
-  source: string,
-}
+const EmptyDataContainerStyle = styled(Stack)(({ theme }) => ({
+  left: 0,
+  top: 0,
+  zIndex: 10,
+  position: 'absolute',
+  width: '100%',
+  height: '100%',
+  paddingY: theme.spacing(5)
+}));
 
 interface Column {
-  id: 'no' | 'avatarUrl' | 'orderdate' | 'source' | 'totalDonations';
+  id: 'id' | 'name' | 'amount' | 'note' | 'timeStamp' | 'sourceId';
   label: string;
   minWidth?: number;
   maxWidth?: number;
@@ -47,55 +51,61 @@ interface Column {
 }
 
 const COLUMNS: Column[] = [
-  { id: 'no', label: 'NO.', minWidth: 10, },
-  { id: 'avatarUrl', label: 'Donator', minWidth: 170 },
+  { id: 'id', label: 'NO.', minWidth: 10, },
+  { id: 'name', label: 'Name', minWidth: 100},
   {
-    id: 'orderdate',
-    label: 'ORDER DATE',
-    minWidth: 170,
+    id: 'amount',
+    label: 'Amount',
+    minWidth: 100,
     align: "left",
     format: (value) => value.toLocaleString('en-US'),
   },
   {
-    id: 'source',
+    id: 'note',
+    label: 'Note',
+    minWidth: 100,
+    align: "left",
+    format: (value) => value.toLocaleString('en-US'),
+  },
+  {
+    id: 'timeStamp',
+    label: 'Time stamp',
+    minWidth: 100,
+    align: "left",
+    format: (value) => value.toLocaleString('en-US'),
+  },
+  {
+    id: 'sourceId',
     label: 'Source',
-    minWidth: 170,
+    minWidth: 100,
     align: "left",
     format: (value) => value.toLocaleString('en-US'),
   },
-  {
-    id: 'totalDonations',
-    label: 'SUI',
-    minWidth: 170,
-    align: "left",
-    format: (value) => value.toLocaleString('en-US'),
-  }
 ];
 
 // ----------------------------------------------------------------------
 
 export default function GroupingListUserDonate() {
-  const {
-    page,
-    rowsPerPage,
-    //
-    onChangePage,
-    onChangeRowsPerPage,
-  } = useTable({ defaultRowsPerPage: 10 });
 
   const {
-    linkId,
-    loadListUserDonate,
     listUserDonate,
+    setListUserDonates,
   } = useContext(LinkDonateContext);
 
-  console.log(linkId);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const loadData = async() => {
-     await loadListUserDonate(linkId);
-  }
+  const handleChangePage = (event: any, newPage: any) => {
+    setPage(newPage);
+  };
 
-  const avataURl = (user: any) =>
+  const handleChangeRowsPerPage = (event: any) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+
+  const avataURl = (user?: any) =>
   {
     const template = (
       <Avatar
@@ -113,34 +123,37 @@ export default function GroupingListUserDonate() {
   {
       if (listUserDonate?.length > 0)
       {
-          const temp = listUserDonate.map((row: UserLinkDonateModel)=>
+          const temp =  (rowsPerPage > 0  ? listUserDonate.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage): listUserDonate).map((row: UserLinkDonateModel) =>
           {
-            const avata = avataURl(row.avatarUrl);
             return (
-              <TableRow hover role="checkbox" tabIndex={-1} key={row.walletAddress}>
-                    <TableCell></TableCell>
+              <TableRow hover role="checkbox" tabIndex={-1} key={row.sourceId}>
+                    <TableCell>{row.id}</TableCell>
                     <TableCell>
                       <Stack direction="row" alignItems="center" spacing={2}>
-                        {avata} <Label sx={{ ml: 1 }}>{row.walletAddress}</Label>
+                          {avataURl} <Label sx={{ ml: 1 }}>{row.name} </Label>
                       </Stack>
                     </TableCell>
-                    <TableCell>{row.orderdate}</TableCell>
+                    <TableCell align="justify">
+                        <Label color='info'>
+                          {row.amount} $
+                        </Label>
+                    </TableCell>
+                    <TableCell><Label color='default'>
+                          {row.note}
+                        </Label>
+                    </TableCell>
+                    <TableCell>{row.timeStamp}</TableCell>
                     <TableCell>
                       <Stack direction="row" alignItems="center" spacing={2}>
                         <Label 
                           sx={{ ml: 1, minWidth: 70 }}
                           color={
-                            (row.source === 'zalo' && 'warning') ||
-                            (row.source === 'facebook' && 'success') ||
+                            (row.sourceId === 0 && 'warning') ||
+                            (row.sourceId === 1 && 'success') ||
                             'info'
                           }
-                        >{row.source}</Label>
+                        >{row.sourceId}</Label>
                       </Stack>
-                    </TableCell>
-                    <TableCell align="justify">
-                        <Label color='info'>
-                          {row.totalDonations} $
-                        </Label>
                     </TableCell>
                 </TableRow>
             );
@@ -152,17 +165,22 @@ export default function GroupingListUserDonate() {
       {
         const temp = (
           <Box sx={{ height: 300 }}>
-            <EmptyData />
+              <EmptyDataContainerStyle justifyContent={'center'} alignContent={'center'} alignItems={"center"}>
+                  <Box className={'background'} sx={{ opacity: 0.7, background: (theme) => theme.palette.background.default }} width={'100%'} height={'100%'}></Box>
+                  <Stack sx={{ position: 'absolute' }} justifyContent={'center'} alignContent={'center'} alignItems={"center"} spacing={2}>
+                      <Typography variant="h5">No user donate </Typography>
+                  </Stack>
+              </EmptyDataContainerStyle>
           </Box>
+            // <EmptyData  />
         )
 
         return temp;
-      }
+      };
   }, [listUserDonate]);
 
   useEffect(() =>
   {
-    loadData();
   }, []);
 
   return (
@@ -192,13 +210,13 @@ export default function GroupingListUserDonate() {
       </Scrollbar>
 
       <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
+        rowsPerPageOptions={[10, 25, 50]}
         component="div"
-        count={listUserDonate?.length}
-        rowsPerPage={rowsPerPage}
+        count={listUserDonate.length}
         page={page}
-        onPageChange={onChangePage}
-        onRowsPerPageChange={onChangeRowsPerPage}
+        onPageChange={handleChangePage}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
       />
     </>
   );

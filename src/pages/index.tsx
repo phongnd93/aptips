@@ -14,7 +14,7 @@ import EmptyData from 'src/components/EmptyData';
 import TransactionServices from 'src/services/TransactionServices';
 import { Donator, RevenueResponseDTO, Transaction } from '../@types/transaction';
 import AppTopDonators from 'src/sections/@dashboard/general/app/AppTopDonators';
-import AppTransactionHistory from 'src/sections/@dashboard/general/app/AppTransactionHistory';
+import TableReportData from './TableReportData';
 
 HomePage.getLayout = function getLayout(page: React.ReactElement)
 {
@@ -138,7 +138,7 @@ export default function HomePage()
             </Grid>
 
             <Grid item xs={12}>
-              <AppTransactionHistory data={transactions} />
+              <TableReportData dataReport={transactions} />
             </Grid>
           </Grid>
         </Container>

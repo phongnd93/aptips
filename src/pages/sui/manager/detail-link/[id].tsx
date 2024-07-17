@@ -1,23 +1,20 @@
+
 import Layout from '../../../../layouts';
 import Page from '../../../../components/Page';
 import { Box, Button, Card, CardActionArea, CardContent, CardHeader, Container, Dialog, Grid, Icon, ListItemIcon, Popover, Stack, Tooltip, Typography, useTheme } from '@mui/material';
 import useSettings from 'src/hooks/useSettings';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
-import TextIconLabel from 'src/components/TextIconLabel';
-import AppAreaInstalled from './detail/AppAreaInstalled';
 import AppWidgetSummary from './detail/AppWidgetSummary';
 import GroupingListUserDonate from './detail/GroupingListUserDonate';
 import Iconify from 'src/components/Iconify';
-import { FabButtonAnimate } from 'src/components/animate';
 import { ShareSocial } from 'src/components/share';
-import { Popup } from 'react-map-gl';
-import { MapControlPopup } from 'src/components/map';
 import { SUI_DONA_PATH } from 'src/routes/paths';
 import Link from 'next/link';
-import { styled } from '@mui/material/styles';
 import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
-import { LinkDonateContext, LinkDonateProvider } from '../../../../contexts/ManagerLinkProvider';
+import { LinkDonateContext } from 'src/contexts/ManagerLinkProvider';
+import { useRouter } from 'next/router';
+import AppAreaInstalled from './detail/AppAreaInstalled';
 
 // ----------------------------------------------------------------------
 
@@ -30,23 +27,49 @@ DetailLinkDonation.getLayout = function getLayout(page: React.ReactElement) {
 export default function DetailLinkDonation(value?: string) {
     const { themeStretch } = useSettings();
 
+    const router = useRouter();
+    const { id } = router.query;
+
     const {
-        linkId,
-    } = useContext(LinkDonateContext);
+        revenue,
+        totalUserDonate,
+        totalSUI,
+        newDonators,
+        loadListUserDonate,
+        loadRevenue
+    } = useContext(LinkDonateContext)
 
     const [isOpenShare, setIsOpenShare] = useState<boolean>(false);
+
     const theme = useTheme();
+
+    const loadData = async() => {
+
+        await loadListUserDonate(id);
+        await loadRevenue(id)
+    }
+
+    const handleClickEdit = () =>
+    {
+        router.push({
+            pathname: `${SUI_DONA_PATH.manager.form}`,
+            query: { id: id },
+          });
+    }
+
+    useEffect(() => {
+        loadData();
+    }, [id]);
     
     return (
-        <LinkDonateProvider NodeId=''>
-            <Page title="Manager: Link Donation" sx={{ mt: 10 }}>
+        <Page title="Manager: Link Donation" sx={{ mt: 10 }}>
                 <Container maxWidth={themeStretch ? false : 'lg'} >
                     <Box sx={{ pt: 4, mb: 1, pl: 1 }} >
                             <Stack spacing={2} direction={'row'}>
                                 <HeaderBreadcrumbs
                                     heading='Detail Link Donate'
                                     links={[
-                                        { name: 'List Links', href: SUI_DONA_PATH.manager.link,  },
+                                        { name: 'List Links', href: SUI_DONA_PATH.manager.link },
                                         { name: 'Detail Links' },
                                     ]}
                                 />
@@ -58,7 +81,7 @@ export default function DetailLinkDonation(value?: string) {
                                         setIsOpenShare(true);
                                     }}
                                 >
-                                    {linkId}
+                                    {id}
                                 </Typography>
                                 <Box sx={{ ml: 4, display: 'flex', height: 35, mt: 4 }}>
                                     <Link href={SUI_DONA_PATH.manager.form}>
@@ -68,6 +91,10 @@ export default function DetailLinkDonation(value?: string) {
                                             size='small'
                                             startIcon={<Iconify icon="ic:edit" />}
                                             href={SUI_DONA_PATH.manager.form}
+                                            onClick={() =>
+                                            {
+                                                handleClickEdit(id);
+                                            }}
                                         >Edit</Button>
                                     </Link>
                                     <Button
@@ -92,9 +119,9 @@ export default function DetailLinkDonation(value?: string) {
                                 <Grid spacing={3} sx={{ width: '50%', mr: 3 }} >
                                     <Grid item md={11} sx={{ mb: 2}}>
                                         <AppWidgetSummary
-                                            title="Total Active Users"
-                                            percent={2.6}
-                                            total={18765}
+                                            title="Total"
+                                            percent={totalUserDonate > 0 ? 100 : 0}
+                                            total={totalUserDonate}
                                             chartColor={theme.palette.primary.main}
                                             chartData={[5, 18, 12, 51, 68, 11, 39, 37, 27, 20]}
                                         />
@@ -102,9 +129,9 @@ export default function DetailLinkDonation(value?: string) {
 
                                     <Grid item md={11} sx={{ mb: 2}}>
                                         <AppWidgetSummary
-                                            title="Total Installed"
-                                            percent={0.2}
-                                            total={4876}
+                                            title="Donations"
+                                            percent={totalSUI > 0 ? 100 : 0}
+                                            total={totalSUI}
                                             chartColor={theme.palette.chart.blue[0]}
                                             chartData={[20, 41, 63, 33, 28, 35, 50, 46, 11, 26]}
                                         />
@@ -112,16 +139,16 @@ export default function DetailLinkDonation(value?: string) {
 
                                     <Grid item md={11} sx={{ mb: 2}}>
                                         <AppWidgetSummary
-                                            title="Total Downloads"
-                                            percent={-0.1}
-                                            total={678}
+                                            title="New donators"
+                                            percent={newDonators > 0 ? 100 : 0}
+                                            total={newDonators}
                                             chartColor={theme.palette.chart.red[0]}
                                             chartData={[8, 9, 31, 8, 16, 37, 8, 33, 46, 31]}
                                         />
                                     </Grid>   
                                 </Grid>
                                 <Grid sx={{ width: '50%', }}>
-                                    <AppAreaInstalled />
+                                    <AppAreaInstalled title="Revenue" data={revenue} />
                                 </Grid>
                             </Grid>
                         </CardContent>
@@ -143,7 +170,6 @@ export default function DetailLinkDonation(value?: string) {
                 >
                     <ShareSocial  />
                 </Dialog>
-            </Page>
-        </LinkDonateProvider>
+        </Page>
     )
 };

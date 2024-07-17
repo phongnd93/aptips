@@ -1,7 +1,9 @@
 import { createContext, useState } from "react";
 import { LinkDonationModel, UserLinkDonateModel } from "src/@types/link-donation";
-import LinksServices from "src/services/LinksServices";
+import { RevenueResponseDTO } from "src/@types/transaction";
 
+
+import LinksServices from "src/services/LinksServices";
 
 
 type LinkDonateProviderProps = {
@@ -9,15 +11,22 @@ type LinkDonateProviderProps = {
     listUserDonate: UserLinkDonateModel[],
     listMostDoante: LinkDonationModel[],
     linkId: number,
+    totalUserDonate: number,
+    totalSUI: number,
+    newDonators: number,
+    revenue: RevenueResponseDTO,
 
-
+    setTotalSUI: (value: number) => void,
+    setRevenue: (config: RevenueResponseDTO) => void,
     setListUserDonates: (config: UserLinkDonateModel[]) => void,
     setListMostDonate: (config: LinkDonationModel[]) => void,
     setLinkId: (value: number) => void,
+    setTotalUserDonate: (value: number) => void,
+    setNewDonators:(value: number) => void,
     setListLinks: (config: LinkDonationModel[]) => void,
     loadDataLink: (reques?: string) => Promise<any>,
-    loadListUserDonate: (id: number) => Promise<any>,
-    loadListMostDonate: (reques?: string) => Promise<any>,
+    loadListUserDonate: (id: string) => Promise<any>,
+    loadRevenue: (id: number) => Promise<any>,
 };
 
 const LinkDonateContext = createContext<LinkDonateProviderProps>({} as LinkDonateProviderProps);
@@ -30,6 +39,11 @@ const LinkDonateProvider: React.FC<{NodeId: string}> = ({ NodeId, children }) =>
     const [ listUserDonate, setListUserDonates ] = useState<UserLinkDonateModel[]>([])
     const [ listMostDoante, setListMostDonate ] = useState<LinkDonationModel[]>([])
 
+    const [revenue, setRevenue] = useState<RevenueResponseDTO>([]);
+
+    const [totalUserDonate , setTotalUserDonate] = useState<number>(0);
+    const [totalSUI , setTotalSUI] = useState<number>(0);
+    const [newDonators, setNewDonators] = useState<number>(0);
 
     const [ linkId, setLinkId ] = useState<number>(0);
 
@@ -42,25 +56,23 @@ const LinkDonateProvider: React.FC<{NodeId: string}> = ({ NodeId, children }) =>
         }
     } 
 
-    const loadListUserDonate = async(id: number) =>
+    const loadListUserDonate = async(id: string) =>
     {
-        const value = JSON.stringify(id);
-        const result = await linkSvc.getUserDonateLink(value);
+        const result = await linkSvc.getUserTransactionLink(id);
 
         if (result?.status === 200)
         {
             setListUserDonates(result.data);
+            setTotalUserDonate(result.data?.totalDonate);
+            setRevenue(result.data?.length);
+            setTotalSUI(result.data?.totalSUI);
         }
     }
 
-    const loadListMostDonate = async() =>
+    const loadRevenue = async(id: number) =>
     {
-        const result = await linkSvc.getMostUserDonate();
-
-        if (result?.status === 200)
-        {
-            setListMostDonate(result.data);
-        }
+        const result = await linkSvc.revenue(id);
+        setRevenue(result)
     }
 
     return (
@@ -69,14 +81,22 @@ const LinkDonateProvider: React.FC<{NodeId: string}> = ({ NodeId, children }) =>
             linkId,
             listUserDonate,
             listMostDoante,
+            totalUserDonate,
+            newDonators,
+            revenue,
+            totalSUI,
 
+            setTotalSUI,
+            setRevenue,
             setListUserDonates,
             setListMostDonate,
+            setTotalUserDonate,
+            setNewDonators,
             setLinkId,
             setListLinks,
             loadDataLink,
             loadListUserDonate,
-            loadListMostDonate,
+            loadRevenue,
         }}
         >
             {children}

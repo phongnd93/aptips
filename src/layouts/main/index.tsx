@@ -7,6 +7,7 @@ import { Box, Link, Container, Typography, Stack } from '@mui/material';
 import Logo from '../../components/Logo';
 //
 import MainHeader from './MainHeader';
+import { LinkDonateProvider } from '../../../src/contexts/ManagerLinkProvider';
 
 // ----------------------------------------------------------------------
 
@@ -21,9 +22,9 @@ export default function MainLayout({ children }: Props)
   return (
     <Stack sx={{ minHeight: 1 }}>
       <MainHeader />
-
-      {children}
-
+        <LinkDonateProvider NodeId=''>
+          {children}
+        </LinkDonateProvider>
       <Box sx={{ flexGrow: 1 }} />
 
       <Box
