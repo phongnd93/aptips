@@ -59,15 +59,9 @@ import MotionLazyContainer from '../components/animate/MotionLazyContainer';
 // Check our docs
 // https://docs-minimals.vercel.app/authentication/ts-version
 
-import { SuiAuthProvider } from 'src/contexts/SuiAuthContext';
-// import { AuthProvider } from '../contexts/JWTContext';
-// import { AuthProvider } from '../contexts/Auth0Context';
-// import { AuthProvider } from '../contexts/FirebaseContext';
-// import { AuthProvider } from '../contexts/AwsCognitoContext';
-import { createNetworkConfig, SuiClientProvider, WalletProvider } from '@mysten/dapp-kit';
-import { getFullnodeUrl } from '@mysten/sui.js/client';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PersistGate } from 'redux-persist/integration/react';
+import { AptosWalletProvider } from '../contexts/aptos/AptosWalletProvider';
+import { AptosProvider } from 'src/contexts/aptos/AptosContext';
 
 // ----------------------------------------------------------------------
 
@@ -84,53 +78,43 @@ interface MyAppProps extends AppProps
 export default function MyApp(props: MyAppProps)
 {
   const { Component, pageProps, settings } = props;
-  // Config options for the networks you want to connect to
-  const { networkConfig } = createNetworkConfig({
-    localnet: { url: getFullnodeUrl('localnet') },
-    mainnet: { url: getFullnodeUrl('mainnet') },
-    devnet: { url: getFullnodeUrl('devnet') }
-  });
+
 
   const getLayout = Component.getLayout ?? ((page) => page);
-  const queryClient = new QueryClient();
   return (
     <>
       <Head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
-      <QueryClientProvider client={queryClient}>
-        <SuiClientProvider defaultNetwork='devnet' networks={networkConfig}>
-          <WalletProvider autoConnect>
-            <SuiAuthProvider createNewAccount={true}>
-              <ReduxProvider store={store}>
-                <PersistGate loading={null} persistor={persistor}>
-                  <CollapseDrawerProvider>
-                    <SettingsProvider defaultSettings={settings}>
-                      <ThemeProvider>
-                        <NotistackProvider>
-                          <MotionLazyContainer>
-                            <ThemeColorPresets>
-                              <ThemeLocalization>
-                                <RtlLayout>
-                                  <ChartStyle />
-                                  {/* PHONG: Hide setting buttons
+      <AptosWalletProvider>
+        <AptosProvider createnewAccount={true} >
+          <ReduxProvider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+              <CollapseDrawerProvider>
+                <SettingsProvider defaultSettings={settings}>
+                  <ThemeProvider>
+                    <NotistackProvider>
+                      <MotionLazyContainer>
+                        <ThemeColorPresets>
+                          <ThemeLocalization>
+                            <RtlLayout>
+                              <ChartStyle />
+                              {/* PHONG: Hide setting buttons
                               <Settings /> */}
-                                  <ProgressBar />
-                                  {getLayout(<Component {...pageProps} />)}
-                                </RtlLayout>
-                              </ThemeLocalization>
-                            </ThemeColorPresets>
-                          </MotionLazyContainer>
-                        </NotistackProvider>
-                      </ThemeProvider>
-                    </SettingsProvider>
-                  </CollapseDrawerProvider>
-                </PersistGate>
-              </ReduxProvider>
-            </SuiAuthProvider>
-          </WalletProvider>
-        </SuiClientProvider>
-      </QueryClientProvider>
+                              <ProgressBar />
+                              {getLayout(<Component {...pageProps} />)}
+                            </RtlLayout>
+                          </ThemeLocalization>
+                        </ThemeColorPresets>
+                      </MotionLazyContainer>
+                    </NotistackProvider>
+                  </ThemeProvider>
+                </SettingsProvider>
+              </CollapseDrawerProvider>
+            </PersistGate>
+          </ReduxProvider>
+        </AptosProvider>
+      </AptosWalletProvider>
     </>
   );
 }

@@ -6,7 +6,7 @@ import { Profile } from '../../../../@types/user';
 // utils
 import cssStyles from '../../../../utils/cssStyles';
 // hooks
-import useAuth from '../../../../hooks/useAuth';
+import useAptos from '../../../../hooks/useAptos';
 // components
 import MyAvatar from '../../../../components/MyAvatar';
 import Image from '../../../../components/Image';
@@ -47,7 +47,7 @@ type Props = {
 };
 
 export default function ProfileCover({ myProfile }: Props) {
-  const { user } = useSuiAuth();
+  const { user } = useAptos();
   const { position, cover } = myProfile;
 
   return (

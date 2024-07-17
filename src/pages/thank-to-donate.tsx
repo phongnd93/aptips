@@ -65,7 +65,7 @@ export default function ThankToDonate()
                             <Typography variant="h3">
                                 <Stack spacing={'1'} direction={'row'} justifyContent={'center'} justifyItems={'center'} alignItems={'center'}>
                                     <span>{amount}</span>
-                                    <Iconify icon={'token-branded:sui'} width={32} height={32} />
+                                    <Iconify icon={'token:aptos'} width={32} height={32} />
                                 </Stack>
                             </Typography>
                         </Stack>

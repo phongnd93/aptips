@@ -5,8 +5,9 @@ import { useRouter } from 'next/router';
 import Login from '../pages/auth/login';
 // components
 import LoadingScreen from '../components/LoadingScreen';
-import useSuiAuth from 'src/hooks/useSuiAuth';
 import Profile from 'src/pages/profile';
+import { useWallet } from '@aptos-labs/wallet-adapter-react';
+import useAptos from 'src/hooks/useAptos';
 
 // ----------------------------------------------------------------------
 
@@ -16,7 +17,8 @@ type Props = {
 
 export default function AuthGuard({ children }: Props)
 {
-  const { isAuthenticated, isInitialized, firstLogin } = useSuiAuth();
+  const { account, connected, wallet } = useWallet();
+  const { firstLogin, isInitialized, isAuthenticated } = useAptos();
 
   const { pathname, push } = useRouter();
 

@@ -83,7 +83,7 @@ export const FormConfig: React.FC = () =>
                                 gap={2}
                                 width={'100%'}
                             >
-                                <SvgIconStyle src={`/icons/ic_sui.svg`} width={40} height={40} />
+                                <Iconify icon={'token:aptos'} width={40} height={40}/>
                                 <Iconify icon={'eva:close-fill'} width={16} height={16}/>
                                 {tempConfig.amounts.map((a: any, index: number) => (
                                     <>

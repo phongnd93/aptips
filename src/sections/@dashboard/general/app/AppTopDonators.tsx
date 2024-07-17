@@ -87,7 +87,7 @@ function DonatorItem({ donator, index }: DonatorItemProps)
                         color: 'text.secondary',
                     }}
                 >
-                    <Iconify icon={'token-branded:sui'} sx={{ width: 28, height: 28 }} />
+                    <Iconify icon={'token:aptos'} sx={{ width: 28, height: 28 }} />
                     {fShortenNumber(donator.total)}
                 </Typography>
             </Box>

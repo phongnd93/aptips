@@ -135,7 +135,7 @@ export default function GroupingListUserDonate()
                 <Label color='primary'>
                   {row.amount}
                 </Label>
-                <Iconify icon={'token-branded:sui'} width={24} height={24} />
+                <Iconify icon={'token:aptos'} width={24} height={24} />
               </Stack>
             </TableCell>
             <TableCell>

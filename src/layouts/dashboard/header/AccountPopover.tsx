@@ -4,16 +4,16 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 // @mui
 import { alpha } from '@mui/material/styles';
-import { Box, Divider, Typography, Stack, MenuItem, Button, IconButton } from '@mui/material';
+import { Box, Divider, Typography, Stack, MenuItem } from '@mui/material';
 // routes
-import { PATH_DASHBOARD, PATH_AUTH, SUI_DONA_PATH } from '../../../routes/paths';
+import { PATH_DASHBOARD } from '../../../routes/paths';
 // hooks
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
 // components
 import MyAvatar from '../../../components/MyAvatar';
 import MenuPopover from '../../../components/MenuPopover';
 import { IconButtonAnimate } from '../../../components/animate';
-import useSuiAuth from 'src/hooks/useSuiAuth';
+import useAptos from 'src/hooks/useAptos';
 import { requestSuiFromFaucet, shortenSuiAddress } from '@polymedia/suits';
 import Iconify from 'src/components/Iconify';
 import { LoadingButton } from '@mui/lab';
@@ -41,7 +41,7 @@ export default function AccountPopover()
 {
   const router = useRouter();
 
-  const { NETWORK, balances, user, wallet, logout, fetchAccountBalance, info } = useSuiAuth();
+  const { balances, user, wallet, logout, fetchAccountBalance, info } = useAptos();
 
   const isMountedRef = useIsMountedRef();
 
@@ -78,15 +78,15 @@ export default function AccountPopover()
       enqueueSnackbar('Unable to logout!', { variant: 'error' });
     }
   };
-  const handleBuySuiClick = async () =>
+  const handleBuyAPTClick = async () =>
   {
-    if (user || wallet)
+    if (user?.address)
     {
       setRequesting(true);
-      await requestSuiFromFaucet(NETWORK, user?.userAddr || wallet?.address);
+      // await requestSuiFromFaucet(NETWORK, user?.userAddr || wallet?.address);
       setTimeout(async () =>
       {
-        await fetchAccountBalance(user?.userAddr || wallet?.address);
+        await fetchAccountBalance(user?.address);
         setRequesting(false);
       }, 3000);
     }
@@ -134,27 +134,27 @@ export default function AccountPopover()
               {info.fullName}
             </Typography>
           }
-          <Typography variant='body2' noWrap>{shortenSuiAddress(user?.userAddr || wallet?.address, 6, 15, '...', '_wallet_')}</Typography>
+          <Typography variant='body2' noWrap>{shortenSuiAddress(user?.address, 6, 15, '...', '_wallet_')}</Typography>
           {
-            wallet?.label && <Typography
-              variant="body2"
-              sx={{ color: 'text.secondary' }} noWrap align='center' alignContent={'baseline'} alignSelf={'center'}>
-              {wallet.label}
-            </Typography>
+            // user?. && <Typography
+            //   variant="body2"
+            //   sx={{ color: 'text.secondary' }} noWrap align='center' alignContent={'baseline'} alignSelf={'center'}>
+            //   {wallet.label}
+            // </Typography>
           }
           <Stack direction={'row'} justifyContent={'space-between'} justifyItems={'baseline'}>
             <Typography
               variant="body2"
               sx={{ color: 'text.secondary' }} noWrap align='center' alignContent={'baseline'} alignSelf={'center'}>
-              SUI: {balances}
+              APT: {balances}
             </Typography>
             <LoadingButton
               variant='outlined'
               color='warning'
-              onClick={handleBuySuiClick}
-              title='Buy SUI (Request Sui From Faucet)'
+              onClick={handleBuyAPTClick}
+              title='Buy APT (Request APT From Faucet)'
               loading={requesting}>
-              <Iconify icon={'token-branded:sui'} />
+              <Iconify icon={'token:aptos'} />
             </LoadingButton>
           </Stack>
         </Box>

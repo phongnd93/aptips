@@ -128,7 +128,7 @@ export default function TableReportData({ dataReport }: AppNewInvoiceProps)
                 <Label color='primary'>
                   {row.amount}
                 </Label>
-                <Iconify icon={'token-branded:sui'} width={24} height={24} />
+                <Iconify icon={'token:aptos'} width={24} height={24} />
               </Stack>
             </TableCell>
             <TableCell size='medium'>

@@ -13,7 +13,7 @@ import {
   IconButton,
 } from '@mui/material';
 // hooks
-import useSuiAuth from 'src/hooks/useSuiAuth';
+import useAptos from 'src/hooks/useAptos';
 // components
 import Iconify from '../../../components/Iconify';
 import MyAvatar from '../../../components/MyAvatar';
@@ -25,7 +25,7 @@ import BadgeStatus, { BadgeStatusEnum } from '../../../components/BadgeStatus';
 const STATUS = ['online', 'invisible', 'away'] as const;
 
 export default function ChatAccount() {
-  const { user } = useSuiAuth();
+  const { user } = useAptos();
 
   const [status, setStatus] = useState<BadgeStatusEnum>('online');
 

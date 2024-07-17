@@ -8,7 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid, Card, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // hooks
-import useAuth from '../../../../hooks/useAuth';
+import useAptos from '../../../../hooks/useAptos';
 // utils
 import { fData } from '../../../../utils/formatNumber';
 // _mock
@@ -41,7 +41,7 @@ type FormValuesProps = {
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { user } = useSuiAuth();
+  const { user } = useAptos();
 
   const UpdateUserSchema = Yup.object().shape({
     displayName: Yup.string().required('Name is required'),

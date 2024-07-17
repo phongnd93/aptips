@@ -4,7 +4,7 @@ import Layout from '../layouts';
 import Page from '../components/Page';
 import { Button, Card, CardContent, Container, Grid, IconButton, InputAdornment, Menu, MenuItem, Stack, TextField, Typography } from '@mui/material';
 
-import useSuiAuth from 'src/hooks/useSuiAuth';
+import useAptos from 'src/hooks/useAptos';
 import { useEffect, useRef, useState } from 'react';
 import UserServices from 'src/services/UserServices';
 
@@ -18,6 +18,7 @@ import { useSnackbar } from 'notistack';
 import useSettings from 'src/hooks/useSettings';
 import { _SOCIALS } from '../constants/social';
 import { UserInfoResponse } from 'src/@types/dto/user-dto';
+import { useWallet } from '@aptos-labs/wallet-adapter-react';
 
 Profile.getLayout = function getLayout(page: React.ReactElement)
 {
@@ -27,7 +28,9 @@ Profile.getLayout = function getLayout(page: React.ReactElement)
 export default function Profile()
 {
     const { themeStretch } = useSettings();
-    const { user, info, balances, wallet, updateProfile } = useSuiAuth();
+    const { user, info, balances, wallet, updateProfile } = useAptos();
+    const {account} = useWallet();
+    console.log(account);
     const userSvc = new UserServices();
 
     const [loading, setLoading] = useState<boolean>(false);
@@ -111,7 +114,7 @@ export default function Profile()
                                 <Stack spacing={2}>
                                     <Stack direction={'row'} spacing={2}>
                                         <Label color='info' sx={{ minWidth: 60, py: 3, textAlign: 'end' }}>
-                                            <Iconify icon={'token-branded:sui'} width={24} height={24} />
+                                            <Iconify icon={'token:aptos'} width={24} height={24} />
                                         </Label>
                                         <Label color='default' sx={{ flex: 1, py: 3 }}>
                                             {balances}
@@ -122,7 +125,7 @@ export default function Profile()
                                             <Iconify icon={'game-icons:wallet'} color={(theme) => theme.palette.primary.main} width={24} height={24} />
                                         </Label>
                                         <Label color='default' sx={{ flex: 1, py: 3 }}>
-                                            {shortenSuiAddress(user?.userAddr || wallet?.address, 6, 15, '...', '_wallet_')}
+                                            {shortenSuiAddress(info?.walletAddress, 6, 15, '...', '_wallet_')}
                                         </Label>
                                     </Stack>
                                     <Stack direction={'row'} spacing={2} alignItems={'center'}>
@@ -132,7 +135,7 @@ export default function Profile()
                                         <TextField
                                             fullWidth
                                             variant="outlined"
-                                            value={formData?.email || wallet?.label || ''}
+                                            value={formData?.email || ''}
                                             onChange={(e) =>
                                             {
                                                 setFormData({ ...formData, ...{ email: e.target.value } });

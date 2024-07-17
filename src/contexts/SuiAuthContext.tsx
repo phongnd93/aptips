@@ -5,10 +5,10 @@ import { ReactNode, createContext, useEffect, useReducer, useState } from "react
 import { ActionMap } from "src/@types/auth";
 import { AddUserInfoDto, UserInfoResponse } from "src/@types/dto/user-dto";
 import UserServices from "src/services/UserServices";
-import SuiSDK, { AccountData } from "src/suiSDK/sdk";
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { TransasctionHistory } from "src/@types/transaction";
 import TransactionServices from "src/services/TransactionServices";
+import SuiSDK, { AccountData } from "src/sdk/suiSDK";
 
 type SuiAuthState = {
     isInitialized: boolean,
@@ -393,7 +393,7 @@ const SuiAuthProvider: React.FC<SuiAuthContextProps> = ({ children, createNewAcc
     const sendTransaction = async (toWallet: string, amount: number, onDonateSuccess: (trans: TransasctionHistory) => void) =>
     {
         const txb = new TransactionBlock();
-        const bigAmount = BigInt(amount * 10 ** 9); // 5 SUI (SUI sử dụng đơn vị 10^9, vì vậy nhân với 10^9 để chuyển đổi)
+        const bigAmount = BigInt(amount * 10 ** 9);
         const res = txb.splitCoins(txb.gas, [bigAmount]);
         txb.transferObjects([res[0]], txb.pure.address(toWallet));
         // debugger       

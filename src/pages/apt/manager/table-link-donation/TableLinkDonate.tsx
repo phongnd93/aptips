@@ -19,13 +19,13 @@ import
 import Scrollbar from '../../../../components/Scrollbar';
 import Label from 'src/components/Label';
 import Iconify from 'src/components/Iconify';
-import { SUI_DONA_PATH } from 'src/routes/paths';
+import { APT_DONA_PATH } from 'src/routes/paths';
 import EmptyData from 'src/components/EmptyData';
 
 
 import { useContext, useEffect, useMemo, useState } from 'react';
 
-import useSuiAuth from 'src/hooks/useSuiAuth';
+import useAptos from 'src/hooks/useAptos';
 import { LinkDonationModel } from 'src/@types/link-donation';
 import { useRouter } from 'next/router';
 import { LinkDonateContext } from 'src/contexts/ManagerLinkContext';
@@ -93,7 +93,7 @@ export default function TableLinkDonate()
 
   } = useContext(LinkDonateContext)
 
-  const { info } = useSuiAuth();
+  const { info } = useAptos();
   const router = useRouter();
 
   const [page, setPage] = useState(0);
@@ -117,7 +117,7 @@ export default function TableLinkDonate()
 
   const handleClickDetail = (id: number) => 
   {
-    router.push(`${SUI_DONA_PATH.manager.detail}/${id}`);
+    router.push(`${APT_DONA_PATH.manager.detail}/${id}`);
   }
 
   const listLinkTable = useMemo(() =>
@@ -150,7 +150,7 @@ export default function TableLinkDonate()
             <TableCell>
               <Stack direction="row" alignItems="center">
                 <Label color={row?.totalDonations > 0 ? 'info' : 'secondary'}>{row.totalDonations || 0}</Label>
-                <Iconify icon={'token-branded:sui'} width={24} height={24} />
+                <Iconify icon={'token:aptos'} width={24} height={24} />
               </Stack>
             </TableCell>
 

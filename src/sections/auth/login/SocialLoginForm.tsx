@@ -131,7 +131,7 @@ const SocialLoginForm: React.FC<SocialLoginFormProps> = ({ onSocialClick, onConn
             onClick={onConnectToWalletClick}
         >
             <Stack direction={'row'} spacing={1} alignContent={"baseline"} alignItems={"center"}>
-                <Iconify icon={'token-branded:sui'} width={32} height={32} />
+                <Iconify icon={'token:aptos'} width={32} height={32} />
                 <span>Connect to wallet</span>
             </Stack>
         </LoadingButton>
