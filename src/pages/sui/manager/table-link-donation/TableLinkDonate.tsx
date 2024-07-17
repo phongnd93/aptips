@@ -1,5 +1,6 @@
 // @mui
-import {
+import
+{
   Table,
   TableRow,
   TableHead,
@@ -32,7 +33,8 @@ import { LinkDonateContext } from 'src/contexts/ManagerLinkContext';
 
 // ----------------------------------------------------------------------
 
-interface Column {
+interface Column
+{
   id: 'id' | 'orderdate' | 'linkCode' | 'amount' | 'sui' | '';
   label: string;
   minWidth?: number;
@@ -70,19 +72,20 @@ const COLUMNS: Column[] = [
     minWidth: 100,
     align: "left",
     format: (value) => value.toFixed(2),
-  },  
+  },
   {
     id: '',
     label: '',
     minWidth: 20,
     align: "right",
     format: (value) => value.toFixed(2),
-  },                          
+  },
 ];
 
 // ----------------------------------------------------------------------
 
-export default function TableLinkDonate() {
+export default function TableLinkDonate()
+{
 
   const {
     listLinks,
@@ -96,90 +99,83 @@ export default function TableLinkDonate() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const handleChangePage = (event: any, newPage: any) => {
+  const handleChangePage = (event: any, newPage: any) =>
+  {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: any) => {
+  const handleChangeRowsPerPage = (event: any) =>
+  {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  const loadData = async() => {
-       await loadDataLink(info?.id);
+  const loadData = async () =>
+  {
+    await loadDataLink(info?.id);
   }
 
   const handleClickDetail = (id: number) => 
   {
-      router.push(`${SUI_DONA_PATH.manager.detail}/${id}`);
+    router.push(`${SUI_DONA_PATH.manager.detail}/${id}`);
   }
 
-  const listLinkTable = useMemo(() =>{
-  
+  const listLinkTable = useMemo(() =>
+  {
+
     if (listLinks.length > 0)
     {
-      const temp = (rowsPerPage > 0  ? listLinks.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage): listLinks).map((row: LinkDonationModel) => {
-          return (
-            <TableRow hover role="checkbox" tabIndex={-1} key={row?.id} sx={{ mb: 2 }} onClick={() =>{handleClickDetail(row.id)}}>
-              <TableCell>{row.id}</TableCell>
-              <TableCell>
-                        <Label
-                          color='info'
-                          onClick={() => {
-                          } }
-                        >
-                          {row.linkCode || <Label color='default'>No Data</Label>}
-                        </Label>
-              </TableCell>
-              <TableCell>{row?.orderdate || <Label color='default'>No Data</Label>}</TableCell>
-              <TableCell>
-                  <Stack direction="row" alignItems="center" spacing={2}>
-                    {row.amount !== 0 && (
-                      <>
-                        <Iconify icon={'ph:user'} sx={{ width: 16, height: 16, mr: 1 }} />
-                        <Box sx={{ ml: 1 }}>{row.amount}</Box>
-                      </>
-                    )}
-                    {!row.amount && (
-                      <Label color='default'>No Data</Label>
-                    )}
-                  </Stack>
-              </TableCell>
-              <TableCell>
-                  <Stack direction="row" alignItems="center" spacing={1}>
-                    {row.sui &&(
-                      <Label
-                        color='info'
-                      ><Box>{row.sui}</Box></Label>
-                    )}
-                    {!row.sui &&(
-                      <Label color='default'>No Data</Label>
-                    )}
-                    <Iconify icon={'token-branded:sui'} width={24} height={24} />
-                  </Stack>
-              </TableCell>
+      const temp = (rowsPerPage > 0 ? listLinks.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : listLinks).map((row: LinkDonationModel, i: number) =>
+      {
+        row.createdAt = '2024-05-30T16:03:31.000Z';
+        return (
+          <TableRow hover role="checkbox" tabIndex={-1} key={row?.id} sx={{ mb: 2 }} onClick={() => { handleClickDetail(row.id) }}>
+            <TableCell>{i + page * rowsPerPage + 1}</TableCell>
+            <TableCell>
+              <Label
+                color='info'
+                onClick={() =>
+                {
+                }}
+              >
+                {row.linkCode || <Label color='default'>No Data</Label>}
+              </Label>
+            </TableCell>
+            <TableCell >{row?.createdAt ? <Label color='secondary'>{new Date().toDateString(row.createdAt)}</Label> : <Label color='default'>No Data</Label>}</TableCell>
+            <TableCell>
+              <Stack direction="row" alignItems="center">
+                <Iconify icon={'ph:user'} sx={{ width: 16, height: 16, mr: 1 }} />
+                <Label color={row?.totalNumberDonations > 0 ? 'primary' : 'secondary'}>{row.totalNumberDonations || 0}</Label>
+              </Stack>
+            </TableCell>
+            <TableCell>
+              <Stack direction="row" alignItems="center">
+                <Label color={row?.totalDonations > 0 ? 'info' : 'secondary'}>{row.totalDonations || 0}</Label>
+                <Iconify icon={'token-branded:sui'} width={24} height={24} />
+              </Stack>
+            </TableCell>
 
-              <TableCell align="justify">
-                    <Button
-                      sx={{ right: 15, top: 0, mt: 0 }}
-                      variant='text'
-                      color='info'
-                    >
-                       <Iconify icon={'bi:arrow-right'} sx={{ width: 16, height: 16, mr: 1 }} />
-                    </Button>
-              </TableCell>
-            </TableRow>
-          );
+            <TableCell align="justify">
+              <Button
+                sx={{ right: 15, top: 0, mt: 0 }}
+                variant='text'
+                color='info'
+              >
+                <Iconify icon={'bi:arrow-right'} sx={{ width: 16, height: 16, mr: 1 }} />
+              </Button>
+            </TableCell>
+          </TableRow>
+        );
       });
 
       return temp;
     }
     else
     {
-      const temp= (
-         <Box sx={{ height: 300 }}>
-           <EmptyData />
-         </Box>
+      const temp = (
+        <Box sx={{ height: 300 }}>
+          <EmptyData />
+        </Box>
       )
       return temp;
     }
@@ -204,7 +200,7 @@ export default function TableLinkDonate() {
                     align={column.align}
                     style={{ top: 0, minWidth: column.minWidth }}
                   >
-                      {column.label}
+                    {column.label}
                   </TableCell>
                 ))}
               </TableRow>

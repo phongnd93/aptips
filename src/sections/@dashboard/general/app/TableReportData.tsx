@@ -55,6 +55,7 @@ const COLUMNS: Column[] = [
     id: 'note',
     label: 'Note',
     minWidth: 100,
+    maxWidth: 120,
     align: "left",
     format: (value) => value.toLocaleString('en-US'),
   },
@@ -122,30 +123,27 @@ export default function TableReportData({ dataReport }: AppNewInvoiceProps)
                 </Label>
               </Stack>
             </TableCell>
-            <TableCell align="justify">
-              <Stack direction={'row'} spacing={1} justifyContent={'flex-end'} alignContent={'center'} alignItems={'center'} alignSelf={'center'}>
+            <TableCell>
+              <Stack direction={'row'} spacing={1}>
                 <Label color='primary'>
                   {row.amount}
                 </Label>
                 <Iconify icon={'token-branded:sui'} width={24} height={24} />
               </Stack>
             </TableCell>
-            <TableCell>
-              <Label color='default'>
-                {row.note}
-              </Label>
+            <TableCell size='medium'>
+              {row?.note ? <Label color='warning'>{row.note}</Label> : <Label color='default'>No data</Label>}
             </TableCell>
-            <TableCell>{row.timeStamp}</TableCell>
+            <TableCell>{row.timeStamp ? <Label color='secondary'>{new Date(row.timeStamp).toDateString()}</Label> : <Label color='default'>No data</Label>}</TableCell>
             <TableCell>
               <Stack direction="row" alignItems="center" spacing={2}>
                 <Label
-                  sx={{ ml: 1, minWidth: 70 }}
                   color={
                     (row.sourceId === 0 && 'warning') ||
                     (row.sourceId === 1 && 'success') ||
                     'info'
                   }
-                >{row.sourceId}</Label>
+                >{row.sourceName}</Label>
               </Stack>
             </TableCell>
           </TableRow>
@@ -173,7 +171,7 @@ export default function TableReportData({ dataReport }: AppNewInvoiceProps)
                   <TableCell
                     key={column.id}
                     align={column.align}
-                    style={{ minWidth: column.minWidth }}
+                    style={{ minWidth: column.minWidth, maxWidth: column.maxWidth }}
                   >
                     {column.label}
                   </TableCell>
