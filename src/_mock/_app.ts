@@ -26,7 +26,7 @@ export const _appInstalled = ['de', 'en', 'fr', 'kr', 'us'].map((country, index)
   flag: `https://minimal-assets-api.vercel.app/assets/icons/ic_flag_${country}.svg`,
 }));
 
-export const _appAuthors = [...Array(3)].map((_, index) => ({
+export const _appAuthors = [...Array(6)].map((_, index) => ({
   id: _mock.id(index),
   name: _mock.name.fullName(index),
   avatar: _mock.image.avatar(index),

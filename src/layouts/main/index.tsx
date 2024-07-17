@@ -44,7 +44,7 @@ export default function MainLayout({ children }: Props) {
             <Typography variant="caption" component="p">
               © All rights reserved
               <br /> made by &nbsp;
-              <Link href="https://minimals.cc/">minimals.cc</Link>
+              <Link href="">Sui Dona team</Link>
             </Typography>
           </Container>
         </Box>

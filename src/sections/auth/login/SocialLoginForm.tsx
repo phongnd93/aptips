@@ -80,7 +80,7 @@ const SocialLoginForm: React.FC = () =>
             size="large"
             variant="contained"
             loading={isSubmitting}
-            sx={[{ bgcolor: '#F1F9FEFF', fontSize: '1rem', color: '#0C476FFF', borderRadius: '22px', boxShadow: '0 8px 16px 0 rgb(222 59 64 / 24%)' }, {
+            sx={[{ bgcolor: '#F1F9FEFF', fontSize: '1rem', color: '#4ba2ff', borderRadius: '22px', boxShadow: '0 8px 16px 0 #60adff3d' }, {
                 '&:hover': {
                     color: '#0C476FFF',
                     background: '#E9F5FDFF'
