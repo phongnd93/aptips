@@ -156,20 +156,6 @@ export const FormConfig: React.FC = () =>
                                     <Iconify icon={'ic:round-plus'} width={16} height={16}/>
                                 </FabButtonAnimate>
                             </Stack>
-                            <TextField
-                                color='info'
-                                label='Name'
-                                fullWidth
-                                disabled
-                            />
-                            <TextField
-                                color='info'
-                                rows={3}
-                                placeholder='Say something nice...(optional)'
-                                fullWidth
-                                multiline
-                                disabled
-                            />
                         </Stack>
                     </Grid>
                 </Grid>
