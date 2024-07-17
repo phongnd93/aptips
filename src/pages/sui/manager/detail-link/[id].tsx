@@ -175,7 +175,7 @@ export default function DetailLinkDonation(value?: string)
                 </Card>
                 <Card sx={{ mt: 2, mb: 2 }}>
                     <ListItemIcon />
-                    <CardHeader title=' List user donate' />
+                    <CardHeader title='Recent donations' />
                     <CardActionArea />
                     <CardContent>
                         <GroupingListUserDonate />

@@ -82,10 +82,10 @@ const DonateComponent: React.FC = () =>
     const [linkCreator, setLinkCreator] = useState<UserInfoResponse>();
     const [source, setSource] = useState<{
         linkId: number,
-        utmSource: string,
+        utmSource: string | null,
     }>({
         linkId: -2,
-        utmSource: (utm_source as string) || ''
+        utmSource: (utm_source as string) || null
     });
 
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -113,11 +113,11 @@ const DonateComponent: React.FC = () =>
         {
             const res = await _fetchConfigByCode(code);
 
-            if (res?.data?.config && utm_source && typeof utm_source === 'string')
+            if (res?.data?.config)
             {
                 setSource({
                     linkId: res.data.id,
-                    utmSource: utm_source
+                    utmSource: utm_source && typeof utm_source === 'string' ? utm_source : null
                 })
                 setFormConfig(res.data.config);
                 const infoRes = await fetchUserInfoById(res.data.userId);
@@ -209,7 +209,7 @@ const DonateComponent: React.FC = () =>
             loading && < LoadingScreen />
         }
 
-        {(!loading && (!formConfig || !utm_source)) && <Page404 />}
+        {(!loading && (!formConfig)) && <Page404 />}
         {(!loading && formConfig) &&
             <>
                 <Stack direction={'row'} spacing={4}>
