@@ -18,6 +18,17 @@ export default class LinksServices
         }
     }
 
+    getLinkById  = async (id: string):  Promise<APIResponse> =>
+    {
+        try
+        {
+            return APIResponseObject(200, await axios.get(`${API}/link/${id}`))
+        } catch (error)
+        {
+            return APIResponseObject(500, null, error.message);
+        }
+    }
+
     getUserDonateLink = async (id: string): Promise<APIResponse> =>
     {
         try

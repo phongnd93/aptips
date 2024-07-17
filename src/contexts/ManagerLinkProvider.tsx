@@ -11,20 +11,15 @@ type LinkDonateProviderProps = {
     listUserDonate: UserLinkDonateModel[],
     listMostDoante: LinkDonationModel[],
     linkId: number,
-    totalUserDonate: number,
-    totalSUI: number,
-    newDonators: number,
     revenue: RevenueResponseDTO,
 
-    setTotalSUI: (value: number) => void,
     setRevenue: (config: RevenueResponseDTO) => void,
     setListUserDonates: (config: UserLinkDonateModel[]) => void,
     setListMostDonate: (config: LinkDonationModel[]) => void,
     setLinkId: (value: number) => void,
-    setTotalUserDonate: (value: number) => void,
-    setNewDonators:(value: number) => void,
     setListLinks: (config: LinkDonationModel[]) => void,
     loadDataLink: (reques?: string) => Promise<any>,
+    loadDetailLink: (id: string) => Promise<any>,
     loadListUserDonate: (id: string) => Promise<any>,
     loadRevenue: (id: number) => Promise<any>,
 };
@@ -41,10 +36,6 @@ const LinkDonateProvider: React.FC<{NodeId: string}> = ({ NodeId, children }) =>
 
     const [revenue, setRevenue] = useState<RevenueResponseDTO>([]);
 
-    const [totalUserDonate , setTotalUserDonate] = useState<number>(0);
-    const [totalSUI , setTotalSUI] = useState<number>(0);
-    const [newDonators, setNewDonators] = useState<number>(0);
-
     const [ linkId, setLinkId ] = useState<number>(0);
 
     const loadDataLink = async(reques?: any) => {
@@ -56,6 +47,14 @@ const LinkDonateProvider: React.FC<{NodeId: string}> = ({ NodeId, children }) =>
         }
     } 
 
+    const loadDetailLink = async(id: string) => {
+        const result: any = await linkSvc.getLinkById(id)
+        if (result.status === 200 )
+        {
+            return result;
+        }
+    }
+
     const loadListUserDonate = async(id: string) =>
     {
         const result = await linkSvc.getUserTransactionLink(id);
@@ -63,9 +62,7 @@ const LinkDonateProvider: React.FC<{NodeId: string}> = ({ NodeId, children }) =>
         if (result?.status === 200)
         {
             setListUserDonates(result.data);
-            setTotalUserDonate(result.data?.totalDonate);
             setRevenue(result.data?.length);
-            setTotalSUI(result.data?.totalSUI);
         }
     }
 
@@ -81,19 +78,14 @@ const LinkDonateProvider: React.FC<{NodeId: string}> = ({ NodeId, children }) =>
             linkId,
             listUserDonate,
             listMostDoante,
-            totalUserDonate,
-            newDonators,
             revenue,
-            totalSUI,
 
-            setTotalSUI,
             setRevenue,
             setListUserDonates,
             setListMostDonate,
-            setTotalUserDonate,
-            setNewDonators,
             setLinkId,
             setListLinks,
+            loadDetailLink,
             loadDataLink,
             loadListUserDonate,
             loadRevenue,

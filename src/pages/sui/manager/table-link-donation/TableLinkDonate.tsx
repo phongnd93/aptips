@@ -64,7 +64,6 @@ const COLUMNS: Column[] = [
     label: 'Donates',
     minWidth: 180,
     align: "left",
-    format: (value) => value.toFixed(2),
   },
   {
     id: 'sui',
@@ -138,8 +137,12 @@ export default function TableLinkDonate() {
               <TableCell>{row?.orderdate || ''}</TableCell>
               <TableCell>
                   <Stack direction="row" alignItems="center" spacing={2}>
-                    {row.amount &&(<Iconify icon={'ph:user'} sx={{ width: 16, height: 16, mr: 1 }} />)}
-                    <Box sx={{ ml: 1 }}>{row.amount}</Box>
+                    {row.amount && (
+                      <>
+                        <Iconify icon={'ph:user'} sx={{ width: 16, height: 16, mr: 1 }} />
+                        <Box sx={{ ml: 1 }}>{row.amount}</Box>
+                      </>
+                    )}
                   </Stack>
               </TableCell>
               <TableCell>

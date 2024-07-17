@@ -32,19 +32,28 @@ export default function DetailLinkDonation(value?: string) {
 
     const {
         revenue,
-        totalUserDonate,
-        totalSUI,
-        newDonators,
         loadListUserDonate,
-        loadRevenue
+        loadRevenue,
+        loadDetailLink
     } = useContext(LinkDonateContext)
 
     const [isOpenShare, setIsOpenShare] = useState<boolean>(false);
 
+    const [detailLink, setDetailLink] = useState<any>();
+
     const theme = useTheme();
 
-    const loadData = async() => {
+    const loadDetail = async() =>{
+        const result = await loadDetailLink(id);
 
+        if (result.status === 200)
+        {
+            setDetailLink(result.data.data);
+        }
+    }
+
+    const loadData = async() => {
+        await loadDetail();
         await loadListUserDonate(id);
         await loadRevenue(id)
     }
@@ -60,6 +69,8 @@ export default function DetailLinkDonation(value?: string) {
     useEffect(() => {
         loadData();
     }, [id]);
+
+    console.log(detailLink);
     
     return (
         <Page title="Manager: Link Donation" sx={{ mt: 10 }}>
@@ -90,7 +101,6 @@ export default function DetailLinkDonation(value?: string) {
                                             color="info"
                                             size='small'
                                             startIcon={<Iconify icon="ic:edit" />}
-                                            href={SUI_DONA_PATH.manager.form}
                                             onClick={() =>
                                             {
                                                 handleClickEdit(id);
@@ -120,8 +130,8 @@ export default function DetailLinkDonation(value?: string) {
                                     <Grid item md={11} sx={{ mb: 2}}>
                                         <AppWidgetSummary
                                             title="Total"
-                                            percent={totalUserDonate > 0 ? 100 : 0}
-                                            total={totalUserDonate}
+                                            percent={detailLink?.totalDonations > 0 ? 100 : 0}
+                                            total={detailLink?.totalDonations}
                                             chartColor={theme.palette.primary.main}
                                             chartData={[5, 18, 12, 51, 68, 11, 39, 37, 27, 20]}
                                         />
@@ -130,8 +140,8 @@ export default function DetailLinkDonation(value?: string) {
                                     <Grid item md={11} sx={{ mb: 2}}>
                                         <AppWidgetSummary
                                             title="Donations"
-                                            percent={totalSUI > 0 ? 100 : 0}
-                                            total={totalSUI}
+                                            percent={detailLink?.totalNumberDonations > 0 ? 100 : 0}
+                                            total={detailLink?.totalNumberDonations}
                                             chartColor={theme.palette.chart.blue[0]}
                                             chartData={[20, 41, 63, 33, 28, 35, 50, 46, 11, 26]}
                                         />
@@ -140,8 +150,8 @@ export default function DetailLinkDonation(value?: string) {
                                     <Grid item md={11} sx={{ mb: 2}}>
                                         <AppWidgetSummary
                                             title="New donators"
-                                            percent={newDonators > 0 ? 100 : 0}
-                                            total={newDonators}
+                                            percent={detailLink?.totalNumberDonations > 0 ? 100 : 0}
+                                            total={detailLink?.totalNumberDonations}
                                             chartColor={theme.palette.chart.red[0]}
                                             chartData={[8, 9, 31, 8, 16, 37, 8, 33, 46, 31]}
                                         />
@@ -168,7 +178,7 @@ export default function DetailLinkDonation(value?: string) {
                     closeAfterTransition
                     onClose={() => {setIsOpenShare(false) }}
                 >
-                    <ShareSocial  />
+                    <ShareSocial value={detailLink?.linkCode} />
                 </Dialog>
         </Page>
     )
