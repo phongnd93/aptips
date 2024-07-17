@@ -52,7 +52,7 @@ export default class TransactionServices
     {
         try
         {
-            const res = await axios.get(`${API}/transaction-history/most-donations-user/${userId}/num=${limit}`);
+            const res = await axios.get(`${API}/transaction-history/most-donations-user/${userId}?num=${limit}`);
             if (res?.data)
                 return res.data as Donator[];
         } catch (error)
