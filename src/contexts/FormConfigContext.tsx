@@ -18,6 +18,7 @@ interface FormConfigContextType
 {
     data: FormConfigResponse | undefined,
     tempConfig: TempConfig,
+    initTempConfig: TempConfig,
     setTempConfig: React.Dispatch<React.SetStateAction<TempConfig>>,
     _fetchConfig: (id: string) => Promise<APIResponse>,
     _fetchConfigByCode: (string: string) => Promise<APIResponse>,
@@ -107,7 +108,8 @@ const FormConfigProvider: React.FC = ({ children }) =>
                 {
                     res.data.config = JSON.parse(res.data.config);
                 }
-                catch {
+                catch
+                {
                     res.data.config = res.data.config;
                 }
             }
@@ -127,7 +129,8 @@ const FormConfigProvider: React.FC = ({ children }) =>
                 {
                     res.data.config = JSON.parse(res.data.config);
                 }
-                catch {
+                catch
+                {
                     res.data.config = res.data.config;
                 }
             }
@@ -165,6 +168,7 @@ const FormConfigProvider: React.FC = ({ children }) =>
         <FormConfigContext.Provider value={{
             data,
             tempConfig,
+            initTempConfig,
             setTempConfig,
             handleSaveConfig,
             _fetchConfig,
