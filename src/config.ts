@@ -29,7 +29,7 @@ export const AUTH0_API = {
 export const MAPBOX_API = process.env.MAPBOX;
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
-export const PATH_AFTER_LOGIN = SUI_DONA_PATH.root; // as '/dashboard/app'
+export const PATH_AFTER_LOGIN = SUI_DONA_PATH.manager.root; // as '/dashboard/app'
 
 // LAYOUT
 // ----------------------------------------------------------------------

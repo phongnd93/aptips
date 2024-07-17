@@ -5,6 +5,7 @@ function path(root: string, sublink: string)
   return `${root}${sublink}`;
 }
 
+const ROOTS_SUI = '/sui';
 const ROOTS_AUTH = '/auth';
 const ROOTS_DASHBOARD = '/dashboard';
 const ROOTS_DONATION = '/donation-link-management';
@@ -94,8 +95,12 @@ export const PATH_DASHBOARD = {
 };
 
 export const SUI_DONA_PATH = {
-  root: ROOTS_DONATION,
-  new: path(ROOTS_DONATION, '/new')
+  root: ROOTS_SUI,
+  new: path(ROOTS_DONATION, '/new'),
+  manager: {
+    root: path(ROOTS_SUI, '/manager'),
+    form: path(ROOTS_SUI, '/manager/form-donation'),
+  }
 }
 
 export const PATH_DOCS = 'https://docs-minimals.vercel.app/introduction';
