@@ -66,7 +66,7 @@ export default function AccountPopover()
     try
     {
       await logout();
-      router.replace(PATH_AUTH.login);
+      router.replace('dashboard');
 
       if (isMountedRef.current)
       {

@@ -79,7 +79,7 @@ export default class SuiSDK
         // Start the OAuth flow with the OpenID provider
         const urlParamsBase = {
             nonce: nonce,
-            redirect_uri: window.location.origin,
+            redirect_uri: `${window.location.origin}/dashboard`,
             response_type: 'id_token',
             scope: 'openid',
         };
