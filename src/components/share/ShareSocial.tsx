@@ -112,7 +112,7 @@ export default function ShareSocial(props: { value?: string })
                     }
                 />
                 <CardContent>
-                    <Stack spacing={3} alignItems={'center'} sx={{overflow:'scroll'}}>
+                    <Stack spacing={3} alignItems={'center'}>
                         <Box
                             sx={{
                                 display: 'flex',

@@ -27,7 +27,7 @@ const AptosLoginForm: FC = () =>
                         <AptosConnectWalletRow
                             key={wallet.name}
                             wallet={wallet}
-                            onConnect={close}
+                            onConnect={() => {}}
                         />
                     ))}
                 </>
