@@ -13,19 +13,19 @@ import {
   IconButton,
 } from '@mui/material';
 // hooks
-import useAptos from 'src/hooks/useAptos';
 // components
 import Iconify from '../../../components/Iconify';
 import MyAvatar from '../../../components/MyAvatar';
 import MenuPopover from '../../../components/MenuPopover';
 import BadgeStatus, { BadgeStatusEnum } from '../../../components/BadgeStatus';
+import useChainAuth from 'src/hooks/useChainAuth';
 
 // ----------------------------------------------------------------------
 
 const STATUS = ['online', 'invisible', 'away'] as const;
 
 export default function ChatAccount() {
-  const { user } = useAptos();
+  const { user } = useChainAuth();
 
   const [status, setStatus] = useState<BadgeStatusEnum>('online');
 

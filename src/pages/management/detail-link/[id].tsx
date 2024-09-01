@@ -1,22 +1,23 @@
 
-import Layout from '../../../../layouts';
-import Page from '../../../../components/Page';
-import { Box, Button, Card, CardActionArea, CardContent, CardHeader, Container, Dialog, Grid, Icon, ListItemIcon, Popover, Stack, Tooltip, Typography, useTheme } from '@mui/material';
+import Layout from '../../../layouts';
+import Page from '../../../components/Page';
+import { Box, Button, Card, CardActionArea, CardContent, CardHeader, Container, Dialog, Grid, ListItemIcon, Stack, Typography, useTheme } from '@mui/material';
 import useSettings from 'src/hooks/useSettings';
 import { useContext, useEffect, useRef, useState, useCallback } from 'react';
 
 import AppWidgetSummary from './detail/AppWidgetSummary';
-import GroupingListUserDonate from './detail/GroupingListUserDonate';
 import Iconify from 'src/components/Iconify';
 import { ShareSocial } from 'src/components/share';
-import { APT_DONA_PATH } from 'src/routes/paths';
-import Link from 'next/link';
+import { APP_PATH } from 'src/routes/paths';
 import HeaderBreadcrumbs from 'src/components/HeaderBreadcrumbs';
 import { useRouter } from 'next/router';
 import AppAreaInstalled from './detail/AppAreaInstalled';
 
-import { _appTransactions } from '../../../../_mock/_app';
+import { _appTransactions } from '../../../_mock/_app';
 import { LinkDonateContext } from 'src/contexts/ManagerLinkContext';
+import React from 'react';
+import { MAIN_CHAIN } from '../../../config';
+import GroupingListUserDonate from './detail/GroupingListUserDonate';
 
 // ----------------------------------------------------------------------
 
@@ -76,7 +77,7 @@ export default function DetailLinkDonation(value?: string)
 
     const handleClickEdit = useCallback((e: any) =>
     {
-        const path = `${APT_DONA_PATH.manager.form}?id=${id}`;
+        const path = `${APP_PATH.manager.form}?id=${id}`;
         router.push(path);
     }, [id]);
 
@@ -94,7 +95,7 @@ export default function DetailLinkDonation(value?: string)
                         <HeaderBreadcrumbs
                             heading='Detail Link Donate'
                             links={[
-                                { name: 'List Links', href: APT_DONA_PATH.manager.link },
+                                { name: 'List Links', href: APP_PATH.manager.link },
                                 { name: 'Detail Links' },
                             ]}
                         />
@@ -140,8 +141,7 @@ export default function DetailLinkDonation(value?: string)
                             <Grid spacing={3} sx={{ width: '50%', mr: 3 }} >
                                 <Grid item md={11} sx={{ mb: 2 }}>
                                     <AppWidgetSummary
-                                        title="Total APT"
-                                        itemIcon='token:aptos'
+                                        title={`Total ${MAIN_CHAIN}`}
                                         percent={detailLink?.totalDonations > 0 ? 100 : 0}
                                         total={detailLink?.totalDonations}
                                         chartColor={theme.palette.primary.main}
@@ -191,7 +191,7 @@ export default function DetailLinkDonation(value?: string)
                 maxWidth={'lg'}
                 open={isOpenShare}
                 closeAfterTransition
-                
+
                 onClose={() => { setIsOpenShare(false) }}
             >
                 <ShareSocial value={detailLink?.linkCode} />

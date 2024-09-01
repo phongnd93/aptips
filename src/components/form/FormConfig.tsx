@@ -7,6 +7,8 @@ import { IconButton } from '@mui/material';
 import { ToggleButton } from '@mui/material';
 import { Popover } from '@mui/material';
 import { FormConfigContext } from 'src/contexts/FormConfigContext';
+import { DisplayLogo } from '../DisplayLogo';
+import { MAIN_CHAIN } from 'src/config';
 
 export const FormConfig: React.FC = () =>
 {
@@ -83,13 +85,14 @@ export const FormConfig: React.FC = () =>
                         gap={2}
                         width={'100%'}
                     >
-                        <Iconify icon={'token:aptos'} width={40} height={40} />
+                        <DisplayLogo width={40} height={40} />
                         <Iconify icon={'eva:close-fill'} width={16} height={16} />
                         {tempConfig.amounts.map((a: any, index: number) => (
                             <>
                                 {a
                                     ? (
                                         <Badge
+                                            key={index}
                                             color={'default'}
                                             overlap='circular'
                                             badgeContent={(
@@ -122,9 +125,10 @@ export const FormConfig: React.FC = () =>
                                     )
                                     : (
                                         <OutlinedInput
+                                            key={index}
                                             type='number'
                                             size='small'
-                                            placeholder='Any APT'
+                                            placeholder={`Any ${MAIN_CHAIN}`}
                                             sx={{ width: 120, borderRadius: 1 }}
                                             endAdornment={
                                                 <InputAdornment position="end">
@@ -180,7 +184,7 @@ export const FormConfig: React.FC = () =>
                             setOpenDialog(true);
                         }}
                     >
-                        Sui Number
+                        Number
                     </Button>
                     <Button
                         color='info'
@@ -191,7 +195,7 @@ export const FormConfig: React.FC = () =>
                             setTempConfig(prevState => ({ ...prevState, amounts: [...prevState.amounts, false] }));
                         }}
                     >
-                        Sui Input
+                        Input
                     </Button>
                 </Box>
             </Popover>
@@ -203,7 +207,7 @@ export const FormConfig: React.FC = () =>
                     <TextField
                         type='number'
                         variant='outlined'
-                        label='Sui Number'
+                        label='Number'
                         placeholder='Example: 5'
                         color='info'
                         focused

@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import { Button, Box, Container, Typography, Link, Stack, Card, alpha } from '@mui/material';
 // components
 import { MotionViewport, varFade } from '../../components/animate';
+import { MAIN_CHAIN } from 'src/config';
 
 // ----------------------------------------------------------------------
 
@@ -88,7 +89,7 @@ export default function SuiHomeDecentralizedTipping()
                             >
                                 <Stack alignItems={'center'}>
                                     <Typography variant="h4">Motivate contributions</Typography>
-                                    <Typography variant='body1'>Increase motivation for Web3 community with tokens of Aptos ecosystem</Typography>
+                                    <Typography variant='body1'>Increase motivation for Web3 community with tokens of {MAIN_CHAIN} ecosystem</Typography>
                                 </Stack>
                             </CardStyle>
                         </m.div>

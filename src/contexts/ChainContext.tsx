@@ -1,17 +1,20 @@
-import { createContext, FC, ReactNode, useEffect, useLayoutEffect, useReducer, useState } from "react";
-import { AccountInfo, InputTransactionData, useWallet, WalletInfo } from "@aptos-labs/wallet-adapter-react";
-import { Aptos, APTOS_COIN, AptosConfig } from "@aptos-labs/ts-sdk";
-import { AddUserInfoDto, UserInfoResponse } from "src/@types/dto/user-dto";
+import { ethers, JsonRpcSigner } from "ethers";
+import { KiiStargateQueryClient } from "kiijs-sdk";
+import React, { createContext, FC, ReactNode, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import { ActionMap } from "src/@types/auth";
+import { AddUserInfoDto, UserInfoResponse } from "src/@types/dto/user-dto";
 import { TransasctionHistory } from "src/@types/transaction";
+import ChainSDK from "src/sdk/ChainSDK";
+import FaucetServices from "src/services/FaucetServices";
 import UserServices from "src/services/UserServices";
 
 type AuthState = {
     isInitialized: boolean,
     isAuthenticated: boolean,
     firstLogin: boolean,
-    user: AccountInfo | null,
-    wallet: WalletInfo | null,
+    metamaskInstalled: boolean,
+    user: any | null,
+    wallet: any | null,
     info: UserInfoResponse | null,
 }
 
@@ -28,17 +31,20 @@ type AuthPayload = {
     [Types.Initial]: {
         isAuthenticated: boolean;
         firstLogin: boolean;
-        user: AccountInfo | null;
-        wallet: WalletInfo | null;
+        metamaskInstalled: boolean;
+        user: any | null;
+        wallet: any | null;
         info: UserInfoResponse | null;
     };
     [Types.Login]: {
         firstLogin: boolean;
-        user: AccountInfo | null;
-        wallet: WalletInfo | null;
+        metamaskInstalled: boolean;
+        user: any | null;
+        wallet: any | null;
         info: UserInfoResponse | null;
     };
     [Types.UpdateProfile]: {
+        metamaskInstalled: boolean;
         firstLogin: boolean;
         info: UserInfoResponse | null;
     };
@@ -48,6 +54,7 @@ type AuthPayload = {
 type AuthActions = ActionMap<AuthPayload>[keyof ActionMap<AuthPayload>];
 
 const initialState: AuthState = {
+    metamaskInstalled: false,
     isInitialized: false,
     isAuthenticated: false,
     firstLogin: false,
@@ -63,6 +70,7 @@ const AuthReducer = (state: AuthState, action: AuthActions) =>
         case Types.Initial:
             return {
                 isAuthenticated: action.payload.isAuthenticated,
+                metamaskInstalled: action.payload.metamaskInstalled,
                 isInitialized: true,
                 firstLogin: action.payload.firstLogin,
                 user: action.payload.user,
@@ -72,6 +80,7 @@ const AuthReducer = (state: AuthState, action: AuthActions) =>
         case Types.Login:
             return {
                 ...state,
+                isInitialized: true,
                 firstLogin: action.payload.firstLogin,
                 isAuthenticated: true,
                 user: action.payload.user,
@@ -98,7 +107,7 @@ const AuthReducer = (state: AuthState, action: AuthActions) =>
     }
 }
 
-interface AptosContextType extends AuthState
+interface ChainContextType extends AuthState
 {
     balances: number,
     loadingBalance: boolean,
@@ -107,82 +116,110 @@ interface AptosContextType extends AuthState
     logout: () => Promise<void>,
     sendTransaction: (toWallet: string, amout: number, onDonateSuccess: (trans: TransasctionHistory) => void) => Promise<void>,
     fetchUserInfoById: (id: number) => Promise<UserInfoResponse | null>,
-    updateProfile: (info?: UserInfoResponse) => void
+    updateProfile: (info?: UserInfoResponse) => void,
+    login: () => Promise<void>,
+    requestTokenFromFaucet: () => Promise<any>
     // getRevenue: () => Promise<RevenueResponseDTO | null>,
     // getTransactions: () => Promise<Transaction[] | null>,
     // getTopDonators: () => Promise<Donator[] | null>,
 }
 
-const AptosContext = createContext<AptosContextType | null>(null);
+const ChainContext = createContext<ChainContextType | null>(null);
 
-type AptosContextProps = {
+type ChainContextProps = {
     children: ReactNode,
     createnewAccount: boolean
 };
-const AptosProvider: FC<AptosContextProps> = ({ children, createnewAccount }: AptosContextProps) =>
+
+const ChainProvider: FC<ChainContextProps> = ({ children, createnewAccount }: ChainContextProps) =>
 {
     const [state, dispatch] = useReducer(AuthReducer, initialState);
     const [balances, setBalances] = useState<number>(0);
     const [loadingBalance, setLoadingBalance] = useState(false);
+    const [meta, setMeta] = useState(typeof window !== undefined);
+    const [client, setClient] = useState<KiiStargateQueryClient>();
+    // const [signer, setSigner] = useState<JsonRpcSigner>();
     const userSvc = new UserServices();
-    const aptosWallet = useWallet();
-    const { account, wallet, connected, network, disconnect, signAndSubmitTransaction, wallets, isLoading } = useWallet();
-    const client = new Aptos(new AptosConfig({
-        network: network?.name
-    }));
+    const faucetSvc = new FaucetServices();
+
+    const sdk = useRef(new ChainSDK()).current;
+    const init = useRef(false);
     useEffect(() =>
     {
-        if (wallets?.length > 0 && !isLoading)
+        if (!init.current)
+        {
+            initClient();
+        }
+        return () =>
+        {
+            init.current = true;
+        }
+    }, []);
+    useEffect(() =>
+    {
+        if (client)
         {
             if (createnewAccount)
                 initialize();
             else initWithoutCreateNewAccount();
         }
+    }, [client, meta]);
 
-    }, [connected, wallets]);
+    const initClient = async () =>
+    {
+        const client = await KiiStargateQueryClient.connect(
+            sdk.network.rpcUrls[0]
+        );
+        setClient(client);
+    }
 
     const initialize = async () =>
     {
         let firstLogin = false;
         try
         {
-
             let userInfo: UserInfoResponse | null = null;
-            if (connected && account?.address)
+            if (meta)
             {
-                const info = await fetchUserInfo(account.address);
-                fetchAccountBalance(account.address);
-                if (info) userInfo = info; else
+                sdk.client = client;
+                const address = await sdk.account();
+                if (address)
                 {
-                    firstLogin = true;
-                    userInfo = await createUser({
-                        email: '',
-                        walletAddress: account.address,
-                        avatarUrl: '', about: '', fullName: ''
+                    const signer = await getSigner();
+                    sdk.signer = signer;
+                    const info = await fetchUserInfo(address);
+                    fetchAccountBalance(address);
+                    if (info) userInfo = info; else
+                    {
+                        firstLogin = true;
+                        userInfo = await createUser({
+                            email: '',
+                            walletAddress: address,
+                            avatarUrl: '', about: '', fullName: ''
+                        });
+                    }
+                    dispatch({
+                        type: Types.Login,
+                        payload: {
+                            firstLogin,
+                            metamaskInstalled: meta,
+                            user: null,
+                            wallet: { address },
+                            info: userInfo
+                        },
                     });
+                    return;
                 }
-                dispatch({
-                    type: Types.Initial,
-                    payload: {
-                        firstLogin,
-                        isAuthenticated: account !== null && userInfo !== null,
-                        user: account,
-                        wallet: wallet,
-                        info: userInfo
-                    },
-                });
-                return;
-
             }
         } catch (error)
         {
             console.log('initialize', error.message);
         }
-        console.log(aptosWallet);
         dispatch({
             type: Types.Initial,
             payload: {
                 firstLogin: false,
+                metamaskInstalled: window?.ethereum,
                 isAuthenticated: false,
                 user: null,
                 wallet: null,
@@ -191,26 +228,33 @@ const AptosProvider: FC<AptosContextProps> = ({ children, createnewAccount }: Ap
         });
     }
 
-    const initWithoutCreateNewAccount = () =>
+    const initWithoutCreateNewAccount = async () =>
     {
         try
         {
             let userInfo: UserInfoResponse | null = null;
-            if (account)
+            if (meta)
             {
-                fetchAccountBalance(account.address);
-
-                dispatch({
-                    type: Types.Initial,
-                    payload: {
-                        firstLogin: false,
-                        isAuthenticated: account !== null,
-                        user: account,
-                        wallet: wallet,
-                        info: userInfo
-                    },
-                });
-                return;
+                sdk.client = client;
+                const address = await sdk.account();
+                if (address?.length)
+                {
+                    const signer = await getSigner();
+                    sdk.signer = signer;
+                    fetchAccountBalance(address);
+                    dispatch({
+                        type: Types.Initial,
+                        payload: {
+                            firstLogin: false,
+                            metamaskInstalled: meta,
+                            isAuthenticated: address?.length,
+                            user: null,
+                            wallet: { address },
+                            info: userInfo
+                        },
+                    });
+                    return;
+                }
             }
         } catch (error)
         {
@@ -219,6 +263,7 @@ const AptosProvider: FC<AptosContextProps> = ({ children, createnewAccount }: Ap
         dispatch({
             type: Types.Initial,
             payload: {
+                metamaskInstalled: window?.ethereum,
                 firstLogin: false,
                 isAuthenticated: false,
                 user: null,
@@ -230,23 +275,54 @@ const AptosProvider: FC<AptosContextProps> = ({ children, createnewAccount }: Ap
 
     const fetchAccountBalance = async (wallet: string) =>
     {
-        setLoadingBalance(true);
-        const res = await client.getAccountResource({ accountAddress: wallet, resourceType: "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>" });
-        const val = res?.coin?.value;
-        setBalances(parseInt(val) / Math.pow(10, 8));
-        setLoadingBalance(false);
+        const bal = await sdk.getBalance(wallet);
+        setBalances(bal);
     };
 
     const logout = async () =>
     {
-        disconnect();
+        await sdk.disconnect(state.wallet.address);
+        dispatch({
+            type: Types.Logout
+        })
     };
+
+    const login = async () =>
+    {
+        const accounts = await sdk.connect();
+        if (accounts?.length)
+        {
+            const address = accounts[0];
+            let userInfo = await fetchUserInfo(address);
+            const firstLogin = typeof userInfo === undefined;
+            if (firstLogin)
+            {
+                userInfo = await createUser({
+                    email: '',
+                    walletAddress: address,
+                    avatarUrl: '', about: '', fullName: ''
+                });
+            }
+            const balance = await sdk.getBalance(address);
+            setBalances(balance);
+            dispatch({
+                type: Types.Login,
+                payload: {
+                    metamaskInstalled: meta,
+                    user: null,
+                    wallet: { address },
+                    info: userInfo,
+                    firstLogin
+                },
+            });
+        }
+    }
 
     const sendTransaction = async (toWallet: string, amount: number, onDonateSuccess: (trans: TransasctionHistory) => void) =>
     {
         try
         {
-            if (account)
+            if (state?.wallet)
             {
                 const transHistory: TransasctionHistory = {
                     amount,
@@ -255,18 +331,8 @@ const AptosProvider: FC<AptosContextProps> = ({ children, createnewAccount }: Ap
                     receiver: 0
                 }
 
-                const transaction: InputTransactionData = {
-                    data: {
-                        function: '0x1::coin::transfer',
-                        typeArguments: [APTOS_COIN],
-                        functionArguments: [toWallet, amount * Math.pow(10, 8)],
-                    },
-                };
-                const txn = await signAndSubmitTransaction(transaction);
-                await client.waitForTransaction({
-                    transactionHash: txn.hash,
-                })
-                transHistory.senderWallet = account.address;
+                await sdk.sendTransaction(toWallet, amount);
+                transHistory.senderWallet = state.wallet.address;
                 onDonateSuccess(transHistory);
             }
         } catch (error)
@@ -278,7 +344,19 @@ const AptosProvider: FC<AptosContextProps> = ({ children, createnewAccount }: Ap
     const fetchUserInfoById = async (id: number): Promise<UserInfoResponse | null> =>
     {
         const res = await userSvc.infoById(id);
-        if (res?.status === 200) return res.data;
+        if (res?.status === 200)
+        {
+            const uInfo = { ...res.data as UserInfoResponse };
+            const { about } = uInfo;
+            try
+            {
+                uInfo.detailAbout = JSON.parse(about);
+            } catch (error)
+            {
+                uInfo.detailAbout = { content: about };
+            }
+            return uInfo;
+        };
         return null;
     };
 
@@ -325,24 +403,45 @@ const AptosProvider: FC<AptosContextProps> = ({ children, createnewAccount }: Ap
                 firstLogin: false,
                 info: uInfo ? uInfo : state.info
             },
-        })
+        });
+    };
+
+    const getSigner = async () =>
+    {
+        if (meta)
+        {
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            return signer;
+        }
     }
 
+    const requestTokenFromFaucet = async () =>
+    {
+        if (state.wallet?.address)
+        {
+            const res = await faucetSvc.getTokens(state.wallet.address, sdk.chainId);
+            await fetchAccountBalance(state.wallet.address);
+            return res;
+        }
+    }
 
-    return <AptosContext.Provider value={{
+    return <ChainContext.Provider value={{
         ...state,
         balances,
         loadingBalance,
 
         fetchAccountBalance,
         logout,
+        login,
         sendTransaction,
         fetchUserInfoById,
-        updateProfile
+        updateProfile,
+        requestTokenFromFaucet
     }}>
 
         {children}
-    </AptosContext.Provider>
-}
+    </ChainContext.Provider>
+};
 
-export { AptosContext, AptosProvider };
+export { ChainContext, ChainProvider }

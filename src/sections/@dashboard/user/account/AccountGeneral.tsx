@@ -7,8 +7,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Box, Grid, Card, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-// hooks
-import useAptos from '../../../../hooks/useAptos';
 // utils
 import { fData } from '../../../../utils/formatNumber';
 // _mock
@@ -21,6 +19,7 @@ import {
   RHFTextField,
   RHFUploadAvatar,
 } from '../../../../components/hook-form';
+import useChainAuth from 'src/hooks/useChainAuth';
 
 // ----------------------------------------------------------------------
 
@@ -41,7 +40,7 @@ type FormValuesProps = {
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { user } = useAptos();
+  const { user } = useChainAuth();
 
   const UpdateUserSchema = Yup.object().shape({
     displayName: Yup.string().required('Name is required'),

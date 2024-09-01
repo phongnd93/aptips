@@ -5,11 +5,10 @@ import { Box, Typography } from '@mui/material';
 import { Profile } from '../../../../@types/user';
 // utils
 import cssStyles from '../../../../utils/cssStyles';
-// hooks
-import useAptos from '../../../../hooks/useAptos';
 // components
 import MyAvatar from '../../../../components/MyAvatar';
 import Image from '../../../../components/Image';
+import useChainAuth from 'src/hooks/useChainAuth';
 
 // ----------------------------------------------------------------------
 
@@ -47,7 +46,7 @@ type Props = {
 };
 
 export default function ProfileCover({ myProfile }: Props) {
-  const { user } = useAptos();
+  const { user } = useChainAuth();
   const { position, cover } = myProfile;
 
   return (

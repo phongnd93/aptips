@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import { Button, Box, Container, Typography, Link, Stack } from '@mui/material';
 // components
 import { MotionViewport, varFade } from '../../components/animate';
+import { MAIN_CHAIN } from 'src/config';
 
 // ----------------------------------------------------------------------
 
@@ -28,7 +29,7 @@ export default function SuiHomeSayThanks()
                     </m.div>
                     <m.div variants={varFade().inDown}>
                         <Typography fontSize={24} fontWeight={'500'}>
-                            <span style={{ color: '#00BDD6' }}>Tip me an Aptos</span> makes it simple and fun,<br /> like receiving a cup of coffee from people who love you.
+                            <span style={{ color: '#00BDD6' }}>Tip me an {MAIN_CHAIN}</span> makes it simple and fun,<br /> like receiving a cup of coffee from people who love you.
                         </Typography>
                     </m.div>
                 </Stack>

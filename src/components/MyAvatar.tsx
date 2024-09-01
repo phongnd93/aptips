@@ -1,6 +1,6 @@
 // hooks
-import useAptos from 'src/hooks/useAptos';
 // utils
+import useChainAuth from 'src/hooks/useChainAuth';
 import createAvatar from '../utils/createAvatar';
 //
 import Avatar, { Props as AvatarProps } from './Avatar';
@@ -9,7 +9,7 @@ import Avatar, { Props as AvatarProps } from './Avatar';
 
 export default function MyAvatar({ ...other }: AvatarProps)
 {
-  const { user, wallet, info } = useAptos();
+  const { user, wallet, info } = useChainAuth();
 
   return (
     <Avatar

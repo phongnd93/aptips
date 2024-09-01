@@ -6,8 +6,7 @@ import Login from '../pages/auth/login';
 // components
 import LoadingScreen from '../components/LoadingScreen';
 import Profile from 'src/pages/profile';
-import { useWallet } from '@aptos-labs/wallet-adapter-react';
-import useAptos from 'src/hooks/useAptos';
+import useChainAuth from 'src/hooks/useChainAuth';
 
 // ----------------------------------------------------------------------
 
@@ -17,8 +16,7 @@ type Props = {
 
 export default function AuthGuard({ children }: Props)
 {
-  const { account, connected, wallet, wallets } = useWallet();
-  const { firstLogin, isInitialized, isAuthenticated } = useAptos();
+  const { firstLogin, isInitialized, isAuthenticated } = useChainAuth();
 
   const { pathname, push } = useRouter();
 
@@ -32,6 +30,7 @@ export default function AuthGuard({ children }: Props)
       push(requestedLocation);
     }
   }, [pathname, push, requestedLocation]);
+  
   if (!isInitialized)
   {
     return <LoadingScreen />;

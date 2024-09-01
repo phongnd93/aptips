@@ -7,7 +7,7 @@ function path(root: string, sublink: string)
 
 const ROOTS_AUTH = '/auth';
 const ROOTS_DASHBOARD = '/dashboard';
-const ROOTS_APT = '/apt';
+const ROOTS_MANAGEMENT = '/management';
 const ROOTS_DONATION = '/donation-link-management';
 
 // ----------------------------------------------------------------------
@@ -95,14 +95,13 @@ export const PATH_DASHBOARD = {
   },
 };
 
-export const APT_DONA_PATH = {
-  root: ROOTS_APT,
+export const APP_PATH = {
   new: path(ROOTS_DONATION, '/new'),
   manager: {
-    root: path(ROOTS_APT, '/manager'),
-    link: path(ROOTS_APT, '/manager/link-donation'),
-    detail: path(ROOTS_APT, '/manager/detail-link'),
-    form: path(ROOTS_APT, '/manager/form-donation'),
+    root: ROOTS_MANAGEMENT,
+    link: path(ROOTS_MANAGEMENT, '/link-donation'),
+    detail: path(ROOTS_MANAGEMENT, '/detail-link'),
+    form: path(ROOTS_MANAGEMENT, '/form-donation'),
   }
 }
 

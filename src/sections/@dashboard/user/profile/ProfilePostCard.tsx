@@ -18,8 +18,6 @@ import {
 } from '@mui/material';
 // @types
 import { UserPost } from '../../../../@types/user';
-// hooks
-import useAptos from '../../../../hooks/useAptos';
 // utils
 import { fDate } from '../../../../utils/formatTime';
 import { fShortenNumber } from '../../../../utils/formatNumber';
@@ -28,6 +26,7 @@ import Image from '../../../../components/Image';
 import Iconify from '../../../../components/Iconify';
 import MyAvatar from '../../../../components/MyAvatar';
 import EmojiPicker from '../../../../components/EmojiPicker';
+import useChainAuth from 'src/hooks/useChainAuth';
 
 // ----------------------------------------------------------------------
 
@@ -36,7 +35,7 @@ interface Props {
 }
 
 export default function ProfilePostCard({ post }: Props) {
-  const { user } = useAptos();
+  const { user } = useChainAuth();
   const commentInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLiked, setLiked] = useState(post.isLiked);

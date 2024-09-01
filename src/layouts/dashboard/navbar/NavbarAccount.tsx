@@ -4,11 +4,12 @@ import NextLink from 'next/link';
 import { styled } from '@mui/material/styles';
 import { Box, Link, Typography } from '@mui/material';
 // hooks
-import useAptos from 'src/hooks/useAptos';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // components
 import MyAvatar from '../../../components/MyAvatar';
+import { MAIN_CHAIN } from 'src/config';
+import useChainAuth from 'src/hooks/useChainAuth';
 
 // ----------------------------------------------------------------------
 
@@ -31,7 +32,7 @@ type Props = {
 
 export default function NavbarAccount({ isCollapse }: Props)
 {
-  const { user, balances } = useAptos();
+  const { user, balances } = useChainAuth();
 
   return (
     <NextLink href={PATH_DASHBOARD.user.account} passHref>
@@ -62,7 +63,7 @@ export default function NavbarAccount({ isCollapse }: Props)
               {user?.address}
             </Typography>
             <Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
-              APT : {balances}
+              {MAIN_CHAIN} : {balances}
             </Typography>
           </Box>
         </RootStyle>

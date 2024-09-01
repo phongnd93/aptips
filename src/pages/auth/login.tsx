@@ -1,7 +1,7 @@
 // next
 // @mui
 import { styled } from '@mui/material/styles';
-import { Box, Stack, Container, Typography, Grid, Alert, Button, Popover, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material';
+import { Box, Stack, Container, Typography, Grid } from '@mui/material';
 // routes
 // hooks
 import useResponsive from '../../hooks/useResponsive';
@@ -12,14 +12,7 @@ import Page from '../../components/Page';
 import Logo from '../../components/Logo';
 import Image from '../../components/Image';
 // sections
-import useAptos from 'src/hooks/useAptos';
-import { useState } from 'react';
-import { AnyAptosWallet, groupAndSortWallets, isInstallRequired } from '@aptos-labs/wallet-adapter-core';
-import { useWallet, WalletItem } from '@aptos-labs/wallet-adapter-react';
-import { LoadingButton } from '@mui/lab';
-import Iconify from '../../components/Iconify';
-import { DialogAnimate } from 'src/components/animate';
-import AptosLoginForm from '../../sections/auth/login/AptosLoginForm';
+import { MetamaskConnectToWallet } from 'src/components/MetamaskConnectToWallet';
 
 // ----------------------------------------------------------------------
 
@@ -29,21 +22,6 @@ const RootStyle = styled('div')(({ theme }) => ({
   },
 }));
 
-const HeaderStyle = styled('header')(({ theme }) => ({
-  top: 0,
-  zIndex: 9,
-  lineHeight: 0,
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  position: 'absolute',
-  padding: theme.spacing(3),
-  justifyContent: 'center',
-  [theme.breakpoints.up('md')]: {
-    alignItems: 'flex-start',
-    padding: theme.spacing(7, 5, 0, 7),
-  },
-}));
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: 480,
@@ -64,20 +42,8 @@ const TermAndPolicyStyle = styled('span')(({ theme }) => ({
 
 export default function Login()
 {
-  // const { login } = useAptos();
-
   const mdUp = useResponsive('up', 'md');
-  const { wallets = [] } = useWallet();
-
-  const { aptosConnectWallets, availableWallets, installableWallets } =
-    groupAndSortWallets(wallets);
-
-  const hasAptosConnectWallets = !!aptosConnectWallets.length;
-  const [open, setOpen] = useState(false);
-  const handleClose = () =>
-  {
-    setOpen(false);
-  };
+  
   return (
     <GuestGuard>
       <Page title="Login">
@@ -101,7 +67,7 @@ export default function Login()
                       </Typography>
                     </Box>
                   </Stack>
-                  <AptosLoginForm />
+                  <MetamaskConnectToWallet />
                 </ContentStyle>
               </Container>
             </Grid>

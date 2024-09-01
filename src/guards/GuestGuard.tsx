@@ -1,8 +1,8 @@
 import { ReactNode, useEffect } from 'react';
 // next
 import { useRouter } from 'next/router';
+import useChainAuth from 'src/hooks/useChainAuth';
 // routes
-import useAptos from 'src/hooks/useAptos';
 
 // ----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ export default function GuestGuard({ children }: Props)
 {
   const { push } = useRouter();
 
-  const { isAuthenticated } = useAptos();
+  const { isAuthenticated } = useChainAuth();
 
   useEffect(() =>
   {

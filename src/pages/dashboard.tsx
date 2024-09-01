@@ -6,13 +6,15 @@ import Page from '../components/Page';
 import { Container, Grid, Stack, StackProps, useTheme } from '@mui/material';
 import { AppWidgetSummary, AppAreaInstalled } from 'src/sections/@dashboard/general/app';
 import useSettings from 'src/hooks/useSettings';
-import useAptos from 'src/hooks/useAptos';
 import { useEffect, useRef, useState } from 'react';
 import UserServices from 'src/services/UserServices';
 import TransactionServices from 'src/services/TransactionServices';
 import { Donator, RevenueResponseDTO, Transaction } from '../@types/transaction';
 import AppTopDonators from 'src/sections/@dashboard/general/app/AppTopDonators';
 import TableReportData from '../sections/@dashboard/general/app/TableReportData';
+import { MAIN_CHAIN } from 'src/config';
+import { MetamaskConnectToWallet } from 'src/components/MetamaskConnectToWallet';
+import useChainAuth from 'src/hooks/useChainAuth';
 
 Dashboard.getLayout = function getLayout(page: React.ReactElement)
 {
@@ -38,7 +40,7 @@ const ContentStyle = styled((props: StackProps) => <Stack spacing={5} {...props}
 export default function Dashboard()
 {
   const theme = useTheme();
-  const { info } = useAptos();
+  const { info } = useChainAuth();
   const { themeStretch } = useSettings();
   const isInit = useRef(false);
 
@@ -97,7 +99,7 @@ export default function Dashboard()
               <Grid container direction={'column'} spacing={1}>
                 <Grid item xs={12} md={4}>
                   <AppWidgetSummary
-                    title="Total APT"
+                    title={`Total ${MAIN_CHAIN}`}
                     percent={total > 0 ? 100 : 0}
                     total={total}
                     chartColor={theme.palette.primary.main}

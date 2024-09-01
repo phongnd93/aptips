@@ -131,7 +131,6 @@ export default function AppAreaInstalled({ title, data }: AppAreaInstalledProps)
       }
     });
     // if (yearArr?.length) setSeriesData(yearArr[0].year);
-    console.log('yearArr : ', yearArr);
     return yearArr;
   }, [realData]);
 

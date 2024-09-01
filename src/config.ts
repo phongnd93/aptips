@@ -1,6 +1,5 @@
 import { SettingsValueProps } from './components/settings/type';
 // routes
-import { PATH_DASHBOARD, APT_DONA_PATH } from './routes/paths';
 
 // API
 // ----------------------------------------------------------------------
@@ -39,6 +38,8 @@ export const SUI_CONFIG = {
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN = '/dashboard'; // as '/dashboard/app'
+export const MAIN_CHAIN = 'KII';
+export const APP_NAME = 'Tipy';
 
 // LAYOUT
 // ----------------------------------------------------------------------

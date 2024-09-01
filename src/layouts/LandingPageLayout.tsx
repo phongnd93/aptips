@@ -1,7 +1,7 @@
 import { styled, useTheme } from '@mui/material/styles';
 import { AppBar, Toolbar, Container, Stack, Typography, Button, Box } from '@mui/material';
 import { ReactNode } from 'react'
-import { HEADER } from 'src/config';
+import { APP_NAME, HEADER, MAIN_CHAIN } from 'src/config';
 import useResponsive from 'src/hooks/useResponsive';
 import cssStyles from 'src/utils/cssStyles';
 import Image from 'src/components/Image';
@@ -78,8 +78,8 @@ const MainHeader: React.FC = () =>
                             disabledEffect
                         />
                         <Stack sx={{ display: isDesktop ? 'block' : 'none' }}>
-                            <Typography variant="h4" color={(theme) => theme.palette.primary.main}>APTips</Typography>
-                            <Typography variant='h6' color={(theme) => theme.palette.primary.main}>Tip me an Aptos</Typography>
+                            <Typography variant="h4" color={(theme) => theme.palette.primary.main}>{APP_NAME}</Typography>
+                            <Typography variant='h6' color={(theme) => theme.palette.primary.main}>Tip me some {MAIN_CHAIN}</Typography>
                         </Stack>
                     </Stack>
                     <Link href={'/dashboard'}>

@@ -13,10 +13,11 @@ import useIsMountedRef from '../../../hooks/useIsMountedRef';
 import MyAvatar from '../../../components/MyAvatar';
 import MenuPopover from '../../../components/MenuPopover';
 import { IconButtonAnimate } from '../../../components/animate';
-import useAptos from 'src/hooks/useAptos';
-import { requestSuiFromFaucet, shortenSuiAddress } from '@polymedia/suits';
-import Iconify from 'src/components/Iconify';
+import { shortenSuiAddress } from '@polymedia/suits';
 import { LoadingButton } from '@mui/lab';
+import { DisplayLogo } from 'src/components/DisplayLogo';
+import { MAIN_CHAIN } from 'src/config';
+import useChainAuth from 'src/hooks/useChainAuth';
 
 // ----------------------------------------------------------------------
 
@@ -41,11 +42,7 @@ export default function AccountPopover()
 {
   const router = useRouter();
 
-  const { balances, user, wallet, logout, fetchAccountBalance, info } = useAptos();
-
-  const isMountedRef = useIsMountedRef();
-
-  const { enqueueSnackbar } = useSnackbar();
+  const { balances, wallet, requestTokenFromFaucet, logout, fetchAccountBalance, info } = useChainAuth();
 
   const [open, setOpen] = useState<HTMLElement | null>(null);
 
@@ -61,32 +58,15 @@ export default function AccountPopover()
     setOpen(null);
   };
 
-  const handleLogout = async () =>
+  const handleBuyTokenClick = async () =>
   {
-    try
-    {
-      await logout();
-      router.replace('dashboard');
-
-      if (isMountedRef.current)
-      {
-        handleClose();
-      }
-    } catch (error)
-    {
-      console.error(error);
-      enqueueSnackbar('Unable to logout!', { variant: 'error' });
-    }
-  };
-  const handleBuyAPTClick = async () =>
-  {
-    if (user?.address)
+    if (wallet?.address)
     {
       setRequesting(true);
-      // await requestSuiFromFaucet(NETWORK, user?.userAddr || wallet?.address);
+      await requestTokenFromFaucet();
       setTimeout(async () =>
       {
-        await fetchAccountBalance(user?.address);
+        await fetchAccountBalance(wallet?.address);
         setRequesting(false);
       }, 3000);
     }
@@ -134,7 +114,7 @@ export default function AccountPopover()
               {info.fullName}
             </Typography>
           }
-          <Typography variant='body2' noWrap>{shortenSuiAddress(user?.address, 6, 15, '...', '_wallet_')}</Typography>
+          <Typography variant='body2' noWrap>{shortenSuiAddress(wallet?.address, 6, 15, '...', '_wallet_')}</Typography>
           {
             // user?. && <Typography
             //   variant="body2"
@@ -143,18 +123,20 @@ export default function AccountPopover()
             // </Typography>
           }
           <Stack direction={'row'} justifyContent={'space-between'} justifyItems={'baseline'}>
-            <Typography
-              variant="body2"
-              sx={{ color: 'text.secondary' }} noWrap align='center' alignContent={'baseline'} alignSelf={'center'}>
-              APT: {balances}
-            </Typography>
+            <Stack direction={'row'} alignItems={'center'} gap={2}>
+              <Typography variant='h6'>{MAIN_CHAIN} : </Typography>
+              <Typography
+                variant="body2"
+                sx={{ color: 'text.secondary' }} noWrap>
+                {balances}
+              </Typography></Stack>
             <LoadingButton
               variant='outlined'
-              color='warning'
-              onClick={handleBuyAPTClick}
-              title='Buy APT (Request APT From Faucet)'
+              color='primary'
+              onClick={handleBuyTokenClick}
+              title={`Buy ${MAIN_CHAIN} (Request ${MAIN_CHAIN} From Faucet)`}
               loading={requesting}>
-              <Iconify icon={'token:aptos'} />
+              <DisplayLogo />
             </LoadingButton>
           </Stack>
         </Box>
@@ -172,7 +154,7 @@ export default function AccountPopover()
         </Stack> */}
 
         <Divider sx={{ borderStyle: 'dashed' }} />
-        <MenuItem href={`${PATH_DASHBOARD.user.profile}`} sx={{ m: 1 }} 
+        <MenuItem href={`${PATH_DASHBOARD.user.profile}`} sx={{ m: 1 }}
           onClick={() =>
           {
             router.push('/profile');
@@ -180,7 +162,7 @@ export default function AccountPopover()
         >
           Profile
         </MenuItem>
-        <MenuItem onClick={handleLogout} sx={{ m: 1 }}>
+        <MenuItem onClick={logout} sx={{ m: 1 }}>
           Logout
         </MenuItem>
       </MenuPopover>

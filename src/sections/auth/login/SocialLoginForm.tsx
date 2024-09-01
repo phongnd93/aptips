@@ -3,6 +3,7 @@ import { LoadingButton } from '@mui/lab';
 import { useState } from "react";
 import Iconify from "src/components/Iconify";
 import React from "react";
+import { DisplayLogo } from "src/components/DisplayLogo";
 
 type SocialLoginFormProps = {
     onSocialClick: (provider: 'Google' | 'Facebook' | 'Twitch') => void,
@@ -131,7 +132,7 @@ const SocialLoginForm: React.FC<SocialLoginFormProps> = ({ onSocialClick, onConn
             onClick={onConnectToWalletClick}
         >
             <Stack direction={'row'} spacing={1} alignContent={"baseline"} alignItems={"center"}>
-                <Iconify icon={'token:aptos'} width={32} height={32} />
+                <DisplayLogo width={32} height={32} />
                 <span>Connect to wallet</span>
             </Stack>
         </LoadingButton>

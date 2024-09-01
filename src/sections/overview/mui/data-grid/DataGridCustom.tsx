@@ -173,7 +173,6 @@ const columns: GridColDef[] = [
       const selectedID = params.row.id;
 
       const handleClick = () => {
-        console.log('selectedID', selectedID);
       };
 
       return (
@@ -205,8 +204,6 @@ export default function DataGridCustom() {
   }
 
   const selected = _dataGrid.filter((row) => selectionModel.includes(row.id));
-
-  console.log('selected', selected);
 
   return (
     <>

@@ -1,5 +1,5 @@
 // routes
-import { APT_DONA_PATH } from '../../routes/paths';
+import { APP_PATH } from '../../routes/paths';
 // components
 // components
 import Iconify from '../../components/Iconify';
@@ -30,7 +30,7 @@ const menuConfig = [
   {
     title: 'Management',
     icon: <Iconify icon={'eva:file-fill'} {...ICON_SIZE} />,
-    path: APT_DONA_PATH.manager.link,
+    path: APP_PATH.manager.link,
   },
   {
     title: 'Profile',

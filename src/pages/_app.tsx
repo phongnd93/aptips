@@ -60,8 +60,7 @@ import MotionLazyContainer from '../components/animate/MotionLazyContainer';
 // https://docs-minimals.vercel.app/authentication/ts-version
 
 import { PersistGate } from 'redux-persist/integration/react';
-import { AptosWalletProvider } from '../contexts/aptos/AptosWalletProvider';
-import { AptosProvider } from 'src/contexts/aptos/AptosContext';
+import { ChainProvider } from 'src/contexts/ChainContext';
 
 // ----------------------------------------------------------------------
 
@@ -89,8 +88,7 @@ export default function MyApp(props: MyAppProps)
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Sans:ital,wght@0,100..800;1,100..800&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet" />
       </Head>
-      <AptosWalletProvider>
-        <AptosProvider createnewAccount={true} >
+      <ChainProvider createnewAccount={true}>
           <ReduxProvider store={store}>
             <PersistGate loading={null} persistor={persistor}>
               <CollapseDrawerProvider>
@@ -116,8 +114,7 @@ export default function MyApp(props: MyAppProps)
               </CollapseDrawerProvider>
             </PersistGate>
           </ReduxProvider>
-        </AptosProvider>
-      </AptosWalletProvider>
+      </ChainProvider>
     </>
   );
 }

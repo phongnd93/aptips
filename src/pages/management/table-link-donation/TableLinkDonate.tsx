@@ -16,19 +16,22 @@ import
 // hooks
 
 // components
-import Scrollbar from '../../../../components/Scrollbar';
+import Scrollbar from '../../../components/Scrollbar';
 import Label from 'src/components/Label';
 import Iconify from 'src/components/Iconify';
-import { APT_DONA_PATH } from 'src/routes/paths';
+import { APP_PATH } from 'src/routes/paths';
 import EmptyData from 'src/components/EmptyData';
 
 
 import { useContext, useEffect, useMemo, useState } from 'react';
 
-import useAptos from 'src/hooks/useAptos';
 import { LinkDonationModel } from 'src/@types/link-donation';
 import { useRouter } from 'next/router';
 import { LinkDonateContext } from 'src/contexts/ManagerLinkContext';
+import { DisplayLogo } from 'src/components/DisplayLogo';
+import React from 'react';
+import { MAIN_CHAIN } from '../../../config';
+import useChainAuth from 'src/hooks/useChainAuth';
 
 
 // ----------------------------------------------------------------------
@@ -68,7 +71,7 @@ const COLUMNS: Column[] = [
   },
   {
     id: 'sui',
-    label: 'APT',
+    label: MAIN_CHAIN,
     minWidth: 100,
     align: "left",
     format: (value) => value.toFixed(2),
@@ -93,7 +96,7 @@ export default function TableLinkDonate()
 
   } = useContext(LinkDonateContext)
 
-  const { info } = useAptos();
+  const { info } = useChainAuth();
   const router = useRouter();
 
   const [page, setPage] = useState(0);
@@ -117,7 +120,7 @@ export default function TableLinkDonate()
 
   const handleClickDetail = (id: number) => 
   {
-    router.push(`${APT_DONA_PATH.manager.detail}/${id}`);
+    router.push(`${APP_PATH.manager.detail}/${id}`);
   }
 
   const listLinkTable = useMemo(() =>
@@ -150,7 +153,7 @@ export default function TableLinkDonate()
             <TableCell>
               <Stack direction="row" alignItems="center">
                 <Label color={row?.totalDonations > 0 ? 'info' : 'secondary'}>{row.totalDonations || 0}</Label>
-                <Iconify icon={'token:aptos'} width={24} height={24} />
+                <DisplayLogo width={24} height={24} />
               </Stack>
             </TableCell>
 

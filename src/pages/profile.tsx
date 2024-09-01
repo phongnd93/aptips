@@ -4,7 +4,6 @@ import Layout from '../layouts';
 import Page from '../components/Page';
 import { Button, Card, CardContent, Container, Grid, IconButton, InputAdornment, Menu, MenuItem, Stack, TextField, Typography } from '@mui/material';
 
-import useAptos from 'src/hooks/useAptos';
 import { useEffect, useRef, useState } from 'react';
 import UserServices from 'src/services/UserServices';
 
@@ -18,9 +17,10 @@ import { useSnackbar } from 'notistack';
 import useSettings from 'src/hooks/useSettings';
 import { _SOCIALS } from '../constants/social';
 import { UserInfoResponse } from 'src/@types/dto/user-dto';
-import { useWallet } from '@aptos-labs/wallet-adapter-react';
 import { useTheme } from '@mui/material/styles';
 import useResponsive from 'src/hooks/useResponsive';
+import { DisplayLogo } from 'src/components/DisplayLogo';
+import useChainAuth from 'src/hooks/useChainAuth';
 
 Profile.getLayout = function getLayout(page: React.ReactElement)
 {
@@ -30,9 +30,8 @@ Profile.getLayout = function getLayout(page: React.ReactElement)
 export default function Profile()
 {
     const { themeStretch } = useSettings();
-    const isDesktop = useResponsive('up','md');
-    const { user, info, balances, wallet, updateProfile } = useAptos();
-    const {account} = useWallet();
+    const isDesktop = useResponsive('up', 'md');
+    const { user, info, balances, wallet, updateProfile } = useChainAuth();
     const userSvc = new UserServices();
 
     const [loading, setLoading] = useState<boolean>(false);
@@ -48,7 +47,7 @@ export default function Profile()
             setFormData(info);
         }
     }, [info]);
-
+    
     const handleClose = () =>
     {
         setAnchorEl(null);
@@ -116,7 +115,7 @@ export default function Profile()
                                 <Stack spacing={2}>
                                     <Stack direction={'row'} spacing={2}>
                                         <Label color='info' sx={{ minWidth: 60, py: 3, textAlign: 'end' }}>
-                                            <Iconify icon={'token:aptos'} width={24} height={24} />
+                                            <DisplayLogo width={24} height={24} />
                                         </Label>
                                         <Label color='default' sx={{ flex: 1, py: 3 }}>
                                             {balances}

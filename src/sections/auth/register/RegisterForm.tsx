@@ -7,7 +7,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Stack, IconButton, InputAdornment, Alert } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // hooks
-import useAptos from 'src/hooks/useAptos';
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
 // components
 import Iconify from '../../../components/Iconify';
@@ -24,7 +23,6 @@ type FormValuesProps = {
 };
 
 export default function RegisterForm() {
-  // const { register } = useAptos();
 
   const isMountedRef = useIsMountedRef();
 

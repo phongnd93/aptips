@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import { APT_DONA_PATH } from '../../../routes/paths';
+import { APP_PATH } from '../../routes/paths';
 
 export default function Index()
 {
@@ -9,10 +9,9 @@ export default function Index()
 
     useEffect(() =>
     {
-        if (pathname === APT_DONA_PATH.manager.root)
+        if (pathname === APP_PATH.manager.root)
         {
-            console.log(pathname);
-            push(APT_DONA_PATH.manager.link);
+            push(APP_PATH.manager.link);
         }
     }, [pathname]);
 

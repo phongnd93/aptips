@@ -19,15 +19,16 @@ import
 } from '@mui/material';
 // hooks
 // components
-import Scrollbar from '../../../../../components/Scrollbar';
-import Label from 'src/components/Label';
-import Iconify from 'src/components/Iconify';
+import Scrollbar from '../../../../components/Scrollbar';
 import { useContext, useMemo, useState } from 'react';
 
-import createAvatar from 'src/utils/createAvatar';
 
 import { alpha } from '@mui/material';
-import { RevenueSourceItem, Transaction } from 'src/@types/transaction';
+import React from 'react';
+import createAvatar from '../../../../utils/createAvatar';
+import { RevenueSourceItem, Transaction } from '../../../../@types/transaction';
+import { DisplayLogo } from '../../../../components/DisplayLogo';
+import Label from 'src/components/Label';
 import { LinkDonateContext } from 'src/contexts/ManagerLinkContext';
 // ----------------------------------------------------------------------
 
@@ -135,7 +136,7 @@ export default function GroupingListUserDonate({ sources }: { sources: RevenueSo
                 <Label color='primary'>
                   {row.amount}
                 </Label>
-                <Iconify icon={'token:aptos'} width={24} height={24} />
+                <DisplayLogo width={24} height={24} />
               </Stack>
             </TableCell>
             <TableCell>

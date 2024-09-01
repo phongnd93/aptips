@@ -7,6 +7,8 @@ import useSettings from '../hooks/useSettings';
 import Image from 'src/components/Image';
 import Iconify from 'src/components/Iconify';
 import { PATH_DASHBOARD } from 'src/routes/paths';
+import { DisplayLogo } from '../components/DisplayLogo';
+import { APP_NAME } from 'src/config';
 
 const RootStyle = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -65,13 +67,13 @@ export default function ThankToDonate()
                             <Typography variant="h3">
                                 <Stack spacing={'1'} direction={'row'} justifyContent={'center'} justifyItems={'center'} alignItems={'center'}>
                                     <span>{amount}</span>
-                                    <Iconify icon={'token:aptos'} width={32} height={32} />
+                                    <DisplayLogo width={32} height={32} />
                                 </Stack>
                             </Typography>
                         </Stack>
                         <Link href={PATH_DASHBOARD.root}>
                             <Stack direction={'row'} justifyContent={'center'} alignItems={'center'}>
-                                <Typography variant='h6'>Start your APTips</Typography>
+                                <Typography variant='h6'>Start your {APP_NAME}</Typography>
                                 <Iconify icon={'grommet-icons:form-next-link'} width={24} height={24} />
                             </Stack>
                         </Link>

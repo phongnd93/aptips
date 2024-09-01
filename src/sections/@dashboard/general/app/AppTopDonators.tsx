@@ -12,6 +12,7 @@ import EmptyData from 'src/components/EmptyData';
 import { Donator } from 'src/@types/transaction';
 import { useMemo } from 'react';
 import createAvatar from 'src/utils/createAvatar';
+import { DisplayLogo } from 'src/components/DisplayLogo';
 
 // ----------------------------------------------------------------------
 
@@ -87,7 +88,7 @@ function DonatorItem({ donator, index }: DonatorItemProps)
                         color: 'text.secondary',
                     }}
                 >
-                    <Iconify icon={'token:aptos'} sx={{ width: 28, height: 28 }} />
+                    <DisplayLogo sx={{ width: 28, height: 28 }} />
                     {fShortenNumber(donator.total)}
                 </Typography>
             </Box>

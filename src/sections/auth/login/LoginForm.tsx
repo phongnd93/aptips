@@ -11,7 +11,6 @@ import { LoadingButton } from '@mui/lab';
 // routes
 import { PATH_AUTH } from '../../../routes/paths';
 // hooks
-import useAptos from 'src/hooks/useAptos';
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
 // components
 import Iconify from '../../../components/Iconify';
@@ -27,7 +26,6 @@ type FormValuesProps = {
 };
 
 export default function LoginForm() {
-  // const { login } = useAptos();
 
   const isMountedRef = useIsMountedRef();
 

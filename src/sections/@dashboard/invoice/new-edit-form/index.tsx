@@ -107,7 +107,6 @@ export default function InvoiceNewEditForm({ isEdit, currentInvoice }: Props) {
       reset();
       setLoadingSave(true);
       push(PATH_DASHBOARD.invoice.list);
-      console.log(JSON.stringify(newInvoice, null, 2));
     } catch (error) {
       console.error(error);
     }
@@ -121,7 +120,6 @@ export default function InvoiceNewEditForm({ isEdit, currentInvoice }: Props) {
       reset();
       setLoadingSend(false);
       push(PATH_DASHBOARD.invoice.list);
-      console.log(JSON.stringify(newInvoice, null, 2));
     } catch (error) {
       console.error(error);
     }

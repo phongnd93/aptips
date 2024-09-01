@@ -1,4 +1,4 @@
-import { Button, CardHeader, Container, OutlinedInput, Stack, styled, TextField, ToggleButton, ToggleButtonGroup, Typography, Card, CardContent, Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Slide, Avatar, alpha } from '@mui/material';
+import { Button, CardHeader, Container, OutlinedInput, Stack, styled, TextField, ToggleButton, ToggleButtonGroup, Typography, Card, CardContent, Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Slide, Avatar, alpha, Grid } from '@mui/material';
 import Page from '../../components/Page';
 import { useRouter } from "next/router";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -10,7 +10,6 @@ import Iconify from "../../components/Iconify";
 import LoadingScreen from "../../components/LoadingScreen";
 import useSettings from "../../hooks/useSettings";
 import Layout from "../../layouts";
-import useAptos from "src/hooks/useAptos";
 import { UserInfoResponse } from "src/@types/dto/user-dto";
 import SourceServices from "src/services/SourceServices";
 import TransactionServices from "src/services/TransactionServices";
@@ -20,10 +19,13 @@ import { UserSocialInfo } from "src/@types/sui-user";
 import { _SOCIALS } from "src/constants/social";
 import { _appTransactions } from "src/_mock";
 import Label from "src/components/Label";
-import { AptosProvider } from "src/contexts/aptos/AptosContext";
-import AptosLoginForm from 'src/sections/auth/login/AptosLoginForm';
-import { address } from '../../_mock/wallet';
-import { useWallet } from '@aptos-labs/wallet-adapter-react';
+import { DisplayLogo } from 'src/components/DisplayLogo';
+import { ChainProvider } from 'src/contexts/ChainContext';
+import useChainAuth from 'src/hooks/useChainAuth';
+import { MAIN_CHAIN } from 'src/config';
+import { MetamaskConnectToWallet } from 'src/components/MetamaskConnectToWallet';
+import useResponsive from 'src/hooks/useResponsive';
+import { useSnackbar } from 'notistack';
 
 const RootStyle = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -59,14 +61,11 @@ const DonateComponent: React.FC = () =>
     const {
         isAuthenticated,
         sendTransaction,
-        user,
-        wallet,
-        fetchAccountBalance,
+        requestTokenFromFaucet,
         balances,
         fetchUserInfoById,
         loadingBalance
-    } = useAptos();
-    const { account } = useWallet();
+    } = useChainAuth();
     const transSvc = new TransactionServices();
     const sourceSvc = new SourceServices();
     const { push } = useRouter();
@@ -76,10 +75,10 @@ const DonateComponent: React.FC = () =>
     const isInit = useRef(false);
     const [loading, setLoading] = useState(true);
     const [formConfig, setFormConfig] = useState<TempConfig>();
+    const { enqueueSnackbar } = useSnackbar();
 
     const [formResult, setFormResult] = useState({});
-    const [open, setOpen] = useState(false);
-    const [loadingBuySui, setLoadingBuySui] = useState(false);
+    const [loadingRequestToken, setLoadingRequestToken] = useState(false);
     const [linkCreator, setLinkCreator] = useState<UserInfoResponse>();
     const [source, setSource] = useState<{
         linkId: number,
@@ -88,7 +87,7 @@ const DonateComponent: React.FC = () =>
         linkId: -2,
         utmSource: (utm_source as string) || null
     });
-
+    const isDesktop = useResponsive('up', 'md');
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [loadingSendSui, setLoadingSendSui] = useState(false);
     const [message, setMessage] = useState<{
@@ -128,47 +127,16 @@ const DonateComponent: React.FC = () =>
         }
     }
 
-    const handleRequestSui = async () =>
+    const handleRequestToken = async () =>
     {
-        if (account)
-        {
-            setLoadingBuySui(true);
-            const res = await fetch('https://faucet.devnet.aptoslabs.com/fund', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    address: account.address,
-                    amount: 1000000000
-                })
-            });
-            const val = await res.json();
-            fetchAccountBalance(account.address);
-            setLoadingBuySui(false);
-            // const request = await requestSuiFromFaucet(NETWORK, user?.userAddr || wallet?.address);
-            // const { task } = await request.json();
-            // console.log(task);
-            // checkRequestStatus(task);
-        }
-    };
-
-    const checkRequestStatus = async (task: string) =>
-    {
-        setTimeout(async () =>
-        {
-            setLoadingBuySui(false);
-            await fetchAccountBalance(user?.address);
-        }, 3000);
+        setLoadingRequestToken(true);
+        const res = await requestTokenFromFaucet();
+        console.log(res);
+        enqueueSnackbar(res.data.data);
+        setLoadingRequestToken(false);
     }
 
-    const handleSendSui = () =>
-    {
-        if (user && !wallet)
-        {
-
-        } else { doSendAPT() };
-    };
-
-    const doSendAPT = () =>
+    const doTip = () =>
     {
         setOpenConfirmDialog(false);
         if (linkCreator?.id)
@@ -179,18 +147,16 @@ const DonateComponent: React.FC = () =>
                 try
                 {
                     const srcInfo = await sourceSvc.add(source);
-                    console.log('Add source', srcInfo);
                     const transaction = {
                         ...trans, ...{
                             sourceId: srcInfo?.id,
                             receiver: linkCreator.id,
-                            amount: formResult.amount,
+                            amount: parseInt(formResult.amount),
                             name: formResult.name,
                             note: formResult.note
                         }
                     };
                     const addTranRes = await transSvc.add(transaction);
-                    console.log('Add trans', addTranRes);
                     setMessage({
                         type: 'success',
                         content: 'Donated successful !'
@@ -204,7 +170,6 @@ const DonateComponent: React.FC = () =>
 
                 } catch (error)
                 {
-                    console.log('doSendAPT', error);
                     setMessage({
                         type: 'error',
                         content: error
@@ -232,8 +197,8 @@ const DonateComponent: React.FC = () =>
         {(!loading && (!formConfig)) && <Page404 />}
         {(!loading && formConfig) &&
             <>
-                <Stack direction={'row'} spacing={2}>
-                    <Stack flex={1}>
+                <Grid container direction={'row'} spacing={2}>
+                    <Grid item md={6} xs={12}>
                         <Card sx={{ height: '100%' }}>
                             <CardContent sx={{ height: '100%' }}>
                                 <Stack spacing={4} alignItems={'center'}>
@@ -252,10 +217,10 @@ const DonateComponent: React.FC = () =>
                                         multiline
                                         label='About'
                                         fullWidth
-                                        value={linkCreator?.about}
+                                        value={linkCreator?.detailAbout?.content}
                                         disabled
                                     />
-                                    <Card>
+                                    {isDesktop && <Card>
                                         <CardHeader title={
                                             <Stack justifyContent={'start'} alignContent={'start'}>
                                                 <Typography variant="h6" textAlign={'left'}>Recent donations</Typography>
@@ -285,7 +250,7 @@ const DonateComponent: React.FC = () =>
                                                                 </Stack>
                                                                 <Label height={'auto'} color="success" sx={{ p: 2, minWidth: 40, width: 75, textAlign: 'right' }}>
                                                                     <Typography variant="h6">{r.amount}</Typography>
-                                                                    <Iconify icon={'token:aptos'} width={28} height={28} />
+                                                                    <DisplayLogo width={28} height={28} />
                                                                 </Label>
                                                             </Stack>
                                                         </CardContent>
@@ -294,197 +259,186 @@ const DonateComponent: React.FC = () =>
                                                 )}
                                             </Stack>
                                         </CardContent>
-                                    </Card>
+                                    </Card>}
                                 </Stack>
                             </CardContent>
                         </Card>
-                    </Stack>
-                    <Stack flex={1} spacing={2}>
-                        <Card>
-                            <CardContent>
-                                <Stack alignSelf={'center'} alignItems={'center'}>
-                                    <Typography variant="h4">{linkCreator?.fullName}</Typography>
-                                    <Typography variant="body1" sx={{ opacity: 0.7 }}>351 supporter</Typography>
-                                </Stack>
-                                <Stack mt={1} direction={'row'} alignSelf={'center'} alignItems={'center'} justifyContent={'center'} spacing={3}>
-                                    {socials.map(s =>
-                                    {
-                                        const si = _SOCIALS.find(si => si.name === s.name);
-                                        return <Button variant="contained" sx={{ bgcolor: si?.color }}>
-                                            <Iconify icon={si.icon} width={48} height={48} />
-                                        </Button>
-                                    })}
-                                </Stack>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardContent>
-                                <Stack spacing={2} alignSelf={'center'} alignItems={'center'}>
-                                    <Stack>
-                                        <Typography variant="h4">{formConfig.title}</Typography>
-                                        <Typography variant="body1">{formConfig.subtitles}</Typography>
+                    </Grid>
+                    <Grid item container direction={'column'} md={6} xs={12} spacing={2}>
+                        <Grid width={'100%'} item height={'fit-content'}>
+                            <Card>
+                                <CardContent>
+                                    <Stack alignSelf={'center'} alignItems={'center'}>
+                                        <Typography variant="h4">{linkCreator?.fullName}</Typography>
+                                        <Typography variant="body1" sx={{ opacity: 0.7 }}>351 supporter</Typography>
                                     </Stack>
-                                    <Typography variant='h6'>Donation amount</Typography>
-                                    <Stack
-                                        direction={'row'}
-                                        justifyContent={'center'}
-                                        alignItems={'center'}
-                                        bgcolor={(theme) => theme.palette.background.neutral}
-                                        borderRadius={'0.25rem'}
-                                        padding={3}
-                                        gap={2}
-                                        width={'100%'}
-                                    >
-                                        <Iconify icon={'token:aptos'} width={40} height={40} />
-                                        <Iconify icon={'eva:close-fill'} width={16} height={16} />
-                                        {formConfig.amounts.map((a: any, index: number) => (
-                                            <ToggleButtonGroup
-                                                color="primary"
-                                                exclusive
-                                                onChange={(e, val) => { setFormResult({ ...formResult, ...{ amount: val } }); }}
-                                                aria-label="Platform"
-                                                value={formResult.amount}>
-                                                {(a && typeof a === 'number')
-                                                    ? (
-                                                        <AmountToggleButton
-                                                            className='form-donation-toggle-button'
-                                                            sx={[
-                                                                {
-                                                                    borderRadius: '50%',
-                                                                    width: 40,
-                                                                    height: 40,
-                                                                    border:0
-                                                                }
-                                                            ]}
-                                                            value={a}
-                                                        >
-                                                            {a}
-                                                        </AmountToggleButton>
-                                                    )
-                                                    : (
-                                                        <OutlinedInput
-                                                            type='number'
-                                                            size='small'
-                                                            placeholder='Any APT'
-                                                            sx={{ width: 120, borderRadius: 1 }}
-                                                            onChange={(e) => { setFormResult({ ...formResult, ...{ amount: e.target.value } }) }}
-                                                        />
-                                                    )
-                                                }
-                                            </ToggleButtonGroup>
-                                        ))}
+                                    <Stack mt={1} direction={'row'} alignSelf={'center'} alignItems={'center'} justifyContent={'center'} spacing={3}>
+                                        {socials.map(s =>
+                                        {
+                                            const si = _SOCIALS.find(si => si.name === s.name);
+                                            return <Button variant="contained" sx={{ bgcolor: si?.color }}>
+                                                <Iconify icon={si.icon} width={48} height={48} />
+                                            </Button>
+                                        })}
                                     </Stack>
-                                    <TextField
-                                        color='info'
-                                        label='Name'
-                                        fullWidth
-                                        value={formResult.name}
-                                        onChange={(e) =>
-                                        {
-                                            setFormResult({ ...formResult, ...{ name: e.target.value } });
-                                        }}
-                                    />
-                                    <TextField
-                                        color='info'
-                                        rows={3}
-                                        placeholder='Say something nice...(optional)'
-                                        value={formResult.note}
-                                        fullWidth
-                                        multiline
-                                        onChange={(e) =>
-                                        {
-                                            setFormResult({ ...formResult, ...{ note: e.target.value } });
-                                        }}
-                                    />
-                                    {
-                                        isAuthenticated &&
-                                        <Stack spacing={2}>
-                                            <Alert severity="success" color="primary" sx={{ display: 'flex', alignItems: 'center' }}>
-                                                <Stack justifyContent={'center'} justifyItems={'center'} alignItems={'center'} direction={'row'}>
-                                                    {!loadingBalance ? <Typography variant="h6">Your balance : {balances}</Typography> : <Typography variant="h6">Refreshing balance ...</Typography>}
-                                                    <Iconify icon={'token:aptos'} width={28} height={28} />
-                                                </Stack>
-                                            </Alert>
-                                            <Stack direction={'row'} gap={2} justifyItems={'center'}>
-                                                <LoadingButton variant="contained"
-                                                    loading={loadingSendSui}
-                                                    disabled={!(formResult.amount && formResult.name && formResult.amount <= balances)}
-                                                    sx={[{ flex: '1', bgcolor: '#F1F9FEFF', fontSize: '1rem', color: '#4ba2ff', borderRadius: '22px', boxShadow: '0 8px 16px 0 #60adff3d' }, {
-                                                        '&:hover': {
-                                                            color: '#0C476FFF',
-                                                            background: '#E9F5FDFF'
-                                                        }
-                                                    }, {
-                                                        '&:hover:active': {
-                                                            color: "#0C476FFF",
-                                                            background: "#D1EAFAFF",
-                                                        }
-                                                    }]}
-                                                    onClick={handleSendSui}>
-                                                    <Stack direction={'row'} justifyContent={'center'} alignItems={'center'} gap={1}>
-                                                        <Iconify icon={'tabler:heart-filled'} color={'inherit'} />
-                                                        <span>Donate</span>
-                                                    </Stack>
-                                                </LoadingButton>
-                                                <LoadingButton
-                                                    loading={loadingBuySui}
-                                                    title='Request APT From Faucet'
-                                                    variant="contained"
-                                                    sx={[{ bgcolor: '#ffc107FF', fontSize: '1rem', color: (theme) => theme.palette.warning.lighter, borderRadius: '22px', boxShadow: '0 8px 16px 0 #ffc10780' }, {
-                                                        '&:hover': {
-                                                            color: '#ffc107FF',
-                                                            background: '#ffc10780'
-                                                        }
-                                                    }, {
-                                                        '&:hover:active': {
-                                                            color: "#ffc107FF",
-                                                            background: "#ffc10780",
-                                                        }
-                                                    }]}
-                                                    onClick={handleRequestSui}>
-                                                    <span>Not enough APT ? Buy APT here</span>
-                                                </LoadingButton>
-
-                                            </Stack>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                        <Grid item>
+                            <Card>
+                                <CardContent>
+                                    <Stack spacing={2} alignSelf={'center'} alignItems={'center'}>
+                                        <Stack>
+                                            <Typography variant="h4">{formConfig.title}</Typography>
+                                            <Typography variant="body1">{formConfig.subtitles}</Typography>
+                                        </Stack>
+                                        <Typography variant='h6'>Donation amount</Typography>
+                                        <Stack
+                                            direction={'row'}
+                                            justifyContent={'center'}
+                                            alignItems={'center'}
+                                            bgcolor={(theme) => theme.palette.background.neutral}
+                                            borderRadius={'0.25rem'}
+                                            padding={3}
+                                            gap={2}
+                                            width={'100%'}
+                                        >
+                                            <DisplayLogo width={40} height={40} />
+                                            <Iconify icon={'eva:close-fill'} width={16} height={16} />
+                                            {isDesktop ? formConfig.amounts.map((a: any, index: number) => (
+                                                <ToggleButtonGroup
+                                                    color="primary"
+                                                    exclusive
+                                                    onChange={(e, val) => { setFormResult({ ...formResult, ...{ amount: val } }); }}
+                                                    aria-label="Platform"
+                                                    value={formResult.amount}>
+                                                    {(a && typeof a === 'number')
+                                                        ? (
+                                                            <AmountToggleButton
+                                                                className='form-donation-toggle-button'
+                                                                sx={[
+                                                                    {
+                                                                        borderRadius: '50%',
+                                                                        width: 40,
+                                                                        height: 40,
+                                                                        border: 0
+                                                                    }
+                                                                ]}
+                                                                value={a}
+                                                            >
+                                                                {a}
+                                                            </AmountToggleButton>
+                                                        )
+                                                        : (
+                                                            <OutlinedInput
+                                                                type='number'
+                                                                size='small'
+                                                                placeholder={`Any ${MAIN_CHAIN}`}
+                                                                sx={{ width: 120, borderRadius: 1 }}
+                                                                onChange={(e) => { setFormResult({ ...formResult, ...{ amount: e.target.value } }) }}
+                                                            />
+                                                        )
+                                                    }
+                                                </ToggleButtonGroup>
+                                            )) : <OutlinedInput
+                                                type='number'
+                                                size='small'
+                                                placeholder={`Any ${MAIN_CHAIN}`}
+                                                sx={{ width: 120, borderRadius: 1 }}
+                                                onChange={(e) => { setFormResult({ ...formResult, ...{ amount: e.target.value } }) }}
+                                            />}
+                                        </Stack>
+                                        <TextField
+                                            color='info'
+                                            label='Name'
+                                            fullWidth
+                                            value={formResult.name}
+                                            onChange={(e) =>
                                             {
-                                                message && <Alert severity={message.type} color={message.type} sx={{ display: 'flex', alignItems: 'center' }}>
+                                                setFormResult({ ...formResult, ...{ name: e.target.value } });
+                                            }}
+                                        />
+                                        <TextField
+                                            color='info'
+                                            rows={3}
+                                            placeholder='Say something nice...(optional)'
+                                            value={formResult.note}
+                                            fullWidth
+                                            multiline
+                                            onChange={(e) =>
+                                            {
+                                                setFormResult({ ...formResult, ...{ note: e.target.value } });
+                                            }}
+                                        />
+                                        {
+                                            isAuthenticated &&
+                                            <Stack spacing={2}>
+                                                <Alert severity="success" color="primary" sx={{ display: 'flex', alignItems: 'center' }}>
                                                     <Stack justifyContent={'center'} justifyItems={'center'} alignItems={'center'} direction={'row'}>
-                                                        <Typography variant="h6">{message.content}</Typography>
+                                                        {!loadingBalance ? <Typography variant="h6">Your balance : {balances}</Typography> : <Typography variant="h6">Refreshing balance ...</Typography>}
+                                                        <DisplayLogo width={28} height={28} />
                                                     </Stack>
                                                 </Alert>
-                                            }
-                                        </Stack>
-                                    }
-                                    {
-                                        !isAuthenticated &&
-                                        <AptosLoginForm />
-                                    }
-                                </Stack>
-                            </CardContent>
-                        </Card>
-                    </Stack>
+                                                <Stack direction={'row'} gap={2} justifyItems={'center'}>
+                                                    <LoadingButton variant="contained"
+                                                        loading={loadingSendSui}
+                                                        disabled={!(formResult.amount && formResult.name && formResult.amount <= balances)}
+                                                        sx={[{ flex: '1', bgcolor: '#F1F9FEFF', fontSize: '1rem', color: '#4ba2ff', borderRadius: '22px', boxShadow: '0 8px 16px 0 #60adff3d' }, {
+                                                            '&:hover': {
+                                                                color: '#0C476FFF',
+                                                                background: '#E9F5FDFF'
+                                                            }
+                                                        }, {
+                                                            '&:hover:active': {
+                                                                color: "#0C476FFF",
+                                                                background: "#D1EAFAFF",
+                                                            }
+                                                        }]}
+                                                        onClick={doTip}>
+                                                        <Stack direction={'row'} justifyContent={'center'} alignItems={'center'} gap={1}>
+                                                            <Iconify icon={'tabler:heart-filled'} color={'inherit'} />
+                                                            <span>Donate</span>
+                                                        </Stack>
+                                                    </LoadingButton>
+                                                    <LoadingButton
+                                                        loading={loadingRequestToken}
+                                                        title={`Request ${MAIN_CHAIN} From Faucet`}
+                                                        variant="contained"
+                                                        sx={[{ bgcolor: '#ffc107FF', fontSize: '1rem', color: (theme) => theme.palette.warning.lighter, borderRadius: '22px', boxShadow: '0 8px 16px 0 #ffc10780' }, {
+                                                            '&:hover': {
+                                                                color: '#ffc107FF',
+                                                                background: '#ffc10780'
+                                                            }
+                                                        }, {
+                                                            '&:hover:active': {
+                                                                color: "#ffc107FF",
+                                                                background: "#ffc10780",
+                                                            }
+                                                        }]}
+                                                        onClick={handleRequestToken}>
+                                                        <span>{isDesktop && `Not enough ${MAIN_CHAIN} ?`} Buy {MAIN_CHAIN} here</span>
+                                                    </LoadingButton>
 
-                </Stack>
-
-                <Dialog
-                    open={openConfirmDialog}
-                    TransitionComponent={Transition}
-                    keepMounted
-                    onClose={() => { setOpenConfirmDialog(false); }}
-                    aria-describedby="alert-dialog-slide-description"
-                >
-                    <DialogTitle>{"Use Google's location service?"}</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id="alert-dialog-slide-description">
-                            Let Google help apps determine location. This means sending anonymous
-                            location data to Google, even when no apps are running.
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => { setOpenConfirmDialog(false); }}>Disagree</Button>
-                        <Button onClick={() => { doSendAPT(); }}>Agree</Button>
-                    </DialogActions>
-                </Dialog>
+                                                </Stack>
+                                                {
+                                                    message && <Alert severity={message.type} color={message.type} sx={{ display: 'flex', alignItems: 'center' }}>
+                                                        <Stack justifyContent={'center'} justifyItems={'center'} alignItems={'center'} direction={'row'}>
+                                                            <Typography variant="h6">{message.content}</Typography>
+                                                        </Stack>
+                                                    </Alert>
+                                                }
+                                            </Stack>
+                                        }
+                                        {
+                                            !isAuthenticated &&
+                                            <MetamaskConnectToWallet />
+                                        }
+                                    </Stack>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    </Grid>
+                </Grid>
             </>
         }
     </>
@@ -497,7 +451,7 @@ export default function Donation()
     const { themeStretch } = useSettings();
     return (
         <Page title="Donate">
-            <AptosProvider createnewAccount={false}>
+            <ChainProvider createnewAccount={false}>
                 <FormConfigProvider>
                     <RootStyle>
                         <Container maxWidth={themeStretch ? false : 'lg'} sx={{
@@ -509,7 +463,7 @@ export default function Donation()
                         </Container>
                     </RootStyle>
                 </FormConfigProvider>
-            </AptosProvider>
+            </ChainProvider>
         </Page >
     )
 }

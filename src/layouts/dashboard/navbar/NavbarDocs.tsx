@@ -1,16 +1,16 @@
 // @mui
 import { Stack, Button, Typography } from '@mui/material';
 // hooks
-import useAptos from 'src/hooks/useAptos';
 // routes
 import { PATH_DOCS } from '../../../routes/paths';
 // assets
 import { DocIllustration } from '../../../assets';
+import useChainAuth from 'src/hooks/useChainAuth';
 
 // ----------------------------------------------------------------------
 
 export default function NavbarDocs() {
-  const { info } = useAptos();
+  const { info } = useChainAuth();
 
   return (
     <Stack

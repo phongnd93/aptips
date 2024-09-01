@@ -2,10 +2,11 @@
 import { alpha, useTheme, styled } from '@mui/material/styles';
 import { Box, Card, Typography, Stack } from '@mui/material';
 // utils
-import { fNumber, fPercent } from '../../../../../utils/formatNumber';
+import { fNumber, fPercent } from '../../../../utils/formatNumber';
 // components
-import Iconify from '../../../../../components/Iconify';
-import ReactApexChart from '../../../../../components/chart';
+import Iconify from '../../../../components/Iconify';
+import ReactApexChart from '../../../../components/chart';
+import React from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -31,7 +32,7 @@ type Props = {
   itemIcon?: string;
 };
 
-export default function AppWidgetSummary({ title, percent, total, chartColor, chartData, itemIcon }: Props) {
+export default function AppWidgetSummary({ title, percent, total, chartColor, chartData }: Props) {
   const theme = useTheme();
 
   const chartOptions = {

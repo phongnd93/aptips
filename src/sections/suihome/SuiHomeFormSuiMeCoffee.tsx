@@ -6,6 +6,8 @@ import { Card, CardContent, Container, OutlinedInput, Stack, TextField, ToggleBu
 // components
 import { MotionViewport, varFade } from '../../components/animate';
 import Iconify from 'src/components/Iconify';
+import { DisplayLogo } from 'src/components/DisplayLogo';
+import { MAIN_CHAIN } from 'src/config';
 
 // ----------------------------------------------------------------------
 
@@ -48,7 +50,7 @@ export default function SuiHomeFormSuiMeCoffee()
                                         gap={2}
                                         width={'100%'}
                                     >
-                                        <Iconify icon={'token:aptos'} width={40} height={40} />
+                                        <DisplayLogo width={40} height={40} />
                                         <Iconify icon={'eva:close-fill'} width={16} height={16} />
                                         {amounts.map((a: any, index: number) => (
                                             <ToggleButtonGroup
@@ -77,7 +79,7 @@ export default function SuiHomeFormSuiMeCoffee()
                                                         <OutlinedInput
                                                             type='number'
                                                             size='small'
-                                                            placeholder='Any APT'
+                                                            placeholder={`Any ${MAIN_CHAIN}`}
                                                             sx={{ width: 120, borderRadius: 1 }}
                                                             disabled
                                                         />
