@@ -7,9 +7,6 @@ import '../utils/highlight';
 // scroll bar
 import 'simplebar/src/simplebar.css';
 
-// lightbox
-import '@mysten/dapp-kit/dist/index.css';
-
 // map
 import 'mapbox-gl/dist/mapbox-gl.css';
 

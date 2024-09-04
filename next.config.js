@@ -33,7 +33,7 @@ module.exports = withTM({
     AUTH0_DOMAIN: '',
     //
     MAPBOX: '',
-    // API: 'http://143.198.196.98:3000/api',
-    API: 'http://192.168.1.12:3000/api'
+    API: 'http://143.198.196.98:3000/api',
+    // API: 'http://192.168.1.12:3000/api'
   },
 });
