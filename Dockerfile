@@ -33,8 +33,8 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 
 # Thiết lập biến môi trường
-ENV NODE_ENV production
-ENV API http://143.198.196.98:3000/api
+ENV NODE_ENV=production
+ENV API=http://143.198.196.98:3000/api
 
 # Expose port 8080
 EXPOSE 8080
