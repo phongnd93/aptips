@@ -40,4 +40,4 @@ ENV API http://143.198.196.98:3000/api
 EXPOSE 8080
 
 # Chạy ứng dụng
-CMD ["/app/node_modules/.bin/pnpm", "start"]
+CMD ["pnpm", "start"]
