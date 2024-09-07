@@ -19,6 +19,7 @@ import navConfig from './MenuConfig';
 import AccountPopover from '../dashboard/header/AccountPopover';
 import LanguagePopover from '../dashboard/header/LanguagePopover';
 import CreateLinkButton from 'src/components/CreateLinkButton';
+import AppLogo from 'src/components/AppLogo';
 
 // ----------------------------------------------------------------------
 
@@ -80,7 +81,7 @@ export default function MainHeader()
           }}
         >
           <Stack direction='row' alignItems='center' justifyContent='start'>
-            <Logo />
+            <AppLogo />
             {isDesktop && <MenuDesktop isOffset={isOffset} isHome={isHome} navConfig={navConfig} />}
           </Stack>
           {/* 

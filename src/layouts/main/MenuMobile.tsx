@@ -26,6 +26,7 @@ import { IconButtonAnimate } from '../../components/animate';
 import { NavSectionVertical } from '../../components/nav-section';
 //
 import { MenuProps, MenuItemProps } from './type';
+import AppLogo from 'src/components/AppLogo';
 
 // ----------------------------------------------------------------------
 
@@ -90,7 +91,7 @@ export default function MenuMobile({ isOffset, isHome, navConfig }: MenuProps) {
         PaperProps={{ sx: { pb: 5, width: 260 } }}
       >
         <Scrollbar>
-          <Logo sx={{ mx: 2.5, my: 3 }} />
+          <AppLogo sx={{ mx: 2.5, my: 3 }} />
 
           <List disablePadding>
             {navConfig.map((link) => (

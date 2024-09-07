@@ -13,6 +13,7 @@ import Logo from '../../components/Logo';
 import Image from '../../components/Image';
 // sections
 import { MetamaskConnectToWallet } from 'src/components/MetamaskConnectToWallet';
+import AppLogo from 'src/components/AppLogo';
 
 // ----------------------------------------------------------------------
 
@@ -55,7 +56,7 @@ export default function Login()
             <Grid item xs={12} md={6} bgcolor={(theme) => theme.palette.background.paper}>
               <Container maxWidth="sm">
                 <ContentStyle>
-                  <Stack alignItems="center"><Logo /></Stack>
+                  <Stack alignItems="center"><AppLogo /></Stack>
                   <Stack direction="row" alignItems="center" sx={{ mb: 5 }}>
                     <Box sx={{ flexGrow: 1, textAlign: 'center' }}>
                       <Typography variant="h3" gutterBottom>

@@ -9,6 +9,7 @@ import Link from 'next/link';
 import Iconify from 'src/components/Iconify';
 import useOffSetTop from 'src/hooks/useOffSetTop';
 import Logo from 'src/components/Logo';
+import AppLogo from 'src/components/AppLogo';
 
 type Props = {
     children: ReactNode
@@ -69,14 +70,8 @@ const MainHeader: React.FC = () =>
                         justifyContent: 'space-between',
                     }}
                 >
-                    <Stack direction={'row'} alignItems={'center'} gap={2}>
-                        <Image
-                            sx={{ zIndex: 2, height: 60, width: 60 }}
-                            src="/imgs/logo.png"
-                            alt="aptipslogo"
-                            visibleByDefault
-                            disabledEffect
-                        />
+                    <Stack direction={'row'} alignItems={'center'}>
+                        <AppLogo />
                         <Stack sx={{ display: isDesktop ? 'block' : 'none' }}>
                             <Typography variant="h4" color={(theme) => theme.palette.primary.main}>{APP_NAME}</Typography>
                             <Typography variant='h6' color={(theme) => theme.palette.primary.main}>Tip me some {MAIN_CHAIN}</Typography>
@@ -112,7 +107,7 @@ export default function LandingPageLayout({ children }: Props)
                 }}
             >
                 <Container>
-                    <Logo sx={{ mb: 1, mx: 'auto' }} />
+                    <AppLogo sx={{ mb: 1, mx: 'auto' }} />
 
                     <Typography variant="caption" component="p">
                         © All rights reserved

@@ -7,6 +7,7 @@ import Iconify from '../../../../../components/Iconify';
 //
 import Logo from './Logo';
 import Button from './Button';
+import AppLogo from 'src/components/AppLogo';
 
 // ----------------------------------------------------------------------
 
@@ -49,7 +50,7 @@ export default function Other() {
                 >
                   <Iconify icon={'eva:refresh-fill'} width={20} height={20} />
                 </IconButton>
-                <Logo key={count} />
+                <AppLogo key={count} />
               </Box>
             </Paper>
           </Grid>

@@ -8,6 +8,7 @@ import Logo from '../../components/Logo';
 //
 import MainHeader from './MainHeader';
 import { LinkDonateProvider } from '../../contexts/ManagerLinkContext';
+import AppLogo from 'src/components/AppLogo';
 
 // ----------------------------------------------------------------------
 
@@ -36,7 +37,7 @@ export default function MainLayout({ children }: Props)
         }}
       >
         <Container>
-          <Logo sx={{ mb: 1, mx: 'auto' }} />
+          <AppLogo sx={{ mb: 1, mx: 'auto' }} />
 
           <Typography variant="caption" component="p">
             © All rights reserved

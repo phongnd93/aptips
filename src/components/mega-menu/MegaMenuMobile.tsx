@@ -24,6 +24,7 @@ import { ParentItemProps, MegaMenuItemProps } from './type';
 import Logo from '../Logo';
 import Iconify from '../Iconify';
 import Scrollbar from '../Scrollbar';
+import AppLogo from '../AppLogo';
 
 // ----------------------------------------------------------------------
 
@@ -67,7 +68,7 @@ export default function MegaMenuMobile({ navConfig }: Props) {
         PaperProps={{ sx: { pb: 5, width: NAVBAR.DASHBOARD_WIDTH } }}
       >
         <Scrollbar>
-          <Logo sx={{ mx: 2.5, my: 3 }} />
+          <AppLogo sx={{ mx: 2.5, my: 3 }} />
 
           <Typography variant="h6" sx={{ px: 2, mb: 2, display: 'flex', alignItems: 'center' }}>
             <Box component={Iconify} icon={'eva:list-fill'} sx={{ mr: 1, width: 24, height: 24 }} />{' '}

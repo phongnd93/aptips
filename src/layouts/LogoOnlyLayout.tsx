@@ -5,6 +5,7 @@ import { styled } from '@mui/material/styles';
 import Logo from '../components/Logo';
 import { Button, Container, Stack, Typography } from '@mui/material';
 import Iconify from 'src/components/Iconify';
+import AppLogo from 'src/components/AppLogo';
 
 // ----------------------------------------------------------------------
 
@@ -39,7 +40,7 @@ export default function LogoOnlyLayout({ children }: Props)
         }}
       >
         <Stack alignItems='center' justifyContent='start'>
-          <Logo />
+          <AppLogo />
         </Stack>
         <Button variant='contained' href='mailto:phongnguyenduy93@gmail.com'>
           <Stack direction={'row'} spacing={1}>
