@@ -33,7 +33,7 @@ module.exports = withTM({
     AUTH0_DOMAIN: '',
     //
     MAPBOX: '',
-    API: 'http://172.17.0.2:3000/api',
+    API: 'http://tipyapi.subcli.top/api',
     // API: 'http://localhost:3000/api'
   },
 });
