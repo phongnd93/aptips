@@ -27,7 +27,14 @@ export const AptosWalletProvider: FC = ({ children }) =>
     <AptosWalletAdapterProvider
       plugins={wallets}
       autoConnect={true}
-      dappConfig={{ network: Network.DEVNET }}
+      dappConfig={{
+        network: Network.TESTNET,
+        mizuwallet: {
+          manifestURL:
+            "https://assets.mz.xyz/static/config/mizuwallet-connect-manifest.json",
+        },
+      }}
+      optInWallets={[]}
       onError={(error) =>
       {
         console.log(error);

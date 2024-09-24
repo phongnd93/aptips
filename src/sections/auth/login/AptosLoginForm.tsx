@@ -19,6 +19,7 @@ const AptosLoginForm: FC = () =>
     {
         setOpen(false);
     };
+    console.log(availableWallets);
     return <>
         <Stack direction={'column'} gap={2}>
             {

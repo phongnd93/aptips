@@ -130,6 +130,7 @@ const AptosProvider: FC<AptosContextProps> = ({ children, createnewAccount }: Ap
     const client = new Aptos(new AptosConfig({
         network: network?.name
     }));
+    console.log(network);
     useEffect(() =>
     {
         if (wallets?.length > 0 && !isLoading)
@@ -231,9 +232,15 @@ const AptosProvider: FC<AptosContextProps> = ({ children, createnewAccount }: Ap
     const fetchAccountBalance = async (wallet: string) =>
     {
         setLoadingBalance(true);
-        const res = await client.getAccountResource({ accountAddress: wallet, resourceType: "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>" });
-        const val = res?.coin?.value;
-        setBalances(parseInt(val) / Math.pow(10, 8));
+        try
+        {
+            const res = await client.getAccountResource({ accountAddress: wallet, resourceType: "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>" });
+            const val = res?.coin?.value;
+            setBalances(parseInt(val) / Math.pow(10, 8));
+        } catch (error)
+        {
+            
+        }
         setLoadingBalance(false);
     };
 

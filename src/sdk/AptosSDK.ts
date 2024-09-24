@@ -118,7 +118,7 @@ import {
       // Local MyWallet class variables
       this.signer = Account.generate();
       const aptosConfig = new AptosConfig({
-        network: Network.DEVNET,
+        network: Network.TESTNET,
       });
       this.aptos = new Aptos(aptosConfig);
   
@@ -157,9 +157,9 @@ import {
     network: AptosGetNetworkMethod = async (): Promise<NetworkInfo> => {
       const network = await this.aptos.getLedgerInfo();
       return {
-        name: Network.DEVNET,
+        name: Network.TESTNET,
         chainId: network.chain_id,
-        url: "https://fullnode.devnet.aptoslabs.com/v1",
+        url: "https://fullnode.testnet.aptoslabs.com/v1",
       };
     };
   
